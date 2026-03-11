@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - ElectraCore</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        :root {
+            --teal: #05a391;
+            --light: #f5f5f5;
+            --muted: #9aa6a6;
+            --dark: #333;
+            --white: #fff;
+            --border: #e6e6e6;
+            --danger: #e63946;
+        }
+        body {
+            font-family: 'Lato', sans-serif;
+            background: var(--light);
+            color: var(--dark);
+        }
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--white);
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--teal);
+        }
+        .logo img {
+            height: 28px;
+            width: auto;
+        }
+        .search-bar {
+            flex: 1;
+            max-width: 500px;
+        }
+        .search-bar input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .user-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        .user-actions a {
+            color: var(--dark);
+            font-weight: 500;
+        }
+        .user-actions a:hover {
+            color: var(--teal);
+        }
+
+        .page {
+            max-width: 1200px;
+            margin: 30px auto 60px;
+            padding: 0 20px;
+        }
+        .checkout-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+            gap: 24px;
+        }
+        .card {
+            background: var(--white);
+            border-radius: 14px;
+            border: 1px solid #f0f0f0;
+            padding: 18px 20px;
+            box-shadow: 0 3px 14px rgba(0,0,0,0.03);
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+        .card-header h3 {
+            font-size: 16px;
+        }
+        .small-label {
+            font-size: 12px;
+            color: var(--muted);
+        }
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-top: 1px solid #f2f2f2;
+        }
+        .edit-link {
+            font-size: 13px;
+            color: var(--teal);
+            cursor: pointer;
+        }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px 18px;
+        }
+        label {
+            display: block;
+            font-size: 13px;
+            margin-bottom: 4px;
+            color: var(--dark);
+        }
+        input,
+        select {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: #fafafa;
+            font-size: 13px;
+        }
+
+        .payment-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 16px;
+        }
+        .policy-card {
+            margin-top: 18px;
+            border-radius: 14px;
+        }
+        .policy-card p {
+            font-size: 13px;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+        .policy-icon {
+            color: var(--danger);
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .terms {
+            margin-top: 18px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        .terms a {
+            color: var(--danger);
+        }
+        .confirm-btn {
+            margin-top: 16px;
+            padding: 12px 26px;
+            border-radius: 999px;
+            border: none;
+            background: #005c59;
+            color: var(--white);
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .order-card img {
+            width: 100%;
+            border-radius: 10px;
+            margin-bottom: 12px;
+        }
+        .order-title {
+            font-size: 15px;
+            margin-bottom: 4px;
+        }
+        .order-meta {
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 12px;
+        }
+        .price-table {
+            width: 100%;
+            font-size: 13px;
+            border-collapse: collapse;
+            margin-bottom: 12px;
+        }
+        .price-table td {
+            padding: 4px 0;
+        }
+        .price-table td:last-child {
+            text-align: left;
+        }
+        .price-total td {
+            font-weight: 700;
+            padding-top: 6px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .discount-card {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed #e0e0e0;
+            font-size: 12px;
+        }
+        .discount-card strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+        .discount-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .discount-row input {
+            flex: 1;
+            background: #fafafa;
+        }
+        .discount-row button {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .btn-outline {
+            background: var(--white);
+            border: 1px solid var(--border);
+            color: var(--dark);
+        }
+        .btn-primary {
+            background: #005c59;
+            color: var(--white);
+        }
+
+        @media (max-width: 900px) {
+            .checkout-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .payment-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="index.html" class="logo">
+            <img src="design/logo.png" alt="ElectraCore logo">
+            ElectraCore
+        </a>
+        <div class="search-bar">
+            <input type="text" placeholder="Search essentials, groceries and more...">
+        </div>
+        <div class="user-actions">
+            <a href="profile.html">Profile</a>
+            <a href="checkout.html">Checkout</a>
+            <a href="signin.html">Sign in</a>
+            <a href="signup.html">Sign up</a>
+        </div>
+    </header>
+
+    <main class="page">
+        <section class="checkout-layout">
+            <div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Booking Summary</h3>
+                        <span class="small-label">Order #12345</span>
+                    </div>
+                    <div class="summary-row">
+                        <div>
+                            <div class="small-label">Check in</div>
+                            <div>19 Oct, 2023</div>
+                        </div>
+                        <span class="edit-link">Edit</span>
+                    </div>
+                    <div class="summary-row">
+                        <div>
+                            <div class="small-label">Check out</div>
+                            <div>23 Oct, 2023</div>
+                        </div>
+                        <span class="edit-link">Edit</span>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top:18px;">
+                    <div class="payment-grid">
+                        <div>
+                            <h3 style="font-size:16px;margin-bottom:10px;">Billing information</h3>
+                            <div class="two-col">
+                                <div>
+                                    <label>Email</label>
+                                    <input type="email" placeholder="example@email.com">
+                                </div>
+                                <div>
+                                    <label>City</label>
+                                    <input type="text" placeholder="City">
+                                </div>
+                                <div>
+                                    <label>Address</label>
+                                    <input type="text" placeholder="Address">
+                                </div>
+                                <div>
+                                    <label>ZIP</label>
+                                    <input type="text" placeholder="ZIP">
+                                </div>
+                                <div>
+                                    <label>State</label>
+                                    <input type="text" placeholder="State">
+                                </div>
+                                <div>
+                                    <label>Country</label>
+                                    <select>
+                                        <option>United States</option>
+                                        <option>Egypt</option>
+                                        <option>United Kingdom</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 style="font-size:16px;margin-bottom:10px;">Card Type</h3>
+                            <div class="two-col">
+                                <div>
+                                    <label>Cardholder Name</label>
+                                    <input type="text" placeholder="Full name on card">
+                                </div>
+                                <div>
+                                    <label>Card Number</label>
+                                    <input type="text" placeholder="0000 0000 0000 0000">
+                                </div>
+                                <div>
+                                    <label>Expiration Date</label>
+                                    <input type="text" placeholder="MM/YY">
+                                </div>
+                                <div>
+                                    <label>CVV Code</label>
+                                    <input type="password" placeholder="***">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card policy-card">
+                    <div class="policy-icon">!</div>
+                    <p>Free cancellation before 3:00 pm on Oct 20, cancel before Oct 27 for a partial refund.</p>
+                </div>
+
+                <div class="card policy-card">
+                    <p class="terms">
+                        By selecting the button below, I agree to the Host's House Rules, Ground rules for guests, Rebooking and Refund Policy, and that ElectraCore can charge my payment method if I'm responsible for damage.
+                        I also agree to the updated <a href="#">Terms of Service</a>, Payments Terms of Service, and acknowledge the <a href="#">Privacy Policy</a>.
+                    </p>
+                    <button class="confirm-btn">confirm and book</button>
+                </div>
+            </div>
+
+            <aside>
+                <div class="card order-card">
+                    <img src="../assets/c__Users_shams_AppData_Roaming_Cursor_User_workspaceStorage_e91676a072d34ffb75070a37cac64c64_images_checkout-8ec324c3-2bd9-45a4-94d8-64903325bde0.png" alt="Product image">
+                    <div class="order-title">Ps5 Slim</div>
+                    <div class="order-meta">Miami, US</div>
+                    <table class="price-table">
+                        <tr>
+                            <td>Device</td>
+                            <td>600$</td>
+                        </tr>
+                        <tr>
+                            <td>Tax</td>
+                            <td>100$</td>
+                        </tr>
+                        <tr class="price-total">
+                            <td>Total</td>
+                            <td>700$</td>
+                        </tr>
+                    </table>
+                    <div class="discount-card">
+                        <strong>Discount Code</strong>
+                        <span>Got a discount code? Apply it now.</span>
+                        <div class="discount-row">
+                            <input type="text" placeholder="Enter code">
+                            <button class="btn-outline">Apply</button>
+                            <button class="btn-primary">Code</button>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </section>
+    </main>
+</body>
+</html>
+

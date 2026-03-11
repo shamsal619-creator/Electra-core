@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إنشاء حساب - ElectraCore</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        :root {
+            --teal: #05a391;
+            --light: #f5f5f5;
+            --muted: #9aa6a6;
+            --dark: #333;
+        }
+        body {
+            font-family: 'Lato', sans-serif;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .card {
+            display: flex;
+            max-width: 1100px;
+            width: 100%;
+            background: white;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 6px 30px rgba(0,0,0,0.06);
+        }
+        .left {
+            flex: 0 0 42%;
+            background: var(--teal);
+            color: white;
+            padding: 48px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .logo-mark {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .logo-mark img {
+            height: 32px;
+            width: auto;
+        }
+        .left h1 {
+            font-size: 36px;
+            font-weight: 900;
+            margin-bottom: 10px;
+        }
+        .left .divider {
+            width: 40px;
+            height: 4px;
+            background: rgba(255,255,255,0.2);
+            margin: 18px 0;
+            border-radius: 4px;
+        }
+        .left p {
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+        .left .cta {
+            display: inline-block;
+            margin-top: 36px;
+            padding: 12px 28px;
+            border-radius: 12px;
+            border: 2px solid rgba(255,255,255,0.35);
+            color: white;
+            text-decoration: none;
+            font-weight: 700;
+            align-self: flex-start;
+        }
+        .right {
+            flex: 1;
+            padding: 48px 56px;
+            background: #fbfbfb;
+        }
+        .right h2 {
+            margin-top: 0;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px 24px;
+        }
+        .full {
+            grid-column: 1 / -1;
+        }
+        label {
+            display: block;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            border: 2px solid #e6e6e6;
+            background: white;
+            font-size: 16px;
+        }
+        .password-wrapper {
+            position: relative;
+        }
+        .password-wrapper input {
+            padding-right: 45px;
+        }
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 16px;
+            color: var(--muted);
+        }
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 12px 0;
+        }
+        .checkbox-row input {
+            width: auto;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            background: var(--teal);
+            color: white;
+            font-weight: 700;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .btn:hover {
+            opacity: 0.9;
+        }
+        .muted {
+            color: var(--muted);
+            font-size: 14px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .muted a {
+            color: var(--teal);
+            text-decoration: none;
+            font-weight: 700;
+        }
+        @media (max-width: 880px) {
+            .card {
+                flex-direction: column;
+            }
+            .left {
+                order: 2;
+                padding: 30px;
+                text-align: center;
+            }
+            .left .cta {
+                align-self: center;
+            }
+            .right {
+                order: 1;
+                padding: 30px;
+            }
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="left">
+            <h1>
+                <a href="index.html" class="logo-mark">
+                    <img src="design/logo.png" alt="ElectraCore logo">
+                    ElectraCore
+                </a>
+            </h1>
+            <div class="divider"></div>
+            <p>fill up personal information and<br>start journey with us</p>
+            <a href="signin.html" class="cta">sign in</a>
+        </div>
+        <div class="right">
+            <h2>Sign up for account</h2>
+            <form id="signupForm">
+                <div class="form-grid">
+                    <div>
+                        <label for="first">First Name</label>
+                        <input type="text" id="first" placeholder="Your First Name" required>
+                    </div>
+                    <div>
+                        <label for="last">Last Name</label>
+                        <input type="text" id="last" placeholder="Your Last Name" required>
+                    </div>
+                    <div class="full">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" placeholder="Enter Your email Address" required>
+                    </div>
+                    <div>
+                        <label for="pass">Password</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="pass" placeholder="Your Password" required>
+                            <button type="button" class="toggle-password" data-target="pass" aria-label="Show password">👁</button>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="confirm">Confirm Password</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="confirm" placeholder="Confirm Your Password" required>
+                            <button type="button" class="toggle-password" data-target="confirm" aria-label="Show password">👁</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="checkbox-row">
+                    <input type="checkbox" id="terms" required>
+                    <label for="terms">I accept all <a href="#">terms and condition</a></label>
+                </div>
+                <button type="submit" class="btn">Sign up</button>
+            </form>
+            <p class="muted">Have an account? <a href="signin.html">Log in</a></p>
+        </div>
+    </div>
+
+    <script>
+        // ننتظر حتى يتم تحميل الصفحة بالكامل
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('signupForm');
+            if (!form) {
+                console.error('لم يتم العثور على النموذج! تأكد من أن id="signupForm" موجود.');
+                return;
+            }
+
+            // toggle password visibility
+            document.querySelectorAll('.toggle-password').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const targetId = btn.getAttribute('data-target');
+                    const input = document.getElementById(targetId);
+                    if (!input) return;
+                    const isHidden = input.type === 'password';
+                    input.type = isHidden ? 'text' : 'password';
+                    btn.textContent = isHidden ? '🙈' : '👁';
+                    btn.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+                });
+            });
+
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                console.log('✅ تم استدعاء حدث submit');
+
+                // جلب القيم
+                const first = document.getElementById('first')?.value.trim() || '';
+                const last = document.getElementById('last')?.value.trim() || '';
+                const email = document.getElementById('email')?.value.trim() || '';
+                const pass = document.getElementById('pass')?.value || '';
+                const confirm = document.getElementById('confirm')?.value || '';
+                const terms = document.getElementById('terms')?.checked || false;
+
+                console.log('البيانات المدخلة:', { first, last, email, pass: '***', confirm: '***', terms });
+
+                // التحقق من الحقول الفارغة
+                if (!first || !last || !email || !pass || !confirm) {
+                    alert('الرجاء ملء جميع الحقول');
+                    return;
+                }
+
+                if (pass !== confirm) {
+                    alert('كلمتا المرور غير متطابقتين');
+                    return;
+                }
+
+                if (!terms) {
+                    alert('يجب الموافقة على الشروط');
+                    return;
+                }
+
+                try {
+                    const res = await fetch('/api/register', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ first, last, email, password: pass })
+                    });
+                    console.log('حالة الاستجابة:', res.status);
+
+                    const data = await res.json();
+                    console.log('البيانات المستقبلة:', data);
+
+                    if (res.ok && data.ok) {
+                        alert('✅ تم التسجيل بنجاح!');
+                        window.location.href = 'signin.html';
+                    } else {
+                        alert('❌ خطأ: ' + (data.error || 'حدث خطأ غير معروف'));
+                    }
+                } catch (err) {
+                    console.error('❌ خطأ في الاتصال بالسيرفر:', err);
+                    alert('❌ فشل الاتصال بالسيرفر. تأكد من تشغيله (node server.js)');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

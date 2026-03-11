@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول - ElectraCore</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        :root {
+            --teal: #05a391;
+            --light: #f5f5f5;
+            --muted: #9aa6a6;
+            --dark: #333;
+        }
+        body {
+            font-family: 'Lato', sans-serif;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .card {
+            display: flex;
+            max-width: 1000px;
+            width: 100%;
+            background: white;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 6px 30px rgba(0,0,0,0.06);
+        }
+        .left {
+            flex: 0 0 42%;
+            background: var(--teal);
+            color: white;
+            padding: 48px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .logo-mark {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .logo-mark img {
+            height: 32px;
+            width: auto;
+        }
+        .left h1 {
+            font-size: 36px;
+            font-weight: 900;
+            margin-bottom: 10px;
+        }
+        .left .divider {
+            width: 40px;
+            height: 4px;
+            background: rgba(255,255,255,0.2);
+            margin: 18px 0;
+            border-radius: 4px;
+        }
+        .left p {
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+        .left .cta {
+            display: inline-block;
+            margin-top: 36px;
+            padding: 12px 28px;
+            border-radius: 12px;
+            border: 2px solid rgba(255,255,255,0.35);
+            color: white;
+            text-decoration: none;
+            font-weight: 700;
+            align-self: flex-start;
+        }
+        .right {
+            flex: 1;
+            padding: 48px 56px;
+            background: #fbfbfb;
+        }
+        .right h2 {
+            margin-top: 0;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        input {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            border: 2px solid #e6e6e6;
+            background: white;
+            font-size: 16px;
+        }
+        .password-wrapper {
+            position: relative;
+        }
+        .password-wrapper input {
+            padding-right: 45px;
+        }
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 16px;
+            color: var(--muted);
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            background: var(--teal);
+            color: white;
+            font-weight: 700;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .btn:hover {
+            opacity: 0.9;
+        }
+        .muted {
+            color: var(--muted);
+            font-size: 14px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .muted a {
+            color: var(--teal);
+            text-decoration: none;
+            font-weight: 700;
+        }
+        @media (max-width: 880px) {
+            .card {
+                flex-direction: column;
+            }
+            .left {
+                order: 2;
+                padding: 30px;
+                text-align: center;
+            }
+            .left .cta {
+                align-self: center;
+            }
+            .right {
+                order: 1;
+                padding: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="left">
+            <h1>
+                <a href="index.html" class="logo-mark">
+                    <img src="design/logo.png" alt="ElectraCore logo">
+                    ElectraCore
+                </a>
+            </h1>
+            <div class="divider"></div>
+            <p>fill up personal information and<br>start journey with us</p>
+            <a href="signup.html" class="cta">sign up</a>
+        </div>
+        <div class="right">
+            <h2>Sign in to account</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" placeholder="Enter Your email Address" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="password" placeholder="Your Password" required>
+                        <button type="button" class="toggle-password" data-target="password" aria-label="Show password">👁</button>
+                    </div>
+                </div>
+                <button type="submit" class="btn">Sign In</button>
+            </form>
+            <p class="muted">Don't have an account? <a href="signup.html">Sign up</a></p>
+        </div>
+    </div>
+
+    <script>
+        // toggle password visibility
+        document.querySelectorAll('.toggle-password').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetId = btn.getAttribute('data-target');
+                const input = document.getElementById(targetId);
+                if (!input) return;
+                const isHidden = input.type === 'password';
+                input.type = isHidden ? 'text' : 'password';
+                btn.textContent = isHidden ? '🙈' : '👁';
+                btn.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+            });
+        });
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json();
+                if (data.ok) {
+                    try {
+                        localStorage.setItem('currentUser', JSON.stringify(data.user));
+                    } catch (_) {}
+                    alert('Login successful!');
+                    window.location.href = 'profile.html';
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (err) {
+                alert('Failed to connect to server. Make sure it is running.');
+            }
+        });
+    </script>
+</body>
+</html>
