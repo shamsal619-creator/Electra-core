@@ -1,81 +1,12 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile - ElectraCore</title>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        :root {
-            --teal: #05a391;
-            --light: #f5f5f5;
-            --muted: #9aa6a6;
-            --dark: #333;
-            --white: #fff;
-            --border: #e6e6e6;
-            --field-bg: #fafafa;
-        }
-        body {
-            font-family: 'Lato', sans-serif;
-            background: var(--light);
-            color: var(--dark);
-        }
-        a {
-            text-decoration: none;
-            color: inherit;
-        }
-        /* shared header from homepage */
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: var(--white);
-            padding: 15px 30px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 24px;
-            font-weight: 900;
-            color: var(--teal);
-        }
-        .logo img {
-            height: 28px;
-            width: auto;
-        }
-        .search-bar {
-            flex: 1;
-            max-width: 500px;
-        }
-        .search-bar input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 14px;
-        }
-        .user-actions {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-        .user-actions a {
-            color: var(--dark);
-            font-weight: 500;
-        }
-        .user-actions a:hover {
-            color: var(--teal);
-        }
-
         .page {
             max-width: 1200px;
             margin: 40px auto 0;
@@ -86,6 +17,13 @@
             align-items: center;
             justify-content: space-between;
             margin-bottom: 32px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
         }
         .profile-info {
             display: flex;
@@ -115,10 +53,33 @@
             padding: 10px 28px;
             border-radius: 999px;
             border: none;
-            background: #005c59;
+            background: var(--teal);
             color: var(--white);
             font-weight: 700;
             cursor: pointer;
+            transition: 0.3s;
+        }
+        .edit-btn:hover {
+            opacity: 0.9;
+        }
+        .edit-btn.cancel-btn {
+            background: var(--muted);
+        }
+        .field.edit-mode .field-view { display: none; }
+        .field.edit-mode .field-edit { display: flex !important; }
+        .field .field-edit {
+            display: none;
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--white);
+            font-size: 14px;
+            color: var(--dark);
+        }
+        .field .field-edit:focus {
+            outline: none;
+            border-color: var(--teal);
         }
 
         .profile-grid {
@@ -201,63 +162,14 @@
             cursor: pointer;
         }
 
-        .footer {
-            background: #005c59;
-            color: var(--white);
-            padding: 40px 30px;
-            margin-top: 40px;
-        }
-        .footer-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 30px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        .footer p,
-        .footer a {
-            font-size: 14px;
-        }
-        .footer a {
-            color: var(--white);
-            opacity: 0.9;
-            display: block;
-            margin-bottom: 6px;
-        }
-        .footer a:hover {
-            opacity: 1;
-        }
-        .social-links {
-            display: flex;
-            gap: 10px;
-            margin-top: 14px;
-        }
-        .social-links a {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            border: 1px solid rgba(255,255,255,0.4);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-        }
-        .copyright {
-            text-align: center;
-            margin-top: 24px;
-            font-size: 12px;
-            opacity: 0.8;
-        }
-
         @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                align-items: stretch;
-            }
             .profile-header {
                 flex-direction: column;
-                align-items: flex-start;
-                gap: 16px;
+                align-items: center;
+                text-align: center;
+            }
+            .profile-info {
+                flex-direction: column;
             }
             .profile-grid {
                 grid-template-columns: 1fr;
@@ -269,57 +181,118 @@
     <header class="header">
         <a href="index.html" class="logo">
             <img src="design/logo.png" alt="ElectraCore logo">
-            ElectraCore
         </a>
         <div class="search-bar">
             <input type="text" placeholder="Search essentials, groceries and more...">
         </div>
-        <div class="user-actions">
-            <a href="profile.html">Profile</a>
-            <a href="checkout.html">Checkout</a>
-            <a href="signin.html">Sign in</a>
-            <a href="signup.html">Sign up</a>
+        <div class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
         </div>
+        <div class="user-actions" id="headerUserActions"></div>
     </header>
 
     <main class="page">
         <section class="profile-header">
             <div class="profile-info">
                 <div class="avatar">
-                    <img src="../assets/c__Users_shams_AppData_Roaming_Cursor_User_workspaceStorage_e91676a072d34ffb75070a37cac64c64_images_profile-08f8d582-b7cc-46ae-88e1-7edef18fbb7c.png" alt="Profile avatar">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 72 72'%3E%3Ccircle fill='%23005c59' cx='36' cy='36' r='36'/%3E%3Ctext x='36' y='44' text-anchor='middle' fill='white' font-size='28' font-family='sans-serif'%3E%3F%3C/text%3E%3C/svg%3E" alt="Profile avatar" id="profileAvatarImg">
                 </div>
                 <div class="profile-text">
                     <h2 id="profileName"></h2>
                     <p id="profileEmail"></p>
                 </div>
             </div>
-            <button class="edit-btn">Edit</button>
+            <div class="header-actions">
+                <button type="button" class="edit-btn" id="editProfileBtn">Edit</button>
+                <button type="button" class="edit-btn cancel-btn" id="cancelProfileBtn" style="display: none;">Cancel</button>
+                <button type="button" class="edit-btn" id="saveProfileBtn" style="display: none;">Save</button>
+            </div>
         </section>
 
-        <section class="profile-grid">
-            <div class="field-group">
-                <label>Full Name</label>
-                <div class="field"><span>Your First Name</span></div>
+        <section class="profile-grid" id="profileForm">
+            <div class="field-group" data-field="first">
+                <label>First Name</label>
+                <div class="field">
+                    <span class="field-view" id="viewFirst"></span>
+                    <input class="field-edit" type="text" id="inputFirst" placeholder="First name">
+                </div>
             </div>
-            <div class="field-group">
+            <div class="field-group" data-field="last">
+                <label>Last Name</label>
+                <div class="field">
+                    <span class="field-view" id="viewLast"></span>
+                    <input class="field-edit" type="text" id="inputLast" placeholder="Last name">
+                </div>
+            </div>
+            <div class="field-group" data-field="nick">
                 <label>Nick Name</label>
-                <div class="field"><span>Your nick Name</span></div>
+                <div class="field">
+                    <span class="field-view" id="viewNick"></span>
+                    <input class="field-edit" type="text" id="inputNick" placeholder="Nick name">
+                </div>
             </div>
-            <div class="field-group">
+            <div class="field-group" data-field="gender">
                 <label>Gender</label>
-                <div class="field select"><span>Your gender</span></div>
+                <div class="field select">
+                    <span class="field-view" id="viewGender"></span>
+                    <select class="field-edit" id="inputGender">
+                        <option value="">Select gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                        <option value="prefer-not">Prefer not to say</option>
+                    </select>
+                </div>
             </div>
-            <div class="field-group">
+            <div class="field-group" data-field="country">
                 <label>Country</label>
-                <div class="field select"><span>Your country</span></div>
+                <div class="field select">
+                    <span class="field-view" id="viewCountry"></span>
+                    <select class="field-edit" id="inputCountry">
+                        <option value="">Select country</option>
+                        <option value="Egypt">Egypt</option>
+                        <option value="Saudi Arabia">Saudi Arabia</option>
+                        <option value="UAE">UAE</option>
+                        <option value="Jordan">Jordan</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
             </div>
-            <div class="field-group">
+            <div class="field-group" data-field="language">
                 <label>Language</label>
-                <div class="field select"><span>Your language</span></div>
+                <div class="field select">
+                    <span class="field-view" id="viewLanguage"></span>
+                    <select class="field-edit" id="inputLanguage">
+                        <option value="">Select language</option>
+                        <option value="en">English</option>
+                        <option value="ar">Arabic</option>
+                        <option value="fr">French</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
             </div>
-            <div class="field-group">
+            <div class="field-group" data-field="timezone">
                 <label>Time Zone</label>
-                <div class="field select"><span>Your time zone</span></div>
+                <div class="field select">
+                    <span class="field-view" id="viewTimezone"></span>
+                    <select class="field-edit" id="inputTimezone">
+                        <option value="">Select time zone</option>
+                        <option value="Africa/Cairo">Africa/Cairo</option>
+                        <option value="Asia/Riyadh">Asia/Riyadh</option>
+                        <option value="Asia/Dubai">Asia/Dubai</option>
+                        <option value="UTC">UTC</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+            </div>
+            <div class="field-group" data-field="address">
+                <label>Delivery Address</label>
+                <div class="field">
+                    <span class="field-view" id="viewAddress"></span>
+                    <input class="field-edit" type="text" id="inputAddress" placeholder="Delivery address">
+                </div>
             </div>
         </section>
 
@@ -370,6 +343,7 @@
             &copy; 2026 ElectraCore. All rights reserved.
         </div>
     </footer>
+    <script src="js/main.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const raw = localStorage.getItem('currentUser');
@@ -385,14 +359,125 @@
                 window.location.href = 'signin.html';
                 return;
             }
-            const fullName = [user.first, user.last].filter(Boolean).join(' ') || 'Your Name';
-            const email = user.email || '';
+
+            const fields = ['first', 'last', 'nick', 'gender', 'country', 'language', 'timezone', 'address'];
+            const placeholders = {
+                first: 'First name',
+                last: 'Last name',
+                nick: 'Nick name',
+                gender: 'Your gender',
+                country: 'Your country',
+                language: 'Your language',
+                timezone: 'Your time zone',
+                address: 'Delivery address'
+            };
+
             const nameEl = document.getElementById('profileName');
             const emailEl = document.getElementById('profileEmail');
             const emailCardEl = document.getElementById('profileEmailCard');
-            if (nameEl) nameEl.textContent = fullName;
-            if (emailEl) emailEl.textContent = email;
-            if (emailCardEl) emailCardEl.textContent = email;
+            const editBtn = document.getElementById('editProfileBtn');
+            const cancelBtn = document.getElementById('cancelProfileBtn');
+            const saveBtn = document.getElementById('saveProfileBtn');
+            const profileForm = document.getElementById('profileForm');
+
+            function displayValue(value) {
+                return (value && String(value).trim()) || '';
+            }
+
+            function renderProfile(u) {
+                const fullName = [u.first, u.last].filter(Boolean).join(' ').trim() || 'Your Name';
+                const email = u.email || '';
+                if (nameEl) nameEl.textContent = fullName;
+                if (emailEl) emailEl.textContent = email;
+                if (emailCardEl) emailCardEl.textContent = email;
+                const initial = (u.first && u.first[0]) || (u.last && u.last[0]) || (email && email[0]) || '?';
+                const avatarImg = document.getElementById('profileAvatarImg');
+                if (avatarImg) {
+                    const letter = encodeURIComponent(initial.toUpperCase());
+                    avatarImg.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 72 72'%3E%3Ccircle fill='%23005c59' cx='36' cy='36' r='36'/%3E%3Ctext x='36' y='44' text-anchor='middle' fill='white' font-size='28' font-family='sans-serif'%3E" + letter + "%3C/text%3E%3C/svg%3E";
+                }
+                fields.forEach(f => {
+                    const viewEl = document.getElementById('view' + f.charAt(0).toUpperCase() + f.slice(1));
+                    const inputEl = document.getElementById('input' + f.charAt(0).toUpperCase() + f.slice(1));
+                    const val = displayValue(u[f]);
+                    if (viewEl) viewEl.textContent = val || placeholders[f];
+                    if (inputEl) {
+                        if (inputEl.tagName === 'SELECT') {
+                            inputEl.value = val || '';
+                        } else {
+                            inputEl.value = val;
+                        }
+                    }
+                });
+            }
+
+            function setEditMode(editing) {
+                const fieldsEl = profileForm.querySelectorAll('.field');
+                fieldsEl.forEach(el => el.classList.toggle('edit-mode', editing));
+                editBtn.style.display = editing ? 'none' : '';
+                cancelBtn.style.display = editing ? '' : 'none';
+                saveBtn.style.display = editing ? '' : 'none';
+            }
+
+            function exitEditMode() {
+                setEditMode(false);
+                renderProfile(user);
+            }
+
+            editBtn.addEventListener('click', () => {
+                renderProfile(user);
+                setEditMode(true);
+            });
+
+            cancelBtn.addEventListener('click', () => {
+                exitEditMode();
+            });
+
+            saveBtn.addEventListener('click', async () => {
+                const userId = user.id || user._id;
+                if (!userId) {
+                    alert('Session expired. Please sign in again.');
+                    localStorage.removeItem('currentUser');
+                    window.location.href = 'signin.html';
+                    return;
+                }
+                const payload = {
+                    userId,
+                    first: (document.getElementById('inputFirst') && document.getElementById('inputFirst').value) || '',
+                    last: (document.getElementById('inputLast') && document.getElementById('inputLast').value) || '',
+                    nick: (document.getElementById('inputNick') && document.getElementById('inputNick').value) || '',
+                    gender: (document.getElementById('inputGender') && document.getElementById('inputGender').value) || '',
+                    language: (document.getElementById('inputLanguage') && document.getElementById('inputLanguage').value) || '',
+                    country: (document.getElementById('inputCountry') && document.getElementById('inputCountry').value) || '',
+                    timezone: (document.getElementById('inputTimezone') && document.getElementById('inputTimezone').value) || '',
+                    address: (document.getElementById('inputAddress') && document.getElementById('inputAddress').value) || ''
+                };
+                try {
+                    const apiUrl = (window.location.origin || '') + '/api/profile';
+                    const res = await fetch(apiUrl, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const data = await res.json().catch(() => ({}));
+                    if (!res.ok) {
+                        const msg = data.error || (res.status === 404 ? 'Server route not found. Open this site from the Node server (http://localhost:3000) and sign in again.' : 'Failed to update profile');
+                        alert(msg);
+                        return;
+                    }
+                    if (data.user) {
+                        user = { ...user, ...data.user };
+                        localStorage.setItem('currentUser', JSON.stringify(user));
+                    }
+                    exitEditMode();
+                    renderProfile(user);
+                } catch (err) {
+                    console.error(err);
+                    alert('Network error. Make sure the Node server is running (e.g. http://localhost:3000) and try again.');
+                }
+            });
+
+            renderProfile(user);
         });
     </script>
 </body>

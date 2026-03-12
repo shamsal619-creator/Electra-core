@@ -1,80 +1,12 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout - ElectraCore</title>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        :root {
-            --teal: #05a391;
-            --light: #f5f5f5;
-            --muted: #9aa6a6;
-            --dark: #333;
-            --white: #fff;
-            --border: #e6e6e6;
-            --danger: #e63946;
-        }
-        body {
-            font-family: 'Lato', sans-serif;
-            background: var(--light);
-            color: var(--dark);
-        }
-        a {
-            text-decoration: none;
-            color: inherit;
-        }
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: var(--white);
-            padding: 15px 30px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 24px;
-            font-weight: 900;
-            color: var(--teal);
-        }
-        .logo img {
-            height: 28px;
-            width: auto;
-        }
-        .search-bar {
-            flex: 1;
-            max-width: 500px;
-        }
-        .search-bar input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 14px;
-        }
-        .user-actions {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-        .user-actions a {
-            color: var(--dark);
-            font-weight: 500;
-        }
-        .user-actions a:hover {
-            color: var(--teal);
-        }
-
         .page {
             max-width: 1200px;
             margin: 30px auto 60px;
@@ -123,20 +55,15 @@
             grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 16px 18px;
         }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
         label {
             display: block;
             font-size: 13px;
-            margin-bottom: 4px;
             color: var(--dark);
-        }
-        input,
-        select {
-            width: 100%;
-            padding: 10px 12px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            background: #fafafa;
-            font-size: 13px;
         }
 
         .payment-grid {
@@ -172,10 +99,14 @@
             padding: 12px 26px;
             border-radius: 999px;
             border: none;
-            background: #005c59;
+            background: var(--teal);
             color: var(--white);
             font-weight: 700;
             cursor: pointer;
+            transition: 0.3s;
+        }
+        .confirm-btn:hover {
+            opacity: 0.9;
         }
 
         .order-card img {
@@ -224,10 +155,11 @@
             display: flex;
             gap: 8px;
             margin-top: 8px;
+            flex-wrap: wrap;
         }
         .discount-row input {
             flex: 1;
-            background: #fafafa;
+            min-width: 100px;
         }
         .discount-row button {
             padding: 8px 12px;
@@ -242,7 +174,7 @@
             color: var(--dark);
         }
         .btn-primary {
-            background: #005c59;
+            background: var(--teal);
             color: var(--white);
         }
 
@@ -252,11 +184,10 @@
             }
         }
         @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                align-items: stretch;
-            }
             .payment-grid {
+                grid-template-columns: 1fr;
+            }
+            .two-col {
                 grid-template-columns: 1fr;
             }
         }
@@ -266,17 +197,16 @@
     <header class="header">
         <a href="index.html" class="logo">
             <img src="design/logo.png" alt="ElectraCore logo">
-            ElectraCore
         </a>
         <div class="search-bar">
             <input type="text" placeholder="Search essentials, groceries and more...">
         </div>
-        <div class="user-actions">
-            <a href="profile.html">Profile</a>
-            <a href="checkout.html">Checkout</a>
-            <a href="signin.html">Sign in</a>
-            <a href="signup.html">Sign up</a>
+        <div class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
         </div>
+        <div class="user-actions" id="headerUserActions"></div>
     </header>
 
     <main class="page">
@@ -408,6 +338,7 @@
             </aside>
         </section>
     </main>
+    <script src="js/main.js"></script>
 </body>
 </html>
 

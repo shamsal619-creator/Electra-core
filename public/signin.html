@@ -1,30 +1,19 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تسجيل الدخول - ElectraCore</title>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        :root {
-            --teal: #05a391;
-            --light: #f5f5f5;
-            --muted: #9aa6a6;
-            --dark: #333;
-        }
         body {
-            font-family: 'Lato', sans-serif;
-            background: var(--light);
             display: flex;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
             padding: 20px;
+            background: var(--light);
         }
         .card {
             display: flex;
@@ -47,10 +36,9 @@
         .logo-mark {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
         }
         .logo-mark img {
-            height: 32px;
+            height: 100px; /* Increased size significantly for sign-in/up pages */
             width: auto;
         }
         .left h1 {
@@ -79,6 +67,10 @@
             text-decoration: none;
             font-weight: 700;
             align-self: flex-start;
+            transition: 0.3s;
+        }
+        .left .cta:hover {
+            background: rgba(255,255,255,0.1);
         }
         .right {
             flex: 1;
@@ -92,20 +84,9 @@
         }
         .form-group {
             margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 8px;
-        }
-        input {
-            width: 100%;
-            padding: 14px;
-            border-radius: 10px;
-            border: 2px solid #e6e6e6;
-            background: white;
-            font-size: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
         .password-wrapper {
             position: relative;
@@ -124,22 +105,6 @@
             font-size: 16px;
             color: var(--muted);
         }
-        .btn {
-            display: block;
-            width: 100%;
-            padding: 14px;
-            border-radius: 10px;
-            background: var(--teal);
-            color: white;
-            font-weight: 700;
-            border: none;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        .btn:hover {
-            opacity: 0.9;
-        }
         .muted {
             color: var(--muted);
             font-size: 14px;
@@ -156,16 +121,15 @@
                 flex-direction: column;
             }
             .left {
-                order: 2;
-                padding: 30px;
+                padding: 40px 30px;
                 text-align: center;
+                align-items: center;
             }
             .left .cta {
                 align-self: center;
             }
             .right {
-                order: 1;
-                padding: 30px;
+                padding: 40px 30px;
             }
         }
     </style>
@@ -176,7 +140,6 @@
             <h1>
                 <a href="index.html" class="logo-mark">
                     <img src="design/logo.png" alt="ElectraCore logo">
-                    ElectraCore
                 </a>
             </h1>
             <div class="divider"></div>
@@ -234,7 +197,7 @@
                         localStorage.setItem('currentUser', JSON.stringify(data.user));
                     } catch (_) {}
                     alert('Login successful!');
-                    window.location.href = 'profile.html';
+                    window.location.href = 'index.html';
                 } else {
                     alert('Error: ' + data.error);
                 }

@@ -1,30 +1,19 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>إنشاء حساب - ElectraCore</title>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        :root {
-            --teal: #05a391;
-            --light: #f5f5f5;
-            --muted: #9aa6a6;
-            --dark: #333;
-        }
         body {
-            font-family: 'Lato', sans-serif;
-            background: var(--light);
             display: flex;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
             padding: 20px;
+            background: var(--light);
         }
         .card {
             display: flex;
@@ -47,10 +36,9 @@
         .logo-mark {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
         }
         .logo-mark img {
-            height: 32px;
+            height: 100px; /* Increased size significantly for sign-in/up pages */
             width: auto;
         }
         .left h1 {
@@ -79,6 +67,10 @@
             text-decoration: none;
             font-weight: 700;
             align-self: flex-start;
+            transition: 0.3s;
+        }
+        .left .cta:hover {
+            background: rgba(255,255,255,0.1);
         }
         .right {
             flex: 1;
@@ -98,21 +90,11 @@
         .full {
             grid-column: 1 / -1;
         }
-        label {
-            display: block;
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 8px;
-        }
-        input[type="text"],
-        input[type="email"],
-        input[type="password"] {
-            width: 100%;
-            padding: 14px;
-            border-radius: 10px;
-            border: 2px solid #e6e6e6;
-            background: white;
-            font-size: 16px;
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 15px;
         }
         .password-wrapper {
             position: relative;
@@ -135,26 +117,10 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            margin: 12px 0;
+            margin: 15px 0;
         }
         .checkbox-row input {
             width: auto;
-        }
-        .btn {
-            display: block;
-            width: 100%;
-            padding: 14px;
-            border-radius: 10px;
-            background: var(--teal);
-            color: white;
-            font-weight: 700;
-            border: none;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        .btn:hover {
-            opacity: 0.9;
         }
         .muted {
             color: var(--muted);
@@ -172,19 +138,19 @@
                 flex-direction: column;
             }
             .left {
-                order: 2;
-                padding: 30px;
+                padding: 40px 30px;
                 text-align: center;
+                align-items: center;
             }
             .left .cta {
                 align-self: center;
             }
             .right {
-                order: 1;
-                padding: 30px;
+                padding: 40px 30px;
             }
             .form-grid {
                 grid-template-columns: 1fr;
+                gap: 15px;
             }
         }
     </style>
@@ -195,7 +161,6 @@
             <h1>
                 <a href="index.html" class="logo-mark">
                     <img src="design/logo.png" alt="ElectraCore logo">
-                    ElectraCore
                 </a>
             </h1>
             <div class="divider"></div>
@@ -206,26 +171,26 @@
             <h2>Sign up for account</h2>
             <form id="signupForm">
                 <div class="form-grid">
-                    <div>
+                    <div class="form-group">
                         <label for="first">First Name</label>
                         <input type="text" id="first" placeholder="Your First Name" required>
                     </div>
-                    <div>
+                    <div class="form-group">
                         <label for="last">Last Name</label>
                         <input type="text" id="last" placeholder="Your Last Name" required>
                     </div>
-                    <div class="full">
+                    <div class="form-group full">
                         <label for="email">Email Address</label>
                         <input type="email" id="email" placeholder="Enter Your email Address" required>
                     </div>
-                    <div>
+                    <div class="form-group">
                         <label for="pass">Password</label>
                         <div class="password-wrapper">
                             <input type="password" id="pass" placeholder="Your Password" required>
                             <button type="button" class="toggle-password" data-target="pass" aria-label="Show password">👁</button>
                         </div>
                     </div>
-                    <div>
+                    <div class="form-group">
                         <label for="confirm">Confirm Password</label>
                         <div class="password-wrapper">
                             <input type="password" id="confirm" placeholder="Confirm Your Password" required>
@@ -281,17 +246,33 @@
 
                 // التحقق من الحقول الفارغة
                 if (!first || !last || !email || !pass || !confirm) {
-                    alert('الرجاء ملء جميع الحقول');
+                    alert('Please fill in all fields');
+                    return;
+                }
+
+                if (first.length < 2 || last.length < 2) {
+                    alert('First and last name must be at least 2 characters long');
+                    return;
+                }
+
+                if (pass.length < 6) {
+                    alert('Password must be at least 6 characters long');
                     return;
                 }
 
                 if (pass !== confirm) {
-                    alert('كلمتا المرور غير متطابقتين');
+                    alert('Passwords do not match');
+                    return;
+                }
+
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    alert('Please enter a valid email address');
                     return;
                 }
 
                 if (!terms) {
-                    alert('يجب الموافقة على الشروط');
+                    alert('You must accept the terms and conditions');
                     return;
                 }
 
