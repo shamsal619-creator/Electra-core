@@ -210,6 +210,16 @@ app.get('/api/users', async (req, res) => {
 // Test route to confirm server is working
 app.get('/ping', (req, res) => res.send('pong'));
 
+// Debug route to check connection status (NOT for production use!)
+app.get('/api/status', (req, res) => {
+    res.json({
+        ok: true,
+        databaseConnected: isConnected,
+        envLoaded: !!MONGODB_URI,
+        port: PORT
+    });
+});
+
 // Static files (must come after API routes so /api/* and /ping are not treated as file paths)
 app.use(express.static(path.join(__dirname, 'public')));
 
