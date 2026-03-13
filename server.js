@@ -14,27 +14,41 @@ app.use(express.json());
 const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
-    console.error('❌ MONGODB_URI not found in .env');
-    process.exit(1);
+    console.error('❌ MONGODB_URI environment variable is missing.');
 }
 
-console.log('🔍 Attempting to connect to database...');
+// Improved connection function for better error reporting
+async function connectToDatabase() {
+    if (!MONGODB_URI) return;
 
-const mongooseOptions = {
-    serverSelectionTimeoutMS: 10000,
-};
+    console.log('🔍 Attempting to connect to database...');
+    
+    // Safety check for common password mistake
+    if (MONGODB_URI.includes('<') || MONGODB_URI.includes('>')) {
+        console.error('⚠️ Warning: MONGODB_URI seems to contain brackets < or >. These should be replaced with your actual password.');
+    }
+
+    const mongooseOptions = {
+        serverSelectionTimeoutMS: 20000,
+        socketTimeoutMS: 45000,
+        family: 4 // Force IPv4 if needed
+    };
+
+    try {
+        await mongoose.connect(MONGODB_URI, mongooseOptions);
+        isConnected = true;
+        console.log('✅ MongoDB connected successfully to:', mongoose.connection.name);
+    } catch (err) {
+        isConnected = false;
+        console.error('❌ MongoDB connection error details:');
+        console.error('- Name:', err.name);
+        console.error('- Message:', err.message);
+        if (err.reason) console.error('- Reason:', err.reason);
+    }
+}
 
 let isConnected = false;
-
-mongoose.connect(MONGODB_URI, mongooseOptions)
-    .then(() => {
-        isConnected = true;
-        console.log('✅ MongoDB connected successfully');
-    })
-    .catch(err => {
-        console.error('❌ MongoDB connection error:', err);
-        isConnected = false;
-    });
+connectToDatabase();
 
 mongoose.connection.on('disconnected', () => {
     isConnected = false;
@@ -200,5 +214,5 @@ app.get('/ping', (req, res) => res.send('pong'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.listen(PORT, () => {
-    console.log(`✅ Server running on http://127.0.0.1:${PORT}`);
+    console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
