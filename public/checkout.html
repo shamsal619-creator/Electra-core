@@ -271,20 +271,16 @@
                         <h2>Payment Method</h2>
                     </div>
                     <div class="payment-methods">
-                        <div class="method-card active">
+                        <div class="method-card active" data-method="online">
                             <span>💳</span>
-                            <span>Credit Card</span>
+                            <span>Pay Online</span>
                         </div>
-                        <div class="method-card">
+                        <div class="method-card" data-method="cod">
                             <span>💰</span>
                             <span>Cash on Delivery</span>
                         </div>
-                        <div class="method-card">
-                            <span>📱</span>
-                            <span>InstaPay</span>
-                        </div>
                     </div>
-                    <form class="form-grid">
+                    <form class="form-grid" id="cardDetailsForm">
                         <div class="form-group full-width">
                             <label>Cardholder Name</label>
                             <input type="text" placeholder="Name as it appears on card">
@@ -302,6 +298,10 @@
                             <input type="password" placeholder="***">
                         </div>
                     </form>
+                    <div id="codNotice" style="display: none; padding: 20px; background: #f9f9f9; border-radius: 10px; border: 1px dashed var(--border); text-align: center;">
+                        <p style="font-size: 14px; color: var(--dark); font-weight: 700;">You will pay for your order in cash when it arrives at your doorstep.</p>
+                        <p style="font-size: 12px; color: var(--muted); margin-top: 5px;">Please have the exact amount ready.</p>
+                    </div>
                 </div>
             </div>
 
@@ -381,6 +381,42 @@
         </div>
     </footer>
     <script src="js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const methodCards = document.querySelectorAll('.method-card');
+            const cardForm = document.getElementById('cardDetailsForm');
+            const codNotice = document.getElementById('codNotice');
+            const placeOrderBtn = document.getElementById('placeOrderBtn');
+
+            methodCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    // Toggle active class
+                    methodCards.forEach(c => c.classList.remove('active'));
+                    card.classList.add('active');
+
+                    // Show/Hide forms based on selection
+                    const method = card.getAttribute('data-method');
+                    if (method === 'cod') {
+                        cardForm.style.display = 'none';
+                        codNotice.style.display = 'block';
+                    } else {
+                        cardForm.style.display = 'grid';
+                        codNotice.style.display = 'none';
+                    }
+                });
+            });
+
+            if (placeOrderBtn) {
+                placeOrderBtn.addEventListener('click', () => {
+                    const activeMethod = document.querySelector('.method-card.active').getAttribute('data-method');
+                    const methodName = activeMethod === 'cod' ? 'Cash on Delivery' : 'Pay Online';
+                    
+                    alert(`Thank you! Your order has been placed successfully using ${methodName}.`);
+                    window.location.href = 'index.html';
+                });
+            }
+        });
+    </script>
 </body>
 </html>
 
