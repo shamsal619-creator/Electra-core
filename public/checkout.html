@@ -209,11 +209,11 @@
     <!-- Category Nav Bar -->
     <nav class="category-nav">
         <a href="index.html" class="nav-item">Home</a>
-        <a href="laptops.html" class="nav-item">Laptop</a>
-        <a href="#" class="nav-item">Headphone</a>
-        <a href="phones.html" class="nav-item">Phone</a>
-        <a href="watches.html" class="nav-item">Watch</a>
-        <a href="#" class="nav-item">Camera</a>
+        <a href="laptops.html" class="nav-item">Laptops</a>
+        <a href="headphones.html" class="nav-item">Headphones</a>
+        <a href="phones.html" class="nav-item">Phones</a>
+        <a href="watches.html" class="nav-item">Watches</a>
+        <a href="cameras.html" class="nav-item">Cameras</a>
         <a href="accessories.html" class="nav-item">Accessories</a>
     </nav>
 
@@ -312,35 +312,31 @@
                         <h2>Order Summary</h2>
                     </div>
                     
-                    <div class="order-item">
-                        <img src="https://loremflickr.com/200/200/ps5,console?lock=201" alt="Product">
-                        <div class="order-item-info">
-                            <h4>PlayStation 5 Slim</h4>
-                            <p>Qty: 1</p>
-                            <p><strong>15000 EGP</strong></p>
-                        </div>
+                    <div id="checkoutItemsList">
+                        <!-- Items will be populated dynamically -->
+                        <p style="text-align: center; color: var(--muted); padding: 20px 0;">Your cart is empty</p>
                     </div>
 
                     <table class="summary-table">
                         <tr>
                             <td>Subtotal</td>
-                            <td>15000 EGP</td>
+                            <td id="checkoutSubtotal">0 EGP</td>
                         </tr>
                         <tr>
                             <td>Shipping</td>
-                            <td>50 EGP</td>
+                            <td id="checkoutShipping">0 EGP</td>
                         </tr>
                         <tr>
                             <td>Tax (14%)</td>
-                            <td>2100 EGP</td>
+                            <td id="checkoutTax">0 EGP</td>
                         </tr>
                         <tr class="total-row">
                             <td>Total</td>
-                            <td>17150 EGP</td>
+                            <td id="checkoutTotal">0 EGP</td>
                         </tr>
                     </table>
 
-                    <button class="place-order-btn">Place Order Now</button>
+                    <button class="place-order-btn" id="placeOrderBtn">Place Order Now</button>
                     
                     <div class="secure-notice">
                         <span>🔒</span>
