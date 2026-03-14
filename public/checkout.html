@@ -9,186 +9,183 @@
     <style>
         .page {
             max-width: 1200px;
-            margin: 30px auto 60px;
+            margin: 40px auto 80px;
             padding: 0 20px;
         }
         .checkout-layout {
             display: grid;
-            grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
-            gap: 24px;
+            grid-template-columns: 1.8fr 1fr;
+            gap: 32px;
+            align-items: start;
         }
-        .card {
+        .section-header {
+            margin-bottom: 24px;
+            border-bottom: 2px solid var(--teal);
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-header h2 {
+            font-size: 20px;
+            font-weight: 900;
+            color: var(--dark);
+        }
+        .checkout-card {
             background: var(--white);
-            border-radius: 14px;
-            border: 1px solid #f0f0f0;
-            padding: 18px 20px;
-            box-shadow: 0 3px 14px rgba(0,0,0,0.03);
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+            margin-bottom: 24px;
         }
-        .card-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 14px;
-        }
-        .card-header h3 {
-            font-size: 16px;
-        }
-        .small-label {
-            font-size: 12px;
-            color: var(--muted);
-        }
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            border-top: 1px solid #f2f2f2;
-        }
-        .edit-link {
-            font-size: 13px;
-            color: var(--teal);
-            cursor: pointer;
-        }
-
-        .two-col {
+        .form-grid {
             display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 16px 18px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
         }
         .form-group {
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 8px;
+        }
+        .form-group.full-width {
+            grid-column: span 2;
         }
         label {
-            display: block;
-            font-size: 13px;
+            font-size: 14px;
+            font-weight: 700;
             color: var(--dark);
         }
-
-        .payment-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 16px;
-        }
-        .policy-card {
-            margin-top: 18px;
-            border-radius: 14px;
-        }
-        .policy-card p {
-            font-size: 13px;
-            color: var(--muted);
-            line-height: 1.5;
-        }
-        .policy-icon {
-            color: var(--danger);
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-
-        .terms {
-            margin-top: 18px;
-            font-size: 13px;
-            line-height: 1.6;
-        }
-        .terms a {
-            color: var(--danger);
-        }
-        .confirm-btn {
-            margin-top: 16px;
-            padding: 12px 26px;
-            border-radius: 999px;
-            border: none;
-            background: var(--teal);
-            color: var(--white);
-            font-weight: 700;
-            cursor: pointer;
+        input, select {
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
             transition: 0.3s;
         }
-        .confirm-btn:hover {
-            opacity: 0.9;
+        input:focus, select:focus {
+            border-color: var(--teal);
+            box-shadow: 0 0 0 3px rgba(5, 163, 145, 0.1);
         }
-
-        .order-card img {
-            width: 100%;
+        
+        .payment-methods {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .method-card {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: 700;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        .method-card.active {
+            border-color: var(--teal);
+            background: #e6fffb;
+            color: var(--teal);
+        }
+        
+        .order-summary-card {
+            position: sticky;
+            top: 150px;
+        }
+        .order-item {
+            display: flex;
+            gap: 15px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+        .order-item img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            background: #f9f9f9;
             border-radius: 10px;
-            margin-bottom: 12px;
         }
-        .order-title {
+        .order-item-info h4 {
             font-size: 15px;
-            margin-bottom: 4px;
+            margin-bottom: 5px;
         }
-        .order-meta {
+        .order-item-info p {
+            font-size: 13px;
+            color: var(--muted);
+        }
+        
+        .summary-table {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .summary-table tr td {
+            padding: 8px 0;
+            font-size: 14px;
+        }
+        .summary-table tr td:last-child {
+            text-align: right;
+            font-weight: 700;
+        }
+        .summary-table tr.total-row td {
+            border-top: 2px solid var(--border);
+            padding-top: 15px;
+            font-size: 18px;
+            font-weight: 900;
+            color: var(--teal);
+        }
+        
+        .place-order-btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--teal);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 900;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .place-order-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(5, 163, 145, 0.3);
+        }
+        
+        .secure-notice {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 15px;
             font-size: 12px;
             color: var(--muted);
-            margin-bottom: 12px;
-        }
-        .price-table {
-            width: 100%;
-            font-size: 13px;
-            border-collapse: collapse;
-            margin-bottom: 12px;
-        }
-        .price-table td {
-            padding: 4px 0;
-        }
-        .price-table td:last-child {
-            text-align: left;
-        }
-        .price-total td {
-            font-weight: 700;
-            padding-top: 6px;
-            border-top: 1px solid #f0f0f0;
         }
 
-        .discount-card {
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 1px dashed #e0e0e0;
-            font-size: 12px;
-        }
-        .discount-card strong {
-            display: block;
-            margin-bottom: 4px;
-        }
-        .discount-row {
-            display: flex;
-            gap: 8px;
-            margin-top: 8px;
-            flex-wrap: wrap;
-        }
-        .discount-row input {
-            flex: 1;
-            min-width: 100px;
-        }
-        .discount-row button {
-            padding: 8px 12px;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            font-size: 12px;
-        }
-        .btn-outline {
-            background: var(--white);
-            border: 1px solid var(--border);
-            color: var(--dark);
-        }
-        .btn-primary {
-            background: var(--teal);
-            color: var(--white);
-        }
-
-        @media (max-width: 900px) {
+        @media (max-width: 992px) {
             .checkout-layout {
                 grid-template-columns: 1fr;
             }
+            .order-summary-card {
+                position: static;
+            }
         }
-        @media (max-width: 768px) {
-            .payment-grid {
+        @media (max-width: 600px) {
+            .form-grid {
                 grid-template-columns: 1fr;
             }
-            .two-col {
-                grid-template-columns: 1fr;
+            .form-group.full-width {
+                grid-column: span 1;
             }
         }
     </style>
@@ -199,7 +196,7 @@
             <img src="design/logo.png" alt="ElectraCore logo">
         </a>
         <div class="search-bar">
-            <input type="text" placeholder="Search essentials, groceries and more...">
+            <input type="text" placeholder="Search essentials, electronics and more...">
         </div>
         <div class="hamburger">
             <span></span>
@@ -209,135 +206,184 @@
         <div class="user-actions" id="headerUserActions"></div>
     </header>
 
+    <!-- Category Nav Bar -->
+    <nav class="category-nav">
+        <a href="index.html" class="nav-item">Home</a>
+        <a href="laptops.html" class="nav-item">Laptop</a>
+        <a href="#" class="nav-item">Headphone</a>
+        <a href="phones.html" class="nav-item">Phone</a>
+        <a href="watches.html" class="nav-item">Watch</a>
+        <a href="#" class="nav-item">Camera</a>
+        <a href="accessories.html" class="nav-item">Accessories</a>
+    </nav>
+
     <main class="page">
-        <section class="checkout-layout">
-            <div>
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Booking Summary</h3>
-                        <span class="small-label">Order #12345</span>
+        <div class="checkout-layout">
+            <!-- Left Side: Shipping & Payment -->
+            <div class="checkout-forms">
+                <div class="checkout-card">
+                    <div class="section-header">
+                        <h2>Shipping Information</h2>
                     </div>
-                    <div class="summary-row">
-                        <div>
-                            <div class="small-label">Check in</div>
-                            <div>19 Oct, 2023</div>
+                    <form class="form-grid">
+                        <div class="form-group">
+                            <label>First Name</label>
+                            <input type="text" placeholder="John" required>
                         </div>
-                        <span class="edit-link">Edit</span>
-                    </div>
-                    <div class="summary-row">
-                        <div>
-                            <div class="small-label">Check out</div>
-                            <div>23 Oct, 2023</div>
+                        <div class="form-group">
+                            <label>Last Name</label>
+                            <input type="text" placeholder="Doe" required>
                         </div>
-                        <span class="edit-link">Edit</span>
-                    </div>
+                        <div class="form-group full-width">
+                            <label>Email Address</label>
+                            <input type="email" placeholder="john@example.com" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Street Address</label>
+                            <input type="text" placeholder="123 Electronic Ave" required>
+                        </div>
+                        <div class="form-group">
+                            <label>City</label>
+                            <input type="text" placeholder="New York" required>
+                        </div>
+                        <div class="form-group">
+                            <label>ZIP Code</label>
+                            <input type="text" placeholder="10001" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Country</label>
+                            <select>
+                                <option>Egypt</option>
+                                <option>United States</option>
+                                <option>United Kingdom</option>
+                                <option>Saudi Arabia</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="tel" placeholder="+20 123 456 7890" required>
+                        </div>
+                    </form>
                 </div>
 
-                <div class="card" style="margin-top:18px;">
-                    <div class="payment-grid">
-                        <div>
-                            <h3 style="font-size:16px;margin-bottom:10px;">Billing information</h3>
-                            <div class="two-col">
-                                <div>
-                                    <label>Email</label>
-                                    <input type="email" placeholder="example@email.com">
-                                </div>
-                                <div>
-                                    <label>City</label>
-                                    <input type="text" placeholder="City">
-                                </div>
-                                <div>
-                                    <label>Address</label>
-                                    <input type="text" placeholder="Address">
-                                </div>
-                                <div>
-                                    <label>ZIP</label>
-                                    <input type="text" placeholder="ZIP">
-                                </div>
-                                <div>
-                                    <label>State</label>
-                                    <input type="text" placeholder="State">
-                                </div>
-                                <div>
-                                    <label>Country</label>
-                                    <select>
-                                        <option>United States</option>
-                                        <option>Egypt</option>
-                                        <option>United Kingdom</option>
-                                    </select>
-                                </div>
-                            </div>
+                <div class="checkout-card">
+                    <div class="section-header">
+                        <h2>Payment Method</h2>
+                    </div>
+                    <div class="payment-methods">
+                        <div class="method-card active">
+                            <span>💳</span>
+                            <span>Credit Card</span>
                         </div>
-                        <div>
-                            <h3 style="font-size:16px;margin-bottom:10px;">Card Type</h3>
-                            <div class="two-col">
-                                <div>
-                                    <label>Cardholder Name</label>
-                                    <input type="text" placeholder="Full name on card">
-                                </div>
-                                <div>
-                                    <label>Card Number</label>
-                                    <input type="text" placeholder="0000 0000 0000 0000">
-                                </div>
-                                <div>
-                                    <label>Expiration Date</label>
-                                    <input type="text" placeholder="MM/YY">
-                                </div>
-                                <div>
-                                    <label>CVV Code</label>
-                                    <input type="password" placeholder="***">
-                                </div>
-                            </div>
+                        <div class="method-card">
+                            <span>💰</span>
+                            <span>Cash on Delivery</span>
+                        </div>
+                        <div class="method-card">
+                            <span>📱</span>
+                            <span>InstaPay</span>
                         </div>
                     </div>
-                </div>
-
-                <div class="card policy-card">
-                    <div class="policy-icon">!</div>
-                    <p>Free cancellation before 3:00 pm on Oct 20, cancel before Oct 27 for a partial refund.</p>
-                </div>
-
-                <div class="card policy-card">
-                    <p class="terms">
-                        By selecting the button below, I agree to the Host's House Rules, Ground rules for guests, Rebooking and Refund Policy, and that ElectraCore can charge my payment method if I'm responsible for damage.
-                        I also agree to the updated <a href="#">Terms of Service</a>, Payments Terms of Service, and acknowledge the <a href="#">Privacy Policy</a>.
-                    </p>
-                    <button class="confirm-btn">confirm and book</button>
+                    <form class="form-grid">
+                        <div class="form-group full-width">
+                            <label>Cardholder Name</label>
+                            <input type="text" placeholder="Name as it appears on card">
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Card Number</label>
+                            <input type="text" placeholder="0000 0000 0000 0000">
+                        </div>
+                        <div class="form-group">
+                            <label>Expiration Date</label>
+                            <input type="text" placeholder="MM/YY">
+                        </div>
+                        <div class="form-group">
+                            <label>CVV</label>
+                            <input type="password" placeholder="***">
+                        </div>
+                    </form>
                 </div>
             </div>
 
-            <aside>
-                <div class="card order-card">
-                    <img src="../assets/c__Users_shams_AppData_Roaming_Cursor_User_workspaceStorage_e91676a072d34ffb75070a37cac64c64_images_checkout-8ec324c3-2bd9-45a4-94d8-64903325bde0.png" alt="Product image">
-                    <div class="order-title">Ps5 Slim</div>
-                    <div class="order-meta">Miami, US</div>
-                    <table class="price-table">
+            <!-- Right Side: Order Summary -->
+            <aside class="order-summary-card">
+                <div class="checkout-card">
+                    <div class="section-header">
+                        <h2>Order Summary</h2>
+                    </div>
+                    
+                    <div class="order-item">
+                        <img src="https://loremflickr.com/200/200/ps5,console?lock=201" alt="Product">
+                        <div class="order-item-info">
+                            <h4>PlayStation 5 Slim</h4>
+                            <p>Qty: 1</p>
+                            <p><strong>15000 EGP</strong></p>
+                        </div>
+                    </div>
+
+                    <table class="summary-table">
                         <tr>
-                            <td>Device</td>
-                            <td>600$</td>
+                            <td>Subtotal</td>
+                            <td>15000 EGP</td>
                         </tr>
                         <tr>
-                            <td>Tax</td>
-                            <td>100$</td>
+                            <td>Shipping</td>
+                            <td>50 EGP</td>
                         </tr>
-                        <tr class="price-total">
+                        <tr>
+                            <td>Tax (14%)</td>
+                            <td>2100 EGP</td>
+                        </tr>
+                        <tr class="total-row">
                             <td>Total</td>
-                            <td>700$</td>
+                            <td>17150 EGP</td>
                         </tr>
                     </table>
-                    <div class="discount-card">
-                        <strong>Discount Code</strong>
-                        <span>Got a discount code? Apply it now.</span>
-                        <div class="discount-row">
-                            <input type="text" placeholder="Enter code">
-                            <button class="btn-outline">Apply</button>
-                            <button class="btn-primary">Code</button>
-                        </div>
+
+                    <button class="place-order-btn">Place Order Now</button>
+                    
+                    <div class="secure-notice">
+                        <span>🔒</span>
+                        <span>Secure SSL Encrypted Checkout</span>
                     </div>
                 </div>
             </aside>
-        </section>
+        </div>
     </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-col">
+                <h4>About Us</h4>
+                <p>We will always give our clients the best in order to get the best experience.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <a href="index.html">Home</a>
+                <a href="#">Shop</a>
+                <a href="#">About</a>
+                <a href="#">Contact</a>
+            </div>
+            <div class="footer-col">
+                <h4>Policies</h4>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms & Conditions</a>
+                <a href="#">Return Policy</a>
+            </div>
+            <div class="footer-col">
+                <h4>Follow Us</h4>
+                <div class="social-links">
+                    <a href="#">f</a>
+                    <a href="#">t</a>
+                    <a href="#">i</a>
+                    <a href="#">y</a>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            &copy; 2026 ElectraCore. All rights reserved.
+        </div>
+    </footer>
     <script src="js/main.js"></script>
 </body>
 </html>
