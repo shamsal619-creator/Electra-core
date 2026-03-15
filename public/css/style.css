@@ -54,7 +54,7 @@ a {
 }
 
 .logo img {
-    height: 100px; /* Increased size significantly */
+    height: 120px; /* Increased from 100px to be even more prominent */
     width: auto;
 }
 
@@ -890,7 +890,7 @@ a {
     }
 
     .logo img {
-        height: 90px; /* Increased to be "so big" as requested */
+        height: 110px; /* Increased from 90px to be "so big" as requested */
     }
 
     .search-bar input {
@@ -983,7 +983,7 @@ a {
 /* Extra Small Devices */
 @media (max-width: 480px) {
     .logo img {
-        height: 80px; /* Big for small phones as requested */
+        height: 100px; /* Big for small phones as requested */
     }
 
     .search-bar {
