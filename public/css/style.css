@@ -798,8 +798,17 @@ a {
     .search-bar {
         order: 3;
         width: 100%;
-        max-width: 300px; /* Applied same smaller size for mobile */
+        max-width: 180px; /* Even smaller width */
         margin: 15px auto 0; /* Centered on mobile */
+    }
+
+    .logo img {
+        height: 90px; /* Increased to be "so big" as requested */
+    }
+
+    .search-bar input {
+        padding: 6px 10px; /* Even smaller padding for mobile */
+        font-size: 12px;
     }
 
     .user-actions {
@@ -886,12 +895,12 @@ a {
 
 /* Extra Small Devices */
 @media (max-width: 480px) {
-    .logo {
-        font-size: 20px;
-    }
-    
     .logo img {
-        height: 36px;
+        height: 80px; /* Big for small phones as requested */
+    }
+
+    .search-bar {
+        max-width: 140px; /* Very small search bar for small phones */
     }
 
     .hero h1 {

@@ -6,6 +6,52 @@
     <title>Your Cart - ElectraCore</title>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        .cart-item {
+            display: grid;
+            grid-template-columns: 100px 1fr auto auto;
+            gap: 20px;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            background: var(--white);
+        }
+        .cart-item img {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            background: #f9f9f9;
+            border-radius: 10px;
+        }
+        .item-details h4 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        .item-details p {
+            color: var(--teal);
+            font-weight: 700;
+        }
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .qty-btn {
+            width: 30px;
+            height: 30px;
+            border: 1px solid var(--border);
+            background: #f9f9f9;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .remove-btn {
+            color: #ff4d4d;
+            cursor: pointer;
+            font-size: 20px;
+            margin-left: 15px;
+        }
+    </style>
 </head>
 <body>
     <header class="header">
@@ -29,17 +75,10 @@
         </div>
 
         <div id="cartContent">
-            <!-- Default Empty State -->
-            <div class="empty-cart-state">
-                <span class="empty-cart-icon">🛒</span>
-                <h2>Your cart is empty</h2>
-                <p>Looks like you haven't added anything to your cart yet.</p>
-                <a href="index.html" class="btn-checkout" style="display: inline-block;">Start Shopping</a>
-            </div>
+            <!-- Dynamic Cart Items -->
         </div>
 
-        <!-- Cart Footer (Hidden when empty in real logic, but showing for now as requested) -->
-        <div class="cart-footer" id="cartFooter" style="display: none;">
+        <div class="cart-footer" id="cartFooter">
             <div class="cart-total-info">
                 <h3>Estimated Total</h3>
                 <span class="total-price" id="cartTotalPrice">0 EGP</span>
@@ -87,17 +126,76 @@
 
     <script src="js/main.js"></script>
     <script>
-        // Simple logic to show footer if items were to be added
         document.addEventListener('DOMContentLoaded', () => {
+            renderCart();
+        });
+
+        function renderCart() {
             const cart = JSON.parse(localStorage.getItem('cart') || '[]');
             const cartContent = document.getElementById('cartContent');
             const cartFooter = document.getElementById('cartFooter');
-            
-            if (cart.length > 0) {
-                cartFooter.style.display = 'flex';
-                // In a real app, you'd map items here
+            const totalPriceElement = document.getElementById('cartTotalPrice');
+
+            if (cart.length === 0) {
+                cartContent.innerHTML = `
+                    <div class="empty-cart-state">
+                        <span class="empty-cart-icon">🛒</span>
+                        <h2>Your cart is empty</h2>
+                        <p>Looks like you haven't added anything to your cart yet.</p>
+                        <a href="index.html" class="btn-checkout" style="display: inline-block;">Start Shopping</a>
+                    </div>
+                `;
+                cartFooter.style.display = 'none';
+                return;
             }
-        });
+
+            cartFooter.style.display = 'flex';
+            cartContent.innerHTML = '';
+            let total = 0;
+
+            cart.forEach((item, index) => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+
+                const itemRow = document.createElement('div');
+                itemRow.className = 'cart-item';
+                itemRow.innerHTML = `
+                    <img src="${item.image}" alt="${item.name}">
+                    <div class="item-details">
+                        <h4>${item.name}</h4>
+                        <p>${item.price.toLocaleString()} EGP</p>
+                    </div>
+                    <div class="quantity-controls">
+                        <button class="qty-btn" onclick="updateQty(${index}, -1)">-</button>
+                        <span>${item.quantity}</span>
+                        <button class="qty-btn" onclick="updateQty(${index}, 1)">+</button>
+                    </div>
+                    <div class="item-actions">
+                        <span class="remove-btn" onclick="removeItem(${index})">🗑️</span>
+                    </div>
+                `;
+                cartContent.appendChild(itemRow);
+            });
+
+            totalPriceElement.textContent = total.toLocaleString() + ' EGP';
+        }
+
+        window.updateQty = (index, delta) => {
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            cart[index].quantity += delta;
+            if (cart[index].quantity < 1) cart[index].quantity = 1;
+            localStorage.setItem('cart', JSON.stringify(cart));
+            renderCart();
+            updateCartCount();
+        };
+
+        window.removeItem = (index) => {
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            cart.splice(index, 1);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            renderCart();
+            updateCartCount();
+        };
     </script>
 </body>
 </html>

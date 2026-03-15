@@ -102,23 +102,23 @@
         .order-item {
             display: flex;
             gap: 15px;
-            padding-bottom: 20px;
+            padding-bottom: 15px;
             border-bottom: 1px solid var(--border);
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         .order-item img {
-            width: 80px;
-            height: 80px;
+            width: 60px;
+            height: 60px;
             object-fit: contain;
             background: #f9f9f9;
             border-radius: 10px;
         }
         .order-item-info h4 {
-            font-size: 15px;
-            margin-bottom: 5px;
+            font-size: 14px;
+            margin-bottom: 2px;
         }
         .order-item-info p {
-            font-size: 13px;
+            font-size: 12px;
             color: var(--muted);
         }
         
@@ -302,8 +302,7 @@
                     </div>
                     
                     <div id="checkoutItemsList">
-                        <!-- Items will be populated dynamically -->
-                        <p style="text-align: center; color: var(--muted); padding: 20px 0;">Your cart is empty</p>
+                        <!-- Items populated from localStorage -->
                     </div>
 
                     <table class="summary-table">
@@ -313,7 +312,7 @@
                         </tr>
                         <tr>
                             <td>Shipping</td>
-                            <td id="checkoutShipping">0 EGP</td>
+                            <td id="checkoutShipping">50 EGP</td>
                         </tr>
                         <tr>
                             <td>Tax (14%)</td>
@@ -372,6 +371,49 @@
     <script src="js/main.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            renderCheckoutSummary();
+            setupPaymentMethods();
+        });
+
+        function renderCheckoutSummary() {
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const itemsList = document.getElementById('checkoutItemsList');
+            const subtotalEl = document.getElementById('checkoutSubtotal');
+            const taxEl = document.getElementById('checkoutTax');
+            const totalEl = document.getElementById('checkoutTotal');
+            
+            if (cart.length === 0) {
+                itemsList.innerHTML = '<p style="text-align: center; color: var(--muted); padding: 20px 0;">Your cart is empty</p>';
+                return;
+            }
+
+            itemsList.innerHTML = '';
+            let subtotal = 0;
+
+            cart.forEach(item => {
+                subtotal += item.price * item.quantity;
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'order-item';
+                itemDiv.innerHTML = `
+                    <img src="${item.image}" alt="${item.name}">
+                    <div class="order-item-info">
+                        <h4>${item.name}</h4>
+                        <p>Qty: ${item.quantity} x ${item.price.toLocaleString()} EGP</p>
+                    </div>
+                `;
+                itemsList.appendChild(itemDiv);
+            });
+
+            const shipping = 50;
+            const tax = Math.round(subtotal * 0.14);
+            const total = subtotal + shipping + tax;
+
+            subtotalEl.textContent = subtotal.toLocaleString() + ' EGP';
+            taxEl.textContent = tax.toLocaleString() + ' EGP';
+            totalEl.textContent = total.toLocaleString() + ' EGP';
+        }
+
+        function setupPaymentMethods() {
             const methodCards = document.querySelectorAll('.method-card');
             const cardForm = document.getElementById('cardDetailsForm');
             const codNotice = document.getElementById('codNotice');
@@ -379,11 +421,9 @@
 
             methodCards.forEach(card => {
                 card.addEventListener('click', () => {
-                    // Toggle active class
                     methodCards.forEach(c => c.classList.remove('active'));
                     card.classList.add('active');
 
-                    // Show/Hide forms based on selection
                     const method = card.getAttribute('data-method');
                     if (method === 'cod') {
                         cardForm.style.display = 'none';
@@ -397,15 +437,21 @@
 
             if (placeOrderBtn) {
                 placeOrderBtn.addEventListener('click', () => {
+                    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+                    if (cart.length === 0) {
+                        alert('Your cart is empty!');
+                        return;
+                    }
+
                     const activeMethod = document.querySelector('.method-card.active').getAttribute('data-method');
                     const methodName = activeMethod === 'cod' ? 'Cash on Delivery' : 'Pay Online';
                     
                     alert(`Thank you! Your order has been placed successfully using ${methodName}.`);
+                    localStorage.removeItem('cart'); // Clear cart after order
                     window.location.href = 'index.html';
                 });
             }
-        });
+        }
     </script>
 </body>
 </html>
-
