@@ -48,7 +48,10 @@ function setupHeaderAuth() {
         container.innerHTML = `
             <span class="user-welcome">Hi, ${fullName}</span>
             <button type="button" class="avatar-pill" id="headerProfileAvatar">${initial.toUpperCase()}</button>
-            <a href="checkout.html">Checkout</a>
+            <a href="cart.html" class="cart-icon-link">
+                <span class="cart-icon">🛒</span>
+                <span class="cart-count">0</span>
+            </a>
             <button type="button" class="logout-btn" id="logoutBtn">Logout</button>
         `;
 

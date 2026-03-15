@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart - ElectraCore</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="header">
+        <a href="index.html" class="logo">
+            <img src="design/logo.png" alt="ElectraCore logo">
+        </a>
+        <div class="search-bar">
+            <input type="text" placeholder="Search for items...">
+        </div>
+        <div class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div class="user-actions" id="headerUserActions"></div>
+    </header>
+
+    <main class="cart-page">
+        <div class="cart-header">
+            <h1>Shopping Cart</h1>
+        </div>
+
+        <div id="cartContent">
+            <!-- Default Empty State -->
+            <div class="empty-cart-state">
+                <span class="empty-cart-icon">🛒</span>
+                <h2>Your cart is empty</h2>
+                <p>Looks like you haven't added anything to your cart yet.</p>
+                <a href="index.html" class="btn-checkout" style="display: inline-block;">Start Shopping</a>
+            </div>
+        </div>
+
+        <!-- Cart Footer (Hidden when empty in real logic, but showing for now as requested) -->
+        <div class="cart-footer" id="cartFooter" style="display: none;">
+            <div class="cart-total-info">
+                <h3>Estimated Total</h3>
+                <span class="total-price" id="cartTotalPrice">0 EGP</span>
+            </div>
+            <div class="cart-actions">
+                <a href="index.html" class="btn-secondary">Continue Shopping</a>
+                <a href="checkout.html" class="btn-checkout">Proceed to Checkout</a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-col">
+                <h4>About Us</h4>
+                <p>We will always give our clients the best in order to get the best experience.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <a href="index.html">Home</a>
+                <a href="#">Shop</a>
+                <a href="#">About</a>
+                <a href="#">Contact</a>
+            </div>
+            <div class="footer-col">
+                <h4>Policies</h4>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms & Conditions</a>
+                <a href="#">Return Policy</a>
+            </div>
+            <div class="footer-col">
+                <h4>Follow Us</h4>
+                <div class="social-links">
+                    <a href="#">f</a>
+                    <a href="#">t</a>
+                    <a href="#">i</a>
+                    <a href="#">y</a>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            &copy; 2026 ElectraCore. All rights reserved.
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script>
+        // Simple logic to show footer if items were to be added
+        document.addEventListener('DOMContentLoaded', () => {
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const cartContent = document.getElementById('cartContent');
+            const cartFooter = document.getElementById('cartFooter');
+            
+            if (cart.length > 0) {
+                cartFooter.style.display = 'flex';
+                // In a real app, you'd map items here
+            }
+        });
+    </script>
+</body>
+</html>

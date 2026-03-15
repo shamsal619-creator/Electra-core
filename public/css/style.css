@@ -98,6 +98,138 @@ a {
     color: var(--dark);
 }
 
+/* Cart Icon in Header */
+.cart-icon-link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    background: #f9f9f9;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+
+.cart-icon-link:hover {
+    background: #e6fffb;
+    transform: translateY(-2px);
+}
+
+.cart-icon {
+    font-size: 20px;
+}
+
+.cart-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: var(--teal);
+    color: white;
+    font-size: 10px;
+    font-weight: 900;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--white);
+}
+
+/* Cart Page Styles */
+.cart-page {
+    max-width: 1000px;
+    margin: 40px auto 80px;
+    padding: 0 20px;
+}
+
+.cart-header {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.cart-header h1 {
+    font-size: 28px;
+    font-weight: 900;
+}
+
+.empty-cart-state {
+    background: var(--white);
+    padding: 60px 20px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+}
+
+.empty-cart-icon {
+    font-size: 60px;
+    margin-bottom: 20px;
+    display: block;
+}
+
+.empty-cart-state h2 {
+    font-size: 22px;
+    margin-bottom: 10px;
+}
+
+.empty-cart-state p {
+    color: var(--muted);
+    margin-bottom: 30px;
+}
+
+.cart-footer {
+    margin-top: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--white);
+    padding: 25px 30px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+}
+
+.cart-total-info h3 {
+    font-size: 16px;
+    color: var(--muted);
+}
+
+.cart-total-info .total-price {
+    font-size: 24px;
+    font-weight: 900;
+    color: var(--teal);
+}
+
+.cart-actions {
+    display: flex;
+    gap: 15px;
+}
+
+.btn-secondary {
+    padding: 12px 25px;
+    border-radius: 10px;
+    background: #f0f0f0;
+    color: var(--dark);
+    font-weight: 700;
+    transition: 0.3s;
+}
+
+.btn-checkout {
+    padding: 12px 35px;
+    border-radius: 10px;
+    background: var(--teal);
+    color: white;
+    font-weight: 900;
+    transition: 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.btn-checkout:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(5, 163, 145, 0.2);
+}
+
 .avatar-pill {
     width: 36px;
     height: 36px;
