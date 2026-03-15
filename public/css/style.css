@@ -60,16 +60,16 @@ a {
 
 .search-bar {
     flex: 1;
-    max-width: 500px;
+    max-width: 300px; /* Reduced from 500px */
     margin: 0 20px;
 }
 
 .search-bar input {
     width: 100%;
-    padding: 10px 15px;
+    padding: 8px 12px; /* Reduced padding */
     border: 1px solid #e0e0e0;
     border-radius: 8px;
-    font-size: 14px;
+    font-size: 13px; /* Slightly smaller font */
     outline: none;
 }
 
@@ -144,42 +144,9 @@ a {
     transition: 0.3s;
 }
 
-/* Category Navigation Bar */
-.category-nav {
+/* Hero Section */
+.hero {
     background: var(--white);
-    padding: 10px 30px;
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-    flex-wrap: wrap;
-    position: sticky;
-    top: 130px; /* Adjust based on header height */
-    z-index: 999;
-}
-
-.nav-item {
-    padding: 6px 15px;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--dark);
-    border: 1px solid var(--border);
-    transition: 0.3s;
-    background: #fdfdfd;
-}
-
-.nav-item:hover, .nav-item.active {
-    background: var(--teal);
-    color: var(--white);
-    border-color: var(--teal);
-}
-
-/* Adjust sticky top for main content if needed */
-.hero, .page-title {
-    margin-top: 20px;
-}
     margin: 20px;
     padding: 40px;
     border-radius: 18px;
@@ -699,8 +666,8 @@ a {
     .search-bar {
         order: 3;
         width: 100%;
-        max-width: none;
-        margin: 15px 0 0 0;
+        max-width: 300px; /* Applied same smaller size for mobile */
+        margin: 15px auto 0; /* Centered on mobile */
     }
 
     .user-actions {
