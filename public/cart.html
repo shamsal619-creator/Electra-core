@@ -7,49 +7,230 @@
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <style>
+        :root {
+            --primary: #008080;
+            --secondary: #004d4d;
+            --accent: #f0fdfa;
+            --text: #333;
+            --light-text: #666;
+            --border: #e5e7eb;
+            --white: #ffffff;
+            --bg: #f9fafb;
+        }
+
+        body {
+            background-color: var(--bg);
+        }
+
+        .cart-page {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+            min-height: 60vh;
+        }
+
+        .cart-header {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .cart-header h1 {
+            font-size: 32px;
+            font-weight: 900;
+            color: var(--text);
+        }
+
+        .cart-container {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 30px;
+            align-items: start;
+        }
+
+        #cartContent {
+            background: var(--white);
+            border-radius: 15px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
         .cart-item {
             display: grid;
-            grid-template-columns: 100px 1fr auto auto;
+            grid-template-columns: 120px 1fr auto;
             gap: 20px;
-            align-items: center;
-            padding: 20px;
+            padding: 25px;
             border-bottom: 1px solid var(--border);
-            background: var(--white);
+            transition: background 0.2s;
         }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
         .cart-item img {
-            width: 100px;
-            height: 100px;
+            width: 120px;
+            height: 120px;
             object-fit: contain;
-            background: #f9f9f9;
-            border-radius: 10px;
+            background: #f3f4f6;
+            border-radius: 12px;
         }
-        .item-details h4 {
+
+        .item-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .item-info h4 {
             font-size: 18px;
-            margin-bottom: 5px;
-        }
-        .item-details p {
-            color: var(--teal);
             font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text);
         }
-        .quantity-controls {
+
+        .item-price {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 18px;
+        }
+
+        .item-controls {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            justify-content: space-between;
+        }
+
+        .quantity-picker {
             display: flex;
             align-items: center;
-            gap: 10px;
-        }
-        .qty-btn {
-            width: 30px;
-            height: 30px;
             border: 1px solid var(--border);
-            background: #f9f9f9;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
+            border-radius: 8px;
+            background: #f9fafb;
         }
-        .remove-btn {
-            color: #ff4d4d;
+
+        .qty-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
             cursor: pointer;
+            font-weight: 900;
+            color: var(--text);
+            transition: background 0.2s;
+        }
+
+        .qty-btn:hover {
+            background: #e5e7eb;
+        }
+
+        .qty-val {
+            width: 40px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .remove-link {
+            color: #ef4444;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: underline;
+            margin-top: 10px;
+        }
+
+        .cart-summary {
+            background: var(--white);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 20px;
+        }
+
+        .cart-summary h2 {
             font-size: 20px;
-            margin-left: 15px;
+            font-weight: 900;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 15px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            color: var(--light-text);
+        }
+
+        .summary-total {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid var(--border);
+            font-size: 22px;
+            font-weight: 900;
+            color: var(--text);
+        }
+
+        .btn-checkout {
+            display: block;
+            width: 100%;
+            background: var(--primary);
+            color: var(--white);
+            text-align: center;
+            padding: 16px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 18px;
+            margin-top: 25px;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .btn-checkout:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            background: var(--white);
+            border-radius: 15px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .empty-state h2 {
+            margin: 20px 0;
+            font-weight: 900;
+        }
+
+        @media (max-width: 900px) {
+            .cart-container {
+                grid-template-columns: 1fr;
+            }
+            .cart-summary {
+                position: static;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .cart-item {
+                grid-template-columns: 80px 1fr;
+                gap: 15px;
+                padding: 15px;
+            }
+            .cart-item img {
+                width: 80px;
+                height: 80px;
+            }
+            .item-controls {
+                grid-column: 1 / -1;
+                flex-direction: row;
+                align-items: center;
+                margin-top: 10px;
+            }
         }
     </style>
 </head>
@@ -71,22 +252,40 @@
 
     <main class="cart-page">
         <div class="cart-header">
-            <h1>Shopping Cart</h1>
+            <h1>Your Shopping Cart</h1>
         </div>
 
-        <div id="cartContent">
-            <!-- Dynamic Cart Items -->
-        </div>
-
-        <div class="cart-footer" id="cartFooter">
-            <div class="cart-total-info">
-                <h3>Estimated Total</h3>
-                <span class="total-price" id="cartTotalPrice">0 EGP</span>
+        <div class="cart-container" id="cartContainer">
+            <div id="cartContent">
+                <!-- Dynamic Cart Items -->
             </div>
-            <div class="cart-actions">
-                <a href="index.html" class="btn-secondary">Continue Shopping</a>
+
+            <div class="cart-summary" id="cartSummary">
+                <h2>Order Summary</h2>
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span id="subtotal">0 EGP</span>
+                </div>
+                <div class="summary-row">
+                    <span>Shipping</span>
+                    <span>Free</span>
+                </div>
+                <div class="summary-total">
+                    <span>Total</span>
+                    <span id="total">0 EGP</span>
+                </div>
                 <a href="checkout.html" class="btn-checkout">Proceed to Checkout</a>
+                <div style="text-align: center; margin-top: 15px;">
+                    <a href="index.html" style="color: var(--light-text); font-size: 14px;">Continue Shopping</a>
+                </div>
             </div>
+        </div>
+
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <div style="font-size: 64px;">🛒</div>
+            <h2>Your cart is empty</h2>
+            <p>Looks like you haven't added any products to your cart yet.</p>
+            <a href="index.html" class="btn-checkout" style="max-width: 250px; margin: 30px auto;">Start Shopping</a>
         </div>
     </main>
 
@@ -124,7 +323,7 @@
         </div>
     </footer>
 
-    <script src="js/main.js"></script>
+    <script src="js/products.js"></script>`n    <script src="js/main.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             renderCart();
@@ -132,24 +331,20 @@
 
         function renderCart() {
             const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const cartContainer = document.getElementById('cartContainer');
             const cartContent = document.getElementById('cartContent');
-            const cartFooter = document.getElementById('cartFooter');
-            const totalPriceElement = document.getElementById('cartTotalPrice');
+            const emptyState = document.getElementById('emptyState');
+            const subtotalEl = document.getElementById('subtotal');
+            const totalEl = document.getElementById('total');
 
             if (cart.length === 0) {
-                cartContent.innerHTML = `
-                    <div class="empty-cart-state">
-                        <span class="empty-cart-icon">🛒</span>
-                        <h2>Your cart is empty</h2>
-                        <p>Looks like you haven't added anything to your cart yet.</p>
-                        <a href="index.html" class="btn-checkout" style="display: inline-block;">Start Shopping</a>
-                    </div>
-                `;
-                cartFooter.style.display = 'none';
+                cartContainer.style.display = 'none';
+                emptyState.style.display = 'block';
                 return;
             }
 
-            cartFooter.style.display = 'flex';
+            cartContainer.style.display = 'grid';
+            emptyState.style.display = 'none';
             cartContent.innerHTML = '';
             let total = 0;
 
@@ -161,23 +356,25 @@
                 itemRow.className = 'cart-item';
                 itemRow.innerHTML = `
                     <img src="${item.image}" alt="${item.name}">
-                    <div class="item-details">
+                    <div class="item-info">
                         <h4>${item.name}</h4>
-                        <p>${item.price.toLocaleString()} EGP</p>
+                        <div class="item-price">${item.price.toLocaleString()} EGP</div>
                     </div>
-                    <div class="quantity-controls">
-                        <button class="qty-btn" onclick="updateQty(${index}, -1)">-</button>
-                        <span>${item.quantity}</span>
-                        <button class="qty-btn" onclick="updateQty(${index}, 1)">+</button>
-                    </div>
-                    <div class="item-actions">
-                        <span class="remove-btn" onclick="removeItem(${index})">🗑️</span>
+                    <div class="item-controls">
+                        <div class="quantity-picker">
+                            <button class="qty-btn" onclick="updateQty(${index}, -1)">-</button>
+                            <span class="qty-val">${item.quantity}</span>
+                            <button class="qty-btn" onclick="updateQty(${index}, 1)">+</button>
+                        </div>
+                        <span class="remove-link" onclick="removeItem(${index})">Remove</span>
                     </div>
                 `;
                 cartContent.appendChild(itemRow);
             });
 
-            totalPriceElement.textContent = total.toLocaleString() + ' EGP';
+            const totalText = total.toLocaleString() + ' EGP';
+            subtotalEl.textContent = totalText;
+            totalEl.textContent = totalText;
         }
 
         window.updateQty = (index, delta) => {
@@ -186,7 +383,7 @@
             if (cart[index].quantity < 1) cart[index].quantity = 1;
             localStorage.setItem('cart', JSON.stringify(cart));
             renderCart();
-            updateCartCount();
+            if (window.updateCartCount) window.updateCartCount();
         };
 
         window.removeItem = (index) => {
@@ -194,7 +391,7 @@
             cart.splice(index, 1);
             localStorage.setItem('cart', JSON.stringify(cart));
             renderCart();
-            updateCartCount();
+            if (window.updateCartCount) window.updateCartCount();
         };
     </script>
 </body>

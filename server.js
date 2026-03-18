@@ -31,10 +31,15 @@ async function connectToDatabase() {
     const mongooseOptions = {
         serverSelectionTimeoutMS: 20000,
         socketTimeoutMS: 45000,
-        family: 4 // Force IPv4 if needed
+        family: 4, // Force IPv4 if needed
+        connectTimeoutMS: 30000,
+        // The following options are sometimes needed for certain network configurations
+        ssl: true,
+        retryWrites: true
     };
 
     try {
+        console.log('🔄 Connecting with SRV record...');
         await mongoose.connect(MONGODB_URI, mongooseOptions);
         isConnected = true;
         console.log('✅ MongoDB connected successfully to:', mongoose.connection.name);
@@ -43,6 +48,14 @@ async function connectToDatabase() {
         console.error('❌ MongoDB connection error details:');
         console.error('- Name:', err.name);
         console.error('- Message:', err.message);
+        
+        if (err.message.includes('ECONNREFUSED') && err.message.includes('querySrv')) {
+            console.error('\n💡 DNS SRV Resolution Failed. This is common in some network environments.');
+            console.error('👉 Suggested Fix: Use the "Standard Connection String" (non-SRV) from Atlas.');
+            console.error('   Go to Atlas > Connect > Drivers > Node.js > Select Version 2.2.12 or later.');
+            console.error('   It should start with "mongodb://" instead of "mongodb+srv://".\n');
+        }
+        
         if (err.reason) console.error('- Reason:', err.reason);
     }
 }

@@ -20,11 +20,88 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Initialize search functionality
+    initSearch();
+
     // Initialize cart count and add to cart listeners
     setupHeaderAuth();
     updateCartCount();
     initAddToCartButtons();
 });
+
+// Handle back/forward cache (bfcache) to ensure cart count is updated
+window.addEventListener('pageshow', (event) => {
+    if (event.persisted) {
+        updateCartCount();
+        setupHeaderAuth();
+    } else {
+        // Even if not persisted, sometimes it's good to refresh just in case
+        updateCartCount();
+    }
+});
+
+function initSearch() {
+    const searchBar = document.querySelector('.search-bar');
+    if (!searchBar) return;
+
+    const input = searchBar.querySelector('input');
+    
+    // Create results dropdown if it doesn't exist
+    let dropdown = searchBar.querySelector('.search-results-dropdown');
+    if (!dropdown) {
+        dropdown = document.createElement('div');
+        dropdown.className = 'search-results-dropdown';
+        searchBar.appendChild(dropdown);
+    }
+
+    input.addEventListener('input', (e) => {
+        const query = e.target.value.trim().toLowerCase();
+        
+        if (query.length < 2) {
+            dropdown.classList.remove('active');
+            dropdown.innerHTML = '';
+            return;
+        }
+
+        // Search products (assuming products is globally available from products.js)
+        if (typeof products !== 'undefined') {
+            const filtered = products.filter(p => 
+                p.name.toLowerCase().includes(query) || 
+                p.category.toLowerCase().includes(query)
+            ).slice(0, 8); // Limit results
+
+            if (filtered.length > 0) {
+                dropdown.innerHTML = filtered.map(p => `
+                    <div class="search-result-item" onclick="window.location.href='product.html?id=${p.id}'">
+                        <img src="${p.image}" alt="${p.name}">
+                        <div class="search-result-info">
+                            <span class="search-result-name">${p.name}</span>
+                            <span class="search-result-price">${p.price} EGP</span>
+                        </div>
+                    </div>
+                `).join('');
+                dropdown.classList.add('active');
+            } else {
+                dropdown.innerHTML = '<div class="no-results">No products found</div>';
+                dropdown.classList.add('active');
+            }
+        }
+    });
+
+    // Close search on click outside
+    document.addEventListener('click', (e) => {
+        if (!searchBar.contains(e.target)) {
+            dropdown.classList.remove('active');
+        }
+    });
+
+    // Show again on focus if query exists
+    input.addEventListener('focus', () => {
+        if (input.value.trim().length >= 2) {
+            dropdown.classList.add('active');
+        }
+    });
+}
 
 function setupHeaderAuth() {
     const container = document.getElementById('headerUserActions') || document.querySelector('.user-actions');
@@ -97,6 +174,11 @@ function updateCartCount() {
     }
 }
 
+// Export for other scripts
+window.updateCartCount = updateCartCount;
+window.getCart = getCart;
+window.saveCart = saveCart;
+
 function initAddToCartButtons() {
     const cartButtons = document.querySelectorAll('.add-to-cart-btn');
     const qtySelectors = document.querySelectorAll('.qty-selector');
@@ -106,7 +188,7 @@ function initAddToCartButtons() {
     
     cartButtons.forEach((btn, index) => {
         const card = btn.closest('.product-card');
-        const name = card.querySelector('h3').textContent;
+        const name = card.querySelector('h3').innerText;
         const existingItem = cart.find(item => item.name === name);
         const selector = card.querySelector('.qty-selector');
         const qtyValue = selector.querySelector('.qty-value');

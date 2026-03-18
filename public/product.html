@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details - ElectraCore</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .product-detail-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .product-image-section {
+            background: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .product-image-section img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+
+        .product-info-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .product-category {
+            color: var(--teal);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 14px;
+        }
+
+        .product-title {
+            font-size: 32px;
+            font-weight: 900;
+        }
+
+        .product-description {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #666;
+        }
+
+        .product-price-container {
+            display: flex;
+            align-items: baseline;
+            gap: 15px;
+        }
+
+        .current-price {
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--teal);
+        }
+
+        .old-price {
+            font-size: 18px;
+            color: #999;
+            text-decoration: line-through;
+        }
+
+        .purchase-section {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .qty-input-group {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .qty-input-group button {
+            background: #f5f5f5;
+            border: none;
+            width: 40px;
+            height: 50px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .qty-input-group button:first-child {
+            border-right: 1px solid #ddd;
+            border-radius: 7px 0 0 7px;
+        }
+
+        .qty-input-group button:last-child {
+            border-left: 1px solid #ddd;
+            border-radius: 0 7px 7px 0;
+        }
+
+        .qty-input-group span {
+            width: 50px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .add-btn {
+            background: var(--teal);
+            color: #fff;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+            flex: 1;
+        }
+
+        .add-btn:hover {
+            background: #007a7a;
+        }
+
+        @media (max-width: 768px) {
+            .product-detail-container {
+                grid-template-columns: 1fr;
+            }
+            .product-title {
+                font-size: 24px;
+            }
+            .purchase-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="index.html" class="logo">
+            <img src="design/logo.png" alt="ElectraCore logo">
+        </a>
+        <div class="search-bar">
+            <input type="text" placeholder="Search for products...">
+        </div>
+        <div class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div class="user-actions" id="headerUserActions"></div>
+    </header>
+
+    <main class="product-detail-page">
+        <div class="product-detail-container" id="productDetail">
+            <!-- Dynamic Content -->
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-col">
+                <h4>About Us</h4>
+                <p>We will always give our clients the best in order to get the best experience.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <a href="index.html">Home</a>
+                <a href="#">Shop</a>
+                <a href="#">About</a>
+                <a href="#">Contact</a>
+            </div>
+            <div class="footer-col">
+                <h4>Policies</h4>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms & Conditions</a>
+                <a href="#">Return Policy</a>
+            </div>
+            <div class="footer-col">
+                <h4>Follow Us</h4>
+                <div class="social-links">
+                    <a href="#">f</a>
+                    <a href="#">t</a>
+                    <a href="#">i</a>
+                    <a href="#">y</a>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            &copy; 2026 ElectraCore. All rights reserved.
+        </div>
+    </footer>
+
+    <script src="js/products.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = urlParams.get('id');
+            const product = getProductById(productId);
+
+            if (product) {
+                renderProductDetails(product);
+            } else {
+                document.getElementById('productDetail').innerHTML = `
+                    <div style="text-align: center; grid-column: 1 / -1; padding: 100px 0;">
+                        <h1>Product Not Found</h1>
+                        <p>Sorry, we couldn't find the product you're looking for.</p>
+                        <a href="index.html" class="btn" style="display: inline-block; margin-top: 20px;">Back to Home</a>
+                    </div>
+                `;
+            }
+        });
+
+        function renderProductDetails(product) {
+            const container = document.getElementById('productDetail');
+            container.innerHTML = `
+                <div class="product-image-section">
+                    <img src="${product.image}" alt="${product.name}">
+                </div>
+                <div class="product-info-section">
+                    <span class="product-category">${product.category}</span>
+                    <h1 class="product-title">${product.name}</h1>
+                    <div class="product-price-container">
+                        <span class="current-price">${product.price.toLocaleString()} EGP</span>
+                        ${product.oldPrice ? `<span class="old-price">${product.oldPrice.toLocaleString()} EGP</span>` : ''}
+                    </div>
+                    <p class="product-description">${product.description}</p>
+                    
+                    <div class="purchase-section">
+                        <div class="qty-input-group">
+                            <button onclick="changeQty(-1)">-</button>
+                            <span id="productQty">1</span>
+                            <button onclick="changeQty(1)">+</button>
+                        </div>
+                        <button class="add-btn" onclick="handleAddToCart('${product.id}')">Add to Cart</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        let currentQty = 1;
+        window.changeQty = (delta) => {
+            currentQty += delta;
+            if (currentQty < 1) currentQty = 1;
+            document.getElementById('productQty').textContent = currentQty;
+        };
+
+        window.handleAddToCart = (id) => {
+            const product = getProductById(id);
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const existingItem = cart.find(item => item.id === id);
+
+            if (existingItem) {
+                existingItem.quantity += currentQty;
+            } else {
+                cart.push({
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    image: product.image,
+                    quantity: currentQty
+                });
+            }
+
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCount();
+            alert('Added to cart!');
+        };
+    </script>
+</body>
+</html>
