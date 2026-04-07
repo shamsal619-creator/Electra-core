@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تسجيل الدخول - ElectraCore</title>
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <style>
         body {
@@ -14,101 +14,221 @@
             min-height: 100vh;
             padding: 20px;
             background: var(--light);
+            font-family: 'Inter', sans-serif;
         }
         .card {
             display: flex;
-            max-width: 1000px;
+            max-width: 1100px;
             width: 100%;
             background: white;
-            border-radius: 18px;
+            border-radius: 24px;
             overflow: hidden;
-            box-shadow: 0 6px 30px rgba(0,0,0,0.06);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
         }
         .left {
             flex: 0 0 42%;
             background: var(--teal);
             color: white;
-            padding: 48px 40px;
+            padding: 60px 40px;
             display: flex;
             flex-direction: column;
             justify-content: center;
+            text-align: center;
+            align-items: center;
         }
         .logo-mark {
             display: inline-flex;
             align-items: center;
+            margin-bottom: 20px;
         }
         .logo-mark img {
-            height: 100px; /* Increased size significantly for sign-in/up pages */
+            height: 140px; /* High-res large logo */
             width: auto;
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.1));
         }
         .left h1 {
             font-size: 36px;
-            font-weight: 900;
+            font-weight: 800;
             margin-bottom: 10px;
         }
         .left .divider {
-            width: 40px;
+            width: 50px;
             height: 4px;
-            background: rgba(255,255,255,0.2);
-            margin: 18px 0;
+            background: rgba(255,255,255,0.3);
+            margin: 24px 0;
             border-radius: 4px;
         }
         .left p {
-            line-height: 1.6;
-            opacity: 0.9;
+            line-height: 1.8;
+            opacity: 0.95;
+            font-weight: 500; /* Medium font-weight */
+            font-size: 17px;
+            letter-spacing: 0.2px;
         }
         .left .cta {
             display: inline-block;
-            margin-top: 36px;
-            padding: 12px 28px;
+            margin-top: 40px;
+            padding: 14px 32px;
             border-radius: 12px;
-            border: 2px solid rgba(255,255,255,0.35);
+            border: 2px solid rgba(255,255,255,0.4);
             color: white;
             text-decoration: none;
             font-weight: 700;
-            align-self: flex-start;
-            transition: 0.3s;
+            transition: all 0.3s ease;
         }
         .left .cta:hover {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
         .right {
             flex: 1;
-            padding: 48px 56px;
-            background: #fbfbfb;
+            padding: 60px 64px;
+            background: #ffffff;
         }
         .right h2 {
             margin-top: 0;
-            margin-bottom: 30px;
-            font-size: 28px;
+            margin-bottom: 32px;
+            font-size: 32px;
+            font-weight: 800; /* Bolder heading */
+            color: var(--dark);
         }
         .form-group {
-            margin-bottom: 20px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+        .form-group label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #555;
+            margin-left: 2px;
+        }
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            height: 52px; /* Increased height */
+            padding: 12px 18px; /* Increased padding */
+            border: 1px solid #e2e8f0; /* Light grey border */
+            border-radius: 10px; /* Subtle border-radius */
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+        input:focus {
+            outline: none;
+            border-color: var(--teal); /* Smooth transition to green */
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(5, 163, 145, 0.1);
         }
         .password-wrapper {
             position: relative;
         }
         .password-wrapper input {
-            padding-right: 45px;
+            width: 100%;
+            padding-right: 50px;
         }
         .toggle-password {
             position: absolute;
-            right: 12px;
+            right: 16px;
             top: 50%;
             transform: translateY(-50%);
             border: none;
             background: transparent;
             cursor: pointer;
-            font-size: 16px;
-            color: var(--muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            color: #94a3b8;
+            transition: all 0.2s ease;
         }
+        .toggle-password:hover {
+            color: var(--teal);
+        }
+        .toggle-password svg {
+            width: 20px;
+            height: 20px;
+        }
+        .right .btn {
+            width: 100%;
+            height: 52px;
+            background: var(--teal);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        .right .btn:hover {
+            background: #048c7f;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(5, 163, 145, 0.2);
+        }
+        
+        /* Social Login */
+        .social-login {
+            margin-top: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .divider-text {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: #94a3b8;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .divider-text::before,
+        .divider-text::after {
+            content: "";
+            flex: 1;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .divider-text:not(:empty)::before {
+            margin-right: 15px;
+        }
+        .divider-text:not(:empty)::after {
+            margin-left: 15px;
+        }
+        .google-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            height: 52px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            color: #475569;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .google-btn:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .google-btn img {
+            width: 20px;
+            height: 20px;
+        }
+
         .muted {
-            color: var(--muted);
+            color: #64748b;
             font-size: 14px;
-            margin-top: 20px;
+            margin-top: 24px;
             text-align: center;
         }
         .muted a {
@@ -119,17 +239,19 @@
         @media (max-width: 880px) {
             .card {
                 flex-direction: column;
+                max-width: 500px;
             }
             .left {
-                padding: 40px 30px;
-                text-align: center;
-                align-items: center;
-            }
-            .left .cta {
-                align-self: center;
+                flex: none;
+                padding: 50px 30px;
             }
             .right {
-                padding: 40px 30px;
+                padding: 50px 40px;
+            }
+        }
+        @media (max-width: 500px) {
+            .right {
+                padding: 40px 24px;
             }
         }
     </style>
@@ -137,30 +259,38 @@
 <body>
     <div class="card">
         <div class="left">
-            <h1>
-                <a href="index.html" class="logo-mark">
-                    <img src="design/logo.png" alt="ElectraCore logo">
-                </a>
-            </h1>
+            <a href="index.html" class="logo-mark">
+                <img src="design/logo.png" alt="ElectraCore logo">
+            </a>
             <div class="divider"></div>
-            <p>fill up personal information and<br>start journey with us</p>
-            <a href="signup.html" class="cta">sign up</a>
+            <p>Fill up personal information and<br>start journey with us</p>
+            <a href="signup.html" class="cta">Sign up</a>
         </div>
         <div class="right">
             <h2>Sign in to account</h2>
             <form id="loginForm">
                 <div class="form-group">
                     <label for="email">Email Address</label>
-                    <input type="email" id="email" placeholder="Enter Your email Address" required>
+                    <input type="email" id="email" placeholder="example@domain.com" required>
                 </div>
                 <div class="form-group">
                     <label for="password">Password</label>
                     <div class="password-wrapper">
-                        <input type="password" id="password" placeholder="Your Password" required>
-                        <button type="button" class="toggle-password" data-target="password" aria-label="Show password">👁</button>
+                        <input type="password" id="password" placeholder="Enter your password" required>
+                        <button type="button" class="toggle-password" data-target="password" aria-label="Show password">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-icon"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        </button>
                     </div>
                 </div>
                 <button type="submit" class="btn">Sign In</button>
+                
+                <div class="social-login">
+                    <div class="divider-text">or</div>
+                    <button type="button" class="google-btn">
+                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+                        Sign in with Google
+                    </button>
+                </div>
             </form>
             <p class="muted">Don't have an account? <a href="signup.html">Sign up</a></p>
         </div>
@@ -173,9 +303,15 @@
                 const targetId = btn.getAttribute('data-target');
                 const input = document.getElementById(targetId);
                 if (!input) return;
+                
                 const isHidden = input.type === 'password';
                 input.type = isHidden ? 'text' : 'password';
-                btn.textContent = isHidden ? '🙈' : '👁';
+                
+                // Professional SVG icons
+                const eyeOpen = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
+                const eyeClosed = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`;
+                
+                btn.innerHTML = isHidden ? eyeClosed : eyeOpen;
                 btn.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
             });
         });

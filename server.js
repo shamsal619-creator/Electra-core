@@ -31,15 +31,19 @@ async function connectToDatabase() {
     const mongooseOptions = {
         serverSelectionTimeoutMS: 20000,
         socketTimeoutMS: 45000,
-        family: 4, // Force IPv4 if needed
+        // family: 4, // Force IPv4 if needed
         connectTimeoutMS: 30000,
         // The following options are sometimes needed for certain network configurations
-        ssl: true,
-        retryWrites: true
+        // ssl: true,
+        // retryWrites: true
     };
 
     try {
-        console.log('🔄 Connecting with SRV record...');
+        if (MONGODB_URI.startsWith('mongodb+srv')) {
+            console.log('🔄 Connecting with SRV record...');
+        } else {
+            console.log('🔄 Connecting with Standard Connection String...');
+        }
         await mongoose.connect(MONGODB_URI, mongooseOptions);
         isConnected = true;
         console.log('✅ MongoDB connected successfully to:', mongoose.connection.name);
@@ -236,6 +240,11 @@ app.get('/api/status', (req, res) => {
 // Static files (must come after API routes so /api/* and /ping are not treated as file paths)
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
+
+server.on('error', (err) => {
+    console.error('❌ Server startup error:', err);
+});
+

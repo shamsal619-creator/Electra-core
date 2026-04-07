@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الرئيسية - ElectraCore</title>
+    <title>Home - ElectraCore</title>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <!-- الهيدر -->
+    <!-- Header -->
     <header class="header">
         <a href="index.html" class="logo">
             <img src="design/logo.png" alt="ElectraCore logo">
         </a>
         
         <div class="search-bar">
-            <input type="text" placeholder="Search essentials, groceries and more...">
+            <input type="text" placeholder="Search electronics, gadgets and more...">
         </div>
 
         <div class="hamburger">
@@ -27,36 +27,36 @@
         <div class="user-actions" id="headerUserActions"></div>
     </header>
 
-    <!-- الهيرو مع العروض -->
-    <section class="hero">
+    <!-- Hero Section -->
+    <section class="hero fade-in-up">
         <div class="hero-content">
-            <h1>True Wireless Noise Cancelling Headphone</h1>
-            <p>Fixed price for all products with no discounts or sales.</p>
-            <a href="headphones.html" class="btn">Shop now</a>
+            <h1>Premium Electronics for Your Lifestyle</h1>
+            <p>Experience cutting-edge technology with our curated collection of high-end gadgets.</p>
+            <a href="laptops.html" class="btn">Shop now</a>
         </div>
         <div class="hero-products">
             <div class="mini-product">
-                <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=400&h=300&auto=format&fit=crop" alt="Samsung Galaxy S25 Ultra">
+                <img src="https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?q=80&w=400&h=300&fm=jpg&fit=crop" alt="Samsung Galaxy S25">
                 <div>
-                    <h4>Samsung Galaxy S25 Ultra</h4>
+                    <h4>Samsung Galaxy S25</h4>
                     <p>Fixed price</p>
-                    <span class="price">1000 EGP</span>
+                    <span class="price">3000 EGP</span>
                 </div>
             </div>
             <div class="mini-product">
-                <img src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?q=80&w=400&h=300&auto=format&fit=crop" alt="Macbook Pro M14">
+                <img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=400&h=300&fm=jpg&fit=crop" alt="Macbook G14">
                 <div>
-                    <h4>Macbook Pro M14</h4>
+                    <h4>Macbook G14</h4>
                     <p>Fixed price</p>
-                    <span class="price">1000 EGP</span>
+                    <span class="price">1500 EGP</span>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- التصنيفات -->
-    <h2 class="section-title">Browse By Category</h2>
-    <div class="category-grid">
+    <!-- Categories -->
+    <h2 class="section-title fade-in-up">Browse By Category</h2>
+    <div class="category-grid fade-in-up">
         <a href="watches.html" class="category-item">Watches</a>
         <a href="headphones.html" class="category-item">Headphones</a>
         <a href="laptops.html" class="category-item">Laptops</a>
@@ -64,207 +64,37 @@
         <a href="accessories.html" class="category-item">Accessories</a>
     </div>
 
-    <!-- الوافدين الجدد -->
-    <h2 class="section-title">New Arrivals</h2>
-    <div class="products-grid" id="new-arrivals">
-        <!-- هذه المنتجات ستُحمّل لاحقاً من قاعدة البيانات، لكننا سنضع عينات ثابتة الآن -->
-        <div class="product-card">
-            <button class="fav-btn">♡</button>
-            <a href="product.html?id=acc-1">
-                <img src="https://images.unsplash.com/photo-1605898960764-756596f4b397?q=80&w=400&h=300&auto=format&fit=crop" alt="Power Bank">
-            </a>
-            <h3><a href="product.html?id=acc-1">Power Bank</a></h3>
-            <div class="price-container">
-                <span class="new-price">1000 EGP</span>
-            </div>
-            <div class="add-to-cart-container">
-                <button class="add-to-cart-btn">Add to Cart</button>
-                <div class="qty-selector">
-                    <button class="qty-minus">-</button>
-                    <span class="qty-value">1</span>
-                    <button class="qty-plus">+</button>
-                </div>
-            </div>
-        </div>
-        <div class="product-card">
-            <div class="fav-btn">♡</div>
-            <a href="product.html?id=phone-1">
-                <img src="https://images.unsplash.com/photo-1592890288564-76628a30a657?q=80&w=400&h=300&auto=format&fit=crop" alt="Honor Lite 200">
-            </a>
-            <h3><a href="product.html?id=phone-1">Honor Lite 200</a></h3>
-            <div class="price-container">
-                <span class="new-price">1000 EGP</span>
-            </div>
-            <div class="add-to-cart-container">
-                <button class="add-to-cart-btn">Add to Cart</button>
-                <div class="qty-selector">
-                    <button class="qty-minus">-</button>
-                    <span class="qty-value">1</span>
-                    <button class="qty-plus">+</button>
-                </div>
-            </div>
-        </div>
-        <div class="product-card">
-            <div class="fav-btn">♡</div>
-            <a href="product.html?id=acc-2">
-                <img src="https://images.unsplash.com/photo-1593305841991-05c297ba4575?q=80&w=400&h=300&auto=format&fit=crop" alt="Speaker Bluetooth">
-            </a>
-            <h3><a href="product.html?id=acc-2">Speaker Bluetooth</a></h3>
-            <div class="price-container">
-                <span class="new-price">1000 EGP</span>
-            </div>
-            <div class="add-to-cart-container">
-                <button class="add-to-cart-btn">Add to Cart</button>
-                <div class="qty-selector">
-                    <button class="qty-minus">-</button>
-                    <span class="qty-value">1</span>
-                    <button class="qty-plus">+</button>
-                </div>
-            </div>
-        </div>
-        <div class="product-card">
-            <div class="fav-btn">♡</div>
-            <a href="product.html?id=laptop-1">
-                <img src="https://images.unsplash.com/photo-1525547718571-03903c345358?q=80&w=400&h=300&auto=format&fit=crop" alt="Tuf Gaming F17">
-            </a>
-            <h3><a href="product.html?id=laptop-1">Tuf Gaming F17</a></h3>
-            <div class="price-container">
-                <span class="new-price">1000 EGP</span>
-            </div>
-            <div class="add-to-cart-container">
-                <button class="add-to-cart-btn">Add to Cart</button>
-                <div class="qty-selector">
-                    <button class="qty-minus">-</button>
-                    <span class="qty-value">1</span>
-                    <button class="qty-plus">+</button>
-                </div>
-            </div>
-        </div>
-        <div class="product-card">
-            <div class="fav-btn">♡</div>
-            <a href="product.html?id=acc-3">
-                <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=400&h=300&auto=format&fit=crop" alt="Canon EOS M6">
-            </a>
-            <h3><a href="product.html?id=acc-3">Canon EOS M6</a></h3>
-            <div class="price-container">
-                <span class="new-price">1000 EGP</span>
-            </div>
-            <div class="add-to-cart-container">
-                <button class="add-to-cart-btn">Add to Cart</button>
-                <div class="qty-selector">
-                    <button class="qty-minus">-</button>
-                    <span class="qty-value">1</span>
-                    <button class="qty-plus">+</button>
-                </div>
-            </div>
-        </div>
+    <!-- New Arrivals -->
+    <h2 class="section-title fade-in-up">New Arrivals</h2>
+    <div class="products-grid fade-in-up" id="new-arrivals">
+        <!-- Renders dynamically from products.js -->
     </div>
 
-    <!-- الماركات -->
-    <div class="brands">
-        <span class="brand-item">Active</span>
+    <!-- Best Seller -->
+    <h2 class="section-title fade-in-up">Best Seller</h2>
+    <div class="products-grid fade-in-up" id="best-sellers">
+        <!-- Renders dynamically from products.js -->
+    </div>
+
+    <!-- Brands -->
+    <div class="brands fade-in-up">
+        <span class="brand-item">APPLE</span>
         <span class="brand-item">SONY</span>
-        <span class="brand-item">Canon</span>
-        <span class="brand-item">HUAWEI</span>
-        <span class="brand-item">X-VISION</span>
+        <span class="brand-item">SAMSUNG</span>
+        <span class="brand-item">ASUS</span>
+        <span class="brand-item">LENOVO</span>
     </div>
 
-    <!-- البانرات الثلاثة -->
-        <div class="banners">
-            <div class="banner">
-                <h3>All Products at 1000 EGP</h3>
-                <p>Enjoy a simple, fixed price on everything.</p>
-                <a href="#" class="btn-small">Start Shopping</a>
-            </div>
-        </div>
-
-    <!-- الأكثر مبيعاً -->
-    <h2 class="section-title">Best Seller</h2>
-    <div class="products-grid" id="best-sellers">
-        <div class="product-card">
-            <div class="fav-btn">♡</div>
-            <a href="product.html?id=watch-1">
-                <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=400&h=300&auto=format&fit=crop" alt="Smart Watch">
-            </a>
-            <h3><a href="product.html?id=watch-1">Smart Watch</a></h3>
-            <div class="price-container">
-                <span class="new-price">1000 EGP</span>
-            </div>
-            <div class="add-to-cart-container">
-                <button class="add-to-cart-btn">Add to Cart</button>
-                <div class="qty-selector">
-                    <button class="qty-minus">-</button>
-                    <span class="qty-value">1</span>
-                    <button class="qty-plus">+</button>
-                </div>
-            </div>
-        </div>
-        <div class="product-card">
-            <div class="fav-btn">♡</div>
-            <a href="product.html?id=phone-1">
-                <img src="https://images.unsplash.com/photo-1556656793-062ff987b50d?q=80&w=400&h=300&auto=format&fit=crop" alt="Reime C45">
-            </a>
-            <h3><a href="product.html?id=phone-1">Reime C45</a></h3>
-            <div class="price-container">
-                <span class="new-price">1000 EGP</span>
-            </div>
-            <div class="add-to-cart-container">
-                <button class="add-to-cart-btn">Add to Cart</button>
-                <div class="qty-selector">
-                    <button class="qty-minus">-</button>
-                    <span class="qty-value">1</span>
-                    <button class="qty-plus">+</button>
-                </div>
-            </div>
-        </div>
-        <div class="product-card">
-            <div class="fav-btn">♡</div>
-            <a href="product.html?id=laptop-1">
-                <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=400&h=300&auto=format&fit=crop" alt="Tuf Gaming F17">
-            </a>
-            <h3><a href="product.html?id=laptop-1">Tuf Gaming F17</a></h3>
-            <div class="price-container">
-                <span class="new-price">1000 EGP</span>
-            </div>
-            <div class="add-to-cart-container">
-                <button class="add-to-cart-btn">Add to Cart</button>
-                <div class="qty-selector">
-                    <button class="qty-minus">-</button>
-                    <span class="qty-value">1</span>
-                    <button class="qty-plus">+</button>
-                </div>
-            </div>
-        </div>
-        <div class="product-card">
-            <div class="fav-btn">♡</div>
-            <a href="product.html?id=acc-1">
-                <img src="https://images.unsplash.com/photo-1526733158173-e6b2177210cd?q=80&w=400&h=300&auto=format&fit=crop" alt="Cannon Eos Mo">
-            </a>
-            <h3><a href="product.html?id=acc-1">Cannon Eos Mo</a></h3>
-            <div class="price-container">
-                <span class="new-price">1000 EGP</span>
-            </div>
-            <div class="add-to-cart-container">
-                <button class="add-to-cart-btn">Add to Cart</button>
-                <div class="qty-selector">
-                    <button class="qty-minus">-</button>
-                    <span class="qty-value">1</span>
-                    <button class="qty-plus">+</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- الفوتر -->
-    <footer class="footer">
+    <!-- Footer -->
+    <footer class="footer fade-in-up">
         <div class="footer-content">
             <div class="footer-col">
                 <h4>About Us</h4>
-                <p>We will always give our clients the best in order to get the best experience.</p>
+                <p>We provide the best electronics with a focus on quality and professional service.</p>
             </div>
             <div class="footer-col">
                 <h4>Quick Links</h4>
-                <a href="#">Home</a>
+                <a href="index.html">Home</a>
                 <a href="#">Shop</a>
                 <a href="#">About</a>
                 <a href="#">Contact</a>
@@ -291,6 +121,60 @@
     </footer>
 
     <script src="js/products.js"></script>
+    <script src="js/image-loader.js"></script>
     <script src="js/main.js"></script>
+    <script>
+        // Simple script to render featured products on index page
+        document.addEventListener('DOMContentLoaded', () => {
+            const newArrivalsGrid = document.getElementById('new-arrivals');
+            const bestSellersGrid = document.getElementById('best-sellers');
+            
+            if (typeof products !== 'undefined') {
+                // New Arrivals: First 5 products
+                renderProducts(products.slice(0, 5), newArrivalsGrid);
+                // Best Sellers: A few from different categories
+                const bestSellers = [
+                    products.find(p => p.id === 'laptop-1'),
+                    products.find(p => p.id === 'phone-1'),
+                    products.find(p => p.id === 'watch-1'),
+                    products.find(p => p.id === 'acc-1'),
+                    products.find(p => p.id === 'headphone-1')
+                ].filter(p => p);
+                renderProducts(bestSellers, bestSellersGrid);
+            }
+        });
+
+        function renderProducts(items, container) {
+            if (!container) return;
+            container.innerHTML = items.map(p => `
+                <div class="product-card fade-in-up" data-id="${p.id}">
+                    <button class="quick-view-btn">Quick View</button>
+                    <button class="fav-btn">♡</button>
+                    <a href="product.html?id=${p.id}">
+                        ${typeof ImageLoader !== 'undefined' ? 
+                            ImageLoader.generateImgTag(p.image, p.name) : 
+                            `<img src="${p.image}" alt="${p.name}" loading="lazy">`
+                        }
+                    </a>
+                    <h3><a href="product.html?id=${p.id}">${p.name}</a></h3>
+                    <div class="price-container">
+                        ${p.oldPrice ? `<span class="old-price">${p.oldPrice} EGP</span>` : ''}
+                        <span class="new-price">${p.price} EGP</span>
+                    </div>
+                    <div class="add-to-cart-container">
+                        <button class="add-to-cart-btn">Add to Cart</button>
+                        <div class="qty-selector" style="display: none;">
+                            <button class="qty-minus">-</button>
+                            <span class="qty-value">1</span>
+                            <button class="qty-plus">+</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Re-init cart buttons if main.js functions are available
+            if (typeof initAddToCartButtons === 'function') initAddToCartButtons();
+        }
+    </script>
 </body>
 </html>
