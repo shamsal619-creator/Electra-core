@@ -1,6 +1,39 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Determine category from page title or URL
+    const pageTitle = document.title.toLowerCase();
+    let category = '';
+    if (pageTitle.includes('laptop')) category = 'laptops';
+    else if (pageTitle.includes('headphone')) category = 'headphones';
+    else if (pageTitle.includes('phone')) category = 'phones';
+    else if (pageTitle.includes('watch')) category = 'watches';
+    else if (pageTitle.includes('accessory') || pageTitle.includes('accessories')) category = 'accessories';
+    
+    // Initialize filters
+    if (typeof initFilters === 'function' && category) {
+        initFilters(category);
+        setupFilterToggle();
+    }
+    
+    // Initialize sorting
+    if (typeof initSort === 'function') {
+        initSort();
+    }
+    
     renderCategoryProducts();
 });
+
+function setupFilterToggle() {
+    const toggleBtn = document.querySelector('.filter-toggle-btn');
+    const overlay = document.querySelector('.filter-panel-overlay');
+    
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', toggleFilterPanel);
+    }
+    
+    if (overlay) {
+        overlay.addEventListener('click', toggleFilterPanel);
+    }
+}
 
 function renderCategoryProducts() {
     const grid = document.querySelector('.products-grid');
@@ -31,9 +64,11 @@ function renderCategoryProducts() {
         const cartItem = cart.find(item => item.id === p.id || item.name === p.name);
         const inCart = !!cartItem;
         const quantity = inCart ? cartItem.quantity : 1;
+        const stockBadge = !p.inStock ? '<span class="stock-badge">Out of Stock</span>' : '';
 
         return `
             <div class="product-card fade-in-up" data-id="${p.id}">
+                ${stockBadge}
                 <button class="quick-view-btn">Quick View</button>
                 <button class="fav-btn">♡</button>
                 <a href="product.html?id=${p.id}">
@@ -48,7 +83,7 @@ function renderCategoryProducts() {
                     <span class="new-price">${p.price} EGP</span>
                 </div>
                 <div class="add-to-cart-container">
-                    <button class="add-to-cart-btn" style="${inCart ? 'display: none;' : 'display: flex;'}">Add to Cart</button>
+                    <button class="add-to-cart-btn" style="${inCart ? 'display: none;' : 'display: flex;'}" ${!p.inStock ? 'disabled' : ''}>Add to Cart</button>
                     <div class="qty-selector" style="${inCart ? 'display: flex;' : 'display: none;'}">
                         <button class="qty-minus">-</button>
                         <span class="qty-value">${quantity}</span>

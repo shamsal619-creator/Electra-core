@@ -25,9 +25,22 @@
 
     <h1 class="page-title fade-in-up">Phones</h1>
 
-    <div class="products-grid fade-in-up">
-        <!-- Products rendered dynamically from js/category.js -->
+    <button class="filter-toggle-btn fade-in-up">Show Filters</button>
+
+    <div class="filter-wrapper fade-in-up">
+        <div class="filters-section">
+            <div class="filter-sidebar">
+                <!-- Filters will be rendered here by JavaScript -->
+            </div>
+        </div>
+        <div class="products-content">
+            <div class="products-grid">
+                <!-- Products rendered dynamically from js/category.js -->
+            </div>
+        </div>
     </div>
+
+    <div class="filter-panel-overlay"></div>
 
     <footer class="footer fade-in-up">
         <div class="footer-content">
@@ -64,6 +77,8 @@
     </footer>
     <script src="js/products.js"></script>
     <script src="js/image-loader.js"></script>
+    <script src="js/filters.js"></script>
+    <script src="js/sort.js"></script>
     <script src="js/main.js"></script>
     <script src="js/category.js"></script>
 </body>

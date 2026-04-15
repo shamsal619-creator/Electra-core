@@ -7,7 +7,10 @@ const products = [
         price: 1500,
         oldPrice: 2000,
         image: "https://images.unsplash.com/photo-1603302576837-37561b2e2302?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "Powerful gaming laptop with 17-inch display, high refresh rate, and dedicated graphics for an immersive gaming experience."
+        description: "Powerful gaming laptop with 17-inch display, high refresh rate, and dedicated graphics for an immersive gaming experience.",
+        brand: "ASUS",
+        color: "Black",
+        inStock: true
     },
     {
         id: "laptop-2",
@@ -16,7 +19,10 @@ const products = [
         price: 2000,
         oldPrice: 2500,
         image: "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "Compact and durable gaming laptop with high-performance specs, perfect for gaming on the go."
+        description: "Compact and durable gaming laptop with high-performance specs, perfect for gaming on the go.",
+        brand: "ASUS",
+        color: "Black",
+        inStock: true
     },
     {
         id: "laptop-3",
@@ -25,7 +31,10 @@ const products = [
         price: 1800,
         oldPrice: 2000,
         image: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "Sleek and stylish laptop for everyday use, featuring a vibrant display and long battery life."
+        description: "Sleek and stylish laptop for everyday use, featuring a vibrant display and long battery life.",
+        brand: "ASUS",
+        color: "Silver",
+        inStock: true
     },
     {
         id: "laptop-4",
@@ -34,7 +43,10 @@ const products = [
         price: 1500,
         oldPrice: 2000,
         image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A reliable and efficient laptop for work and entertainment, with a comfortable keyboard and long-lasting battery."
+        description: "A reliable and efficient laptop for work and entertainment, with a comfortable keyboard and long-lasting battery.",
+        brand: "Lenovo",
+        color: "Silver",
+        inStock: true
     },
     {
         id: "laptop-5",
@@ -43,7 +55,10 @@ const products = [
         price: 1900,
         oldPrice: 2000,
         image: "https://images.unsplash.com/photo-1544731612-de7f96afe55f?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A compact and lightweight laptop with a premium feel, perfect for productivity on the move."
+        description: "A compact and lightweight laptop with a premium feel, perfect for productivity on the move.",
+        brand: "ASUS",
+        color: "Gold",
+        inStock: true
     },
     {
         id: "laptop-6",
@@ -52,7 +67,10 @@ const products = [
         price: 1800,
         oldPrice: 2000,
         image: "https://images.unsplash.com/photo-1626218174358-7769486c4b79?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A top-tier gaming laptop with a high-refresh-rate display and powerful cooling system for marathon gaming sessions."
+        description: "A top-tier gaming laptop with a high-refresh-rate display and powerful cooling system for marathon gaming sessions.",
+        brand: "ASUS",
+        color: "Black",
+        inStock: false
     },
     {
         id: "laptop-7",
@@ -61,7 +79,10 @@ const products = [
         price: 3500,
         oldPrice: 4000,
         image: "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?auto=format&fit=crop&w=400",
-        description: "Experience immersive gaming with this large-screen Lenovo gaming laptop, featuring a powerful processor and dedicated graphics."
+        description: "Experience immersive gaming with this large-screen Lenovo gaming laptop, featuring a powerful processor and dedicated graphics.",
+        brand: "Lenovo",
+        color: "Black",
+        inStock: true
     },
     {
         id: "laptop-8",
@@ -70,7 +91,10 @@ const products = [
         price: 800,
         oldPrice: 1000,
         image: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A budget-friendly and reliable notebook for everyday tasks, from browsing the web to working on documents."
+        description: "A budget-friendly and reliable notebook for everyday tasks, from browsing the web to working on documents.",
+        brand: "HP",
+        color: "Silver",
+        inStock: true
     },
     {
         id: "laptop-9",
@@ -79,7 +103,10 @@ const products = [
         price: 600,
         oldPrice: 800,
         image: "https://images.unsplash.com/photo-1525547718571-03903c345358?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A slim and powerful gaming laptop that doesn't compromise on performance, with a sleek design and customizable RGB lighting."
+        description: "A slim and powerful gaming laptop that doesn't compromise on performance, with a sleek design and customizable RGB lighting.",
+        brand: "Lenovo",
+        color: "Black",
+        inStock: true
     },
     {
         id: "laptop-10",
@@ -88,7 +115,10 @@ const products = [
         price: 700,
         oldPrice: 800,
         image: "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "An affordable and versatile laptop with a large display, perfect for students and home users."
+        description: "An affordable and versatile laptop with a large display, perfect for students and home users.",
+        brand: "ASUS",
+        color: "Silver",
+        inStock: true
     },
     {
         id: "laptop-11",
@@ -97,7 +127,10 @@ const products = [
         price: 1500,
         oldPrice: 1800,
         image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "Experience the power and elegance of a Macbook, with a stunning Retina display and all-day battery life."
+        description: "Experience the power and elegance of a Macbook, with a stunning Retina display and all-day battery life.",
+        brand: "Apple",
+        color: "Space Gray",
+        inStock: true
     },
     {
         id: "laptop-12",
@@ -106,7 +139,10 @@ const products = [
         price: 1800,
         oldPrice: 2000,
         image: "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A high-performance laptop with a large, immersive display, perfect for creative professionals and power users."
+        description: "A high-performance laptop with a large, immersive display, perfect for creative professionals and power users.",
+        brand: "ASUS",
+        color: "Silver",
+        inStock: true
     },
     {
         id: "laptop-13",
@@ -115,7 +151,10 @@ const products = [
         price: 1800,
         oldPrice: 2000,
         image: "https://images.unsplash.com/photo-1603302576837-37561b2e2302?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A top-tier gaming laptop with a high-refresh-rate display and powerful cooling system for marathon gaming sessions."
+        description: "A top-tier gaming laptop with a high-refresh-rate display and powerful cooling system for marathon gaming sessions.",
+        brand: "ASUS",
+        color: "Black",
+        inStock: true
     },
     {
         id: "laptop-14",
@@ -124,7 +163,10 @@ const products = [
         price: 1900,
         oldPrice: 2000,
         image: "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A powerful and stylish gaming laptop with a high-refresh-rate display and customizable RGB lighting."
+        description: "A powerful and stylish gaming laptop with a high-refresh-rate display and customizable RGB lighting.",
+        brand: "Lenovo",
+        color: "Black",
+        inStock: true
     },
     {
         id: "laptop-15",
@@ -133,7 +175,10 @@ const products = [
         price: 1500,
         oldPrice: 2000,
         image: "https://images.unsplash.com/photo-1525547718571-03903c345358?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A high-performance gaming laptop with a sleek design and powerful cooling system for optimal performance."
+        description: "A high-performance gaming laptop with a sleek design and powerful cooling system for optimal performance.",
+        brand: "Lenovo",
+        color: "Black",
+        inStock: true
     },
     {
         id: "laptop-16",
@@ -142,7 +187,10 @@ const products = [
         price: 2000,
         oldPrice: 3000,
         image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A powerful and affordable gaming laptop with a high-refresh-rate display and dedicated graphics."
+        description: "A powerful and affordable gaming laptop with a high-refresh-rate display and dedicated graphics.",
+        brand: "Lenovo",
+        color: "Black",
+        inStock: false
     },
     {
         id: "laptop-17",
@@ -150,8 +198,11 @@ const products = [
         name: "Lenovo Gaming G2",
         price: 1800,
         oldPrice: 2000,
-        image: "", // Empty URL to test robust loader
-        description: "A budget-friendly gaming laptop that doesn't compromise on performance, with a high-refresh-rate display and dedicated graphics."
+        image: "",
+        description: "A budget-friendly gaming laptop that doesn't compromise on performance, with a high-refresh-rate display and dedicated graphics.",
+        brand: "Lenovo",
+        color: "Black",
+        inStock: true
     },
     // Phones
     {
@@ -161,7 +212,10 @@ const products = [
         price: 1500,
         oldPrice: 2000,
         image: "https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "The latest iPhone with a professional-grade camera system, stunning display, and powerful performance."
+        description: "The latest iPhone with a professional-grade camera system, stunning display, and powerful performance.",
+        brand: "Apple",
+        color: "Space Gray",
+        inStock: true
     },
     {
         id: "phone-2",
@@ -170,7 +224,10 @@ const products = [
         price: 2000,
         oldPrice: 2500,
         image: "https://images.unsplash.com/photo-1592890288564-76628a30a657?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "Experience the future of smartphones with the iPhone 16, featuring cutting-edge technology and design."
+        description: "Experience the future of smartphones with the iPhone 16, featuring cutting-edge technology and design.",
+        brand: "Apple",
+        color: "Gold",
+        inStock: true
     },
     {
         id: "phone-3",
@@ -179,7 +236,10 @@ const products = [
         price: 1900,
         oldPrice: 2000,
         image: "https://images.unsplash.com/photo-1611791485933-51393043812d?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A powerful and stylish smartphone with a beautiful Super Retina XDR display and A14 Bionic chip."
+        description: "A powerful and stylish smartphone with a beautiful Super Retina XDR display and A14 Bionic chip.",
+        brand: "Apple",
+        color: "White",
+        inStock: true
     },
     {
         id: "phone-4",
@@ -188,7 +248,10 @@ const products = [
         price: 1800,
         oldPrice: 2000,
         image: "https://images.unsplash.com/photo-1523206489230-c012c64b2b48?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A reliable and affordable iPhone with a dual-camera system and all-day battery life."
+        description: "A reliable and affordable iPhone with a dual-camera system and all-day battery life.",
+        brand: "Apple",
+        color: "Black",
+        inStock: true
     },
     {
         id: "phone-5",
@@ -197,7 +260,10 @@ const products = [
         price: 700,
         oldPrice: 1000,
         image: "https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A large and powerful iPhone with a triple-camera system and Super Retina XDR display."
+        description: "A large and powerful iPhone with a triple-camera system and Super Retina XDR display.",
+        brand: "Apple",
+        color: "Gold",
+        inStock: false
     },
     {
         id: "phone-6",
@@ -206,7 +272,10 @@ const products = [
         price: 3000,
         oldPrice: 4500,
         image: "https://images.unsplash.com/photo-1567581935884-3349723552ca?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A foldable smartphone with a large, immersive display and a versatile camera system."
+        description: "A foldable smartphone with a large, immersive display and a versatile camera system.",
+        brand: "Samsung",
+        color: "Black",
+        inStock: true
     },
     {
         id: "phone-7",
@@ -215,7 +284,10 @@ const products = [
         price: 700,
         oldPrice: 1000,
         image: "https://images.unsplash.com/photo-1573148195900-7845dcb9b127?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A classic Samsung Note with a large display and S Pen for productivity and creativity."
+        description: "A classic Samsung Note with a large display and S Pen for productivity and creativity.",
+        brand: "Samsung",
+        color: "Black",
+        inStock: true
     },
     {
         id: "phone-8",
@@ -224,7 +296,10 @@ const products = [
         price: 1500,
         oldPrice: 2000,
         image: "https://images.unsplash.com/photo-1551817419-db3c2854582d?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A powerful and stylish Samsung Note with a large display and S Pen for productivity and creativity."
+        description: "A powerful and stylish Samsung Note with a large display and S Pen for productivity and creativity.",
+        brand: "Samsung",
+        color: "Silver",
+        inStock: true
     },
     {
         id: "phone-9",
@@ -233,7 +308,10 @@ const products = [
         price: 600,
         oldPrice: 800,
         image: "https://images.unsplash.com/photo-1546054454-aa26e2b734c7?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A classic Samsung Galaxy with a beautiful display and a powerful camera."
+        description: "A classic Samsung Galaxy with a beautiful display and a powerful camera.",
+        brand: "Samsung",
+        color: "Black",
+        inStock: true
     },
     {
         id: "phone-10",
@@ -242,7 +320,10 @@ const products = [
         price: 800,
         oldPrice: 1200,
         image: "https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A budget-friendly smartphone with a large display and long battery life."
+        description: "A budget-friendly smartphone with a large display and long battery life.",
+        brand: "Realme",
+        color: "Blue",
+        inStock: true
     },
     {
         id: "phone-11",
@@ -251,7 +332,10 @@ const products = [
         price: 500,
         oldPrice: 1000,
         image: "https://images.unsplash.com/photo-1567581935884-3349723552ca?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A stylish and affordable smartphone with a large display and a capable camera."
+        description: "A stylish and affordable smartphone with a large display and a capable camera.",
+        brand: "Honor",
+        color: "Silver",
+        inStock: true
     },
     {
         id: "phone-12",
@@ -260,7 +344,10 @@ const products = [
         price: 3000,
         oldPrice: 4000,
         image: "https://images.unsplash.com/photo-1573148195900-7845dcb9b127?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "The latest Samsung Galaxy with a stunning display, a professional-grade camera system, and powerful performance."
+        description: "The latest Samsung Galaxy with a stunning display, a professional-grade camera system, and powerful performance.",
+        brand: "Samsung",
+        color: "Black",
+        inStock: true
     },
     {
         id: "phone-13",
@@ -269,7 +356,10 @@ const products = [
         price: 2000,
         oldPrice: 2200,
         image: "https://images.unsplash.com/photo-1512054849369-a91fb6a6ef03?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A powerful and stylish smartphone with a large display and a capable camera."
+        description: "A powerful and stylish smartphone with a large display and a capable camera.",
+        brand: "Honor",
+        color: "Gold",
+        inStock: true
     },
     {
         id: "phone-14",
@@ -278,7 +368,10 @@ const products = [
         price: 1800,
         oldPrice: 2000,
         image: "https://images.unsplash.com/photo-1546054454-aa26e2b734c7?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A budget-friendly gaming smartphone with a high-refresh-rate display and a powerful processor."
+        description: "A budget-friendly gaming smartphone with a high-refresh-rate display and a powerful processor.",
+        brand: "Poco",
+        color: "Black",
+        inStock: true
     },
     {
         id: "phone-15",
@@ -287,7 +380,10 @@ const products = [
         price: 1000,
         oldPrice: 2000,
         image: "https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A budget-friendly tablet with a large display and long battery life."
+        description: "A budget-friendly tablet with a large display and long battery life.",
+        brand: "Redmi",
+        color: "Silver",
+        inStock: false
     },
     {
         id: "phone-16",
@@ -296,7 +392,10 @@ const products = [
         price: 1900,
         oldPrice: 2000,
         image: "https://images.unsplash.com/photo-1567581935884-3349723552ca?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A powerful and affordable gaming smartphone with a high-refresh-rate display and a powerful processor."
+        description: "A powerful and affordable gaming smartphone with a high-refresh-rate display and a powerful processor.",
+        brand: "Poco",
+        color: "Blue",
+        inStock: true
     },
     {
         id: "phone-17",
@@ -305,7 +404,10 @@ const products = [
         price: 900,
         oldPrice: 1500,
         image: "https://images.unsplash.com/photo-1573148195900-7845dcb9b127?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A reliable and affordable iPhone with a large Liquid Retina display and all-day battery life."
+        description: "A reliable and affordable iPhone with a large Liquid Retina display and all-day battery life.",
+        brand: "Apple",
+        color: "White",
+        inStock: true
     },
     {
         id: "phone-18",
@@ -314,7 +416,10 @@ const products = [
         price: 2500,
         oldPrice: 3000,
         image: "https://images.unsplash.com/photo-1512054849369-a91fb6a6ef03?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A stylish and affordable smartphone with a large display and a capable camera."
+        description: "A stylish and affordable smartphone with a large display and a capable camera.",
+        brand: "Oppo",
+        color: "Black",
+        inStock: true
     },
     {
         id: "phone-19",
@@ -323,7 +428,10 @@ const products = [
         price: 2000,
         oldPrice: 2200,
         image: "https://images.unsplash.com/photo-1546054454-aa26e2b734c7?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A powerful and stylish smartphone with a large display and a capable camera."
+        description: "A powerful and stylish smartphone with a large display and a capable camera.",
+        brand: "Redmi",
+        color: "Green",
+        inStock: true
     },
     {
         id: "phone-20",
@@ -332,7 +440,10 @@ const products = [
         price: 1900,
         oldPrice: 2000,
         image: "https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A stylish and affordable smartphone with a large display and a capable camera."
+        description: "A stylish and affordable smartphone with a large display and a capable camera.",
+        brand: "Vivo",
+        color: "Blue",
+        inStock: true
     },
     {
         id: "phone-21",
@@ -341,7 +452,10 @@ const products = [
         price: 1300,
         oldPrice: 1600,
         image: "https://images.unsplash.com/photo-1567581935884-3349723552ca?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A budget-friendly smartphone with a large display and long battery life."
+        description: "A budget-friendly smartphone with a large display and long battery life.",
+        brand: "Vivo",
+        color: "White",
+        inStock: true
     },
     {
         id: "phone-22",
@@ -350,7 +464,10 @@ const products = [
         price: 1900,
         oldPrice: 2000,
         image: "https://images.unsplash.com/photo-1573148195900-7845dcb9b127?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A stylish and affordable smartphone with a large display and a capable camera."
+        description: "A stylish and affordable smartphone with a large display and a capable camera.",
+        brand: "Vivo",
+        color: "Black",
+        inStock: true
     },
     {
         id: "phone-23",
@@ -359,7 +476,10 @@ const products = [
         price: 1000,
         oldPrice: 1500,
         image: "https://images.unsplash.com/photo-1512054849369-a91fb6a6ef03?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A budget-friendly smartphone with a large display and long battery life."
+        description: "A budget-friendly smartphone with a large display and long battery life.",
+        brand: "Vivo",
+        color: "Silver",
+        inStock: true
     },
     // Watches
     {
@@ -369,7 +489,10 @@ const products = [
         price: 1500,
         oldPrice: 2300,
         image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "Advanced smartwatch with health monitoring features, customizable watch faces, and seamless integration with your phone."
+        description: "Advanced smartwatch with health monitoring features, customizable watch faces, and seamless integration with your phone.",
+        brand: "Apple",
+        color: "Space Gray",
+        inStock: true
     },
     {
         id: "watch-2",
@@ -378,7 +501,10 @@ const products = [
         price: 2000,
         oldPrice: 2500,
         image: "https://images.unsplash.com/photo-1542496658-e33a6d0d50f6?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A rugged and capable smartwatch for athletes and adventurers, with a large display and long battery life."
+        description: "A rugged and capable smartwatch for athletes and adventurers, with a large display and long battery life.",
+        brand: "Apple",
+        color: "Black",
+        inStock: true
     },
     {
         id: "watch-3",
@@ -387,7 +513,10 @@ const products = [
         price: 1000,
         oldPrice: 2300,
         image: "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "An affordable smartwatch with all the essential features, perfect for first-time smartwatch users."
+        description: "An affordable smartwatch with all the essential features, perfect for first-time smartwatch users.",
+        brand: "Apple",
+        color: "Silver",
+        inStock: false
     },
     {
         id: "watch-4",
@@ -396,7 +525,10 @@ const products = [
         price: 1500,
         oldPrice: 2300,
         image: "https://images.unsplash.com/photo-1523170335258-f5ed11844a49?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A special edition smartwatch designed for runners, with exclusive Nike watch faces and run-tracking features."
+        description: "A special edition smartwatch designed for runners, with exclusive Nike watch faces and run-tracking features.",
+        brand: "Apple",
+        color: "Black",
+        inStock: true
     },
     {
         id: "watch-5",
@@ -405,7 +537,10 @@ const products = [
         price: 1800,
         oldPrice: 2200,
         image: "https://images.unsplash.com/photo-1542496658-e33a6d0d50f6?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A powerful and stylish smartwatch with advanced health sensors and a beautiful always-on display."
+        description: "A powerful and stylish smartwatch with advanced health sensors and a beautiful always-on display.",
+        brand: "Apple",
+        color: "Gold",
+        inStock: true
     },
     {
         id: "watch-6",
@@ -414,7 +549,10 @@ const products = [
         price: 2800,
         oldPrice: 3300,
         image: "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A premium smartwatch with a classic design, advanced health monitoring, and long battery life."
+        description: "A premium smartwatch with a classic design, advanced health monitoring, and long battery life.",
+        brand: "Apple",
+        color: "Space Gray",
+        inStock: true
     },
     {
         id: "watch-7",
@@ -423,7 +561,10 @@ const products = [
         price: 800,
         oldPrice: 1200,
         image: "https://images.unsplash.com/photo-1523170335258-f5ed11844a49?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A lightweight and comfortable smartwatch for fitness tracking, with a vibrant display and long battery life."
+        description: "A lightweight and comfortable smartwatch for fitness tracking, with a vibrant display and long battery life.",
+        brand: "Xiaomi",
+        color: "Black",
+        inStock: true
     },
     {
         id: "watch-8",
@@ -432,7 +573,10 @@ const products = [
         price: 1500,
         oldPrice: 2000,
         image: "https://images.unsplash.com/photo-1542496658-e33a6d0d50f6?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A timeless and elegant smartwatch with a classic design and modern features."
+        description: "A timeless and elegant smartwatch with a classic design and modern features.",
+        brand: "Apple",
+        color: "Silver",
+        inStock: true
     },
     {
         id: "watch-9",
@@ -441,7 +585,10 @@ const products = [
         price: 600,
         oldPrice: 1000,
         image: "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A durable and water-resistant smartwatch for sports and fitness enthusiasts."
+        description: "A durable and water-resistant smartwatch for sports and fitness enthusiasts.",
+        brand: "Xiaomi",
+        color: "Blue",
+        inStock: true
     },
     // Headphones
     {
@@ -451,7 +598,10 @@ const products = [
         price: 500,
         oldPrice: 1000,
         image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "High-quality wireless headphones with active noise cancellation and crystal-clear audio."
+        description: "High-quality wireless headphones with active noise cancellation and crystal-clear audio.",
+        brand: "Sony",
+        color: "Black",
+        inStock: true
     },
     {
         id: "headphone-2",
@@ -460,7 +610,10 @@ const products = [
         price: 550,
         oldPrice: 800,
         image: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "Immerse yourself in your music with these professional-grade noise-cancelling headphones."
+        description: "Immerse yourself in your music with these professional-grade noise-cancelling headphones.",
+        brand: "Bose",
+        color: "Blue",
+        inStock: true
     },
     {
         id: "headphone-3",
@@ -469,7 +622,10 @@ const products = [
         price: 550,
         oldPrice: 1000,
         image: "https://images.unsplash.com/photo-1583394838336-acd9929a5f91?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "Experience studio-quality sound with these high-fidelity monitor headphones."
+        description: "Experience studio-quality sound with these high-fidelity monitor headphones.",
+        brand: "Audio-Technica",
+        color: "Black",
+        inStock: true
     },
     {
         id: "headphone-4",
@@ -478,7 +634,10 @@ const products = [
         price: 900,
         oldPrice: 1200,
         image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "The ultimate headphones for audio professionals, with a flat frequency response and exceptional clarity."
+        description: "The ultimate headphones for audio professionals, with a flat frequency response and exceptional clarity.",
+        brand: "Sennheiser",
+        color: "Gray",
+        inStock: true
     },
     {
         id: "headphone-5",
@@ -487,7 +646,10 @@ const products = [
         price: 1000,
         oldPrice: 2000,
         image: "https://images.unsplash.com/photo-1484704849700-f032a568e944?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "Feel the beat with these powerful bass-heavy headphones, perfect for electronic music and movies."
+        description: "Feel the beat with these powerful bass-heavy headphones, perfect for electronic music and movies.",
+        brand: "JBL",
+        color: "Black",
+        inStock: true
     },
     {
         id: "headphone-6",
@@ -496,7 +658,10 @@ const products = [
         price: 1000,
         oldPrice: 3000,
         image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "Experience music the way it was meant to be heard with these high-fidelity audio headphones."
+        description: "Experience music the way it was meant to be heard with these high-fidelity audio headphones.",
+        brand: "Beyerdynamic",
+        color: "Black",
+        inStock: false
     },
     {
         id: "headphone-7",
@@ -505,7 +670,10 @@ const products = [
         price: 1000,
         oldPrice: 2300,
         image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "Enjoy true wireless freedom with these compact and comfortable earbuds."
+        description: "Enjoy true wireless freedom with these compact and comfortable earbuds.",
+        brand: "Apple",
+        color: "White",
+        inStock: true
     },
     {
         id: "headphone-8",
@@ -514,7 +682,10 @@ const products = [
         price: 1200,
         oldPrice: 1500,
         image: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A stylish and comfortable wireless headset with a long battery life and crystal-clear microphone."
+        description: "A stylish and comfortable wireless headset with a long battery life and crystal-clear microphone.",
+        brand: "Sony",
+        color: "Blue",
+        inStock: true
     },
     {
         id: "headphone-9",
@@ -523,7 +694,10 @@ const products = [
         price: 1300,
         oldPrice: 1500,
         image: "https://images.unsplash.com/photo-1583394838336-acd9929a5f91?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A durable and water-resistant headset for sports and fitness enthusiasts."
+        description: "A durable and water-resistant headset for sports and fitness enthusiasts.",
+        brand: "JBL",
+        color: "Green",
+        inStock: true
     },
     {
         id: "headphone-10",
@@ -532,7 +706,10 @@ const products = [
         price: 1300,
         oldPrice: 1500,
         image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A stylish and comfortable headset with a classic design and modern features."
+        description: "A stylish and comfortable headset with a classic design and modern features.",
+        brand: "Beats",
+        color: "Red",
+        inStock: true
     },
     {
         id: "headphone-11",
@@ -541,7 +718,10 @@ const products = [
         price: 1500,
         oldPrice: 2300,
         image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A premium headset with a luxurious design and high-fidelity audio."
+        description: "A premium headset with a luxurious design and high-fidelity audio.",
+        brand: "Beats",
+        color: "Gold",
+        inStock: true
     },
     {
         id: "headphone-12",
@@ -550,7 +730,10 @@ const products = [
         price: 700,
         oldPrice: 1000,
         image: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A lightweight and comfortable headset for all-day use."
+        description: "A lightweight and comfortable headset for all-day use.",
+        brand: "Bose",
+        color: "Green",
+        inStock: true
     },
     {
         id: "headphone-13",
@@ -559,7 +742,10 @@ const products = [
         price: 1700,
         oldPrice: 2200,
         image: "https://images.unsplash.com/photo-1583394838336-acd9929a5f91?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A stylish and comfortable wireless headset with a long battery life and crystal-clear microphone."
+        description: "A stylish and comfortable wireless headset with a long battery life and crystal-clear microphone.",
+        brand: "Sony",
+        color: "Blue",
+        inStock: true
     },
     {
         id: "headphone-14",
@@ -568,7 +754,10 @@ const products = [
         price: 1500,
         oldPrice: 2200,
         image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "Enjoy true wireless freedom with these compact and comfortable earbuds in a stylish pastel pink."
+        description: "Enjoy true wireless freedom with these compact and comfortable earbuds in a stylish pastel pink.",
+        brand: "Apple",
+        color: "Pink",
+        inStock: true
     },
     {
         id: "headphone-15",
@@ -577,7 +766,10 @@ const products = [
         price: 1200,
         oldPrice: 2200,
         image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "Experience powerful bass and luxurious comfort with these premium headphones."
+        description: "Experience powerful bass and luxurious comfort with these premium headphones.",
+        brand: "Beats",
+        color: "Gold",
+        inStock: true
     },
     {
         id: "headphone-16",
@@ -586,7 +778,10 @@ const products = [
         price: 1000,
         oldPrice: 2300,
         image: "https://images.unsplash.com/photo-1484704849700-f032a568e944?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A durable and water-resistant headset for sports and fitness enthusiasts."
+        description: "A durable and water-resistant headset for sports and fitness enthusiasts.",
+        brand: "JBL",
+        color: "White",
+        inStock: true
     },
     {
         id: "headphone-17",
@@ -595,7 +790,10 @@ const products = [
         price: 1100,
         oldPrice: 2300,
         image: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A lightweight and comfortable headset for all-day use, in a stylish teal color."
+        description: "A lightweight and comfortable headset for all-day use, in a stylish teal color.",
+        brand: "Bose",
+        color: "Teal",
+        inStock: true
     },
     {
         id: "headphone-18",
@@ -604,7 +802,10 @@ const products = [
         price: 1100,
         oldPrice: 2300,
         image: "https://images.unsplash.com/photo-1583394838336-acd9929a5f91?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "The ultimate headphones for audio professionals, with a flat frequency response and exceptional clarity."
+        description: "The ultimate headphones for audio professionals, with a flat frequency response and exceptional clarity.",
+        brand: "Audio-Technica",
+        color: "Gray",
+        inStock: true
     },
     // Accessories
     {
@@ -614,7 +815,10 @@ const products = [
         price: 3000,
         oldPrice: 4000,
         image: "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "Next-gen gaming controller for PS5, featuring haptic feedback and adaptive triggers for a more immersive experience."
+        description: "Next-gen gaming controller for PS5, featuring haptic feedback and adaptive triggers for a more immersive experience.",
+        brand: "Sony",
+        color: "White",
+        inStock: true
     },
     {
         id: "acc-2",
@@ -623,7 +827,10 @@ const products = [
         price: 8000,
         oldPrice: 9000,
         image: "https://images.unsplash.com/photo-1592155931584-901ac15763e3?auto=format&fit=crop&w=400",
-        description: "Experience the modernized design of the Xbox Wireless Controller, featuring sculpted surfaces and refined geometry for enhanced comfort and effortless control during gameplay."
+        description: "Experience the modernized design of the Xbox Wireless Controller, featuring sculpted surfaces and refined geometry for enhanced comfort and effortless control during gameplay.",
+        brand: "Microsoft",
+        color: "Black",
+        inStock: true
     },
     {
         id: "acc-3",
@@ -632,7 +839,10 @@ const products = [
         price: 8000,
         oldPrice: 10000,
         image: "https://images.unsplash.com/photo-1593118247619-e2d6f056869e?auto=format&fit=crop&w=400",
-        description: "A special edition Xbox controller with a unique design and all the features of the standard controller."
+        description: "A special edition Xbox controller with a unique design and all the features of the standard controller.",
+        brand: "Microsoft",
+        color: "Blue",
+        inStock: true
     },
     {
         id: "acc-4",
@@ -641,7 +851,10 @@ const products = [
         price: 12000,
         oldPrice: 14000,
         image: "https://images.unsplash.com/photo-1592155931584-901ac15763e3?auto=format&fit=crop&w=400",
-        description: "A vibrant purple Xbox controller that will make your gaming setup stand out."
+        description: "A vibrant purple Xbox controller that will make your gaming setup stand out.",
+        brand: "Microsoft",
+        color: "Purple",
+        inStock: false
     },
     {
         id: "acc-5",
@@ -650,7 +863,10 @@ const products = [
         price: 1000,
         oldPrice: 1200,
         image: "https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?auto=format&fit=crop&w=400",
-        description: "AirPods Pro feature Active Noise Cancellation for immersive sound. Transparency mode for hearing the world around you. They’re sweat and water resistant and have a customizable fit for all-day comfort."
+        description: "AirPods Pro feature Active Noise Cancellation for immersive sound. Transparency mode for hearing the world around you. They're sweat and water resistant and have a customizable fit for all-day comfort.",
+        brand: "Apple",
+        color: "White",
+        inStock: true
     },
     {
         id: "acc-6",
@@ -659,7 +875,10 @@ const products = [
         price: 1500,
         oldPrice: 2000,
         image: "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?auto=format&fit=crop&w=400",
-        description: "A premium case for your iPhone, made from high-quality materials to protect your device from scratches and drops."
+        description: "A premium case for your iPhone, made from high-quality materials to protect your device from scratches and drops.",
+        brand: "Apple",
+        color: "Black",
+        inStock: true
     },
     {
         id: "acc-7",
@@ -668,7 +887,10 @@ const products = [
         price: 20000,
         oldPrice: 25000,
         image: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "Experience the next generation of Wi-Fi with this powerful Wi-Fi 6 router, delivering faster speeds and more reliable connections."
+        description: "Experience the next generation of Wi-Fi with this powerful Wi-Fi 6 router, delivering faster speeds and more reliable connections.",
+        brand: "TP-Link",
+        color: "Black",
+        inStock: true
     },
     {
         id: "acc-8",
@@ -677,7 +899,10 @@ const products = [
         price: 10000,
         oldPrice: 12000,
         image: "https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A high-capacity power bank with fast-charging technology to keep your devices powered up on the go."
+        description: "A high-capacity power bank with fast-charging technology to keep your devices powered up on the go.",
+        brand: "Anker",
+        color: "Black",
+        inStock: true
     },
     {
         id: "acc-9",
@@ -686,7 +911,10 @@ const products = [
         price: 12000,
         oldPrice: 15000,
         image: "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?q=80&w=400&h=300&fm=jpg&fit=crop",
-        description: "A compact and powerful GaN charger that can charge your laptop, phone, and other devices at high speed."
+        description: "A compact and powerful GaN charger that can charge your laptop, phone, and other devices at high speed.",
+        brand: "Anker",
+        color: "White",
+        inStock: true
     },
     {
         id: "acc-10",
@@ -695,7 +923,10 @@ const products = [
         price: 1000,
         oldPrice: 1500,
         image: "https://images.unsplash.com/photo-1562976540-1502c2145186?auto=format&fit=crop&w=400",
-        description: "A high-speed USB 3.1 flash drive for storing and transferring your files quickly and easily."
+        description: "A high-speed USB 3.1 flash drive for storing and transferring your files quickly and easily.",
+        brand: "SanDisk",
+        color: "Silver",
+        inStock: true
     }
 ];
 
