@@ -216,7 +216,8 @@ function setupFilterListeners() {
     
     // Filter section toggles
     document.querySelectorAll('.filter-section-toggle').forEach(toggle => {
-        toggle.addEventListener('click', (e) => {
+        const handler = (e) => {
+            e.preventDefault();
             const section = e.currentTarget.closest('.filter-section');
             const content = section.querySelector('.filter-section-content');
             const icon = section.querySelector('.toggle-icon');
@@ -229,7 +230,9 @@ function setupFilterListeners() {
                 content.style.display = 'block';
                 icon.textContent = '▼';
             }
-        });
+        };
+        toggle.addEventListener('click', handler);
+        toggle.addEventListener('touchstart', handler);
     });
     
     // Apply filters button
@@ -377,7 +380,21 @@ function toggleFilterPanel() {
     if (overlay) {
         overlay.classList.toggle('active');
         if (overlay.classList.contains('active')) {
-            overlay.addEventListener('click', toggleFilterPanel);
+            // Add document click listener to close when clicking outside
+            const closeHandler = (e) => {
+                if (!sidebar.contains(e.target) && e.target !== document.querySelector('.filter-toggle-btn')) {
+                    toggleFilterPanel();
+                }
+            };
+            document.addEventListener('click', closeHandler);
+            // Store the handler to remove later
+            overlay._closeHandler = closeHandler;
+        } else {
+            // Remove the listener when deactivating
+            if (overlay._closeHandler) {
+                document.removeEventListener('click', overlay._closeHandler);
+                delete overlay._closeHandler;
+            }
         }
     }
 }

@@ -309,8 +309,9 @@ app.get('/api/status', (req, res) => {
 // Static files (must come after API routes so /api/* and /ping are not treated as file paths)
 app.use(express.static(path.join(__dirname, 'public')));
 
-const server = app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
+const HOST = process.env.HOST || '0.0.0.0';
+const server = app.listen(PORT, HOST, () => {
+    console.log(`🚀 Server running on http://${HOST}:${PORT}`);
 });
 
 server.on('error', (err) => {
