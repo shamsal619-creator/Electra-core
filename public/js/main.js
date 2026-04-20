@@ -282,11 +282,14 @@ function setupHeaderAuth() {
             return;
         }
         const fullName = [user.first, user.last].filter(Boolean).join(' ').trim() || 'User';
-        const initial = (user.first && user.first[0]) || (user.last && user.last[0]) || (user.email && user.email[0]) || 'U';
 
         container.innerHTML = `
             <span class="user-welcome">Hi, ${fullName}</span>
-            <button type="button" class="avatar-pill" id="headerProfileAvatar">${initial.toUpperCase()}</button>
+            <button type="button" class="avatar-pill" id="headerProfileAvatar" aria-label="Open profile">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                </svg>
+            </button>
             <a href="cart.html" class="cart-icon-link">
                 <span class="cart-icon">🛒</span>
                 <span class="cart-count" id="headerCartCount">0</span>

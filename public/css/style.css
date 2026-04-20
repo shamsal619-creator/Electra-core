@@ -226,6 +226,38 @@ a {
     font-size: 20px;
 }
 
+.avatar-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: none;
+    background: var(--teal);
+    color: var(--white);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 10px 24px rgba(0, 92, 89, 0.14);
+}
+
+.avatar-pill:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 28px rgba(0, 92, 89, 0.2);
+}
+
+.avatar-pill svg {
+    width: 20px;
+    height: 20px;
+    display: block;
+    fill: currentColor;
+}
+
+.avatar-pill:focus {
+    outline: 2px solid rgba(255,255,255,0.85);
+    outline-offset: 3px;
+}
+
 .cart-count {
     position: absolute;
     top: -5px;
