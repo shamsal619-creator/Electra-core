@@ -64,6 +64,27 @@ function escapeHtml(value) {
         .replaceAll("'", '&#39;');
 }
 
+function renderExistingImages(images) {
+    const safeImages = Array.isArray(images) ? images : [];
+    previewList.innerHTML = safeImages.map((img, idx) => `
+        <div class="preview-item">
+            <img src="${img}" alt="existing image ${idx + 1}">
+            <button type="button" class="remove-image-btn" data-remove-index="${idx}" title="Remove image">×</button>
+        </div>
+    `).join('');
+
+    previewList.querySelectorAll('[data-remove-index]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            if (!editingProduct || !Array.isArray(editingProduct.images)) return;
+            const index = Number(btn.dataset.removeIndex);
+            if (!Number.isInteger(index) || index < 0 || index >= editingProduct.images.length) return;
+            editingProduct.images.splice(index, 1);
+            renderExistingImages(editingProduct.images);
+            showStatus('Image removed from edit list. Click Update Product to save.', true);
+        });
+    });
+}
+
 async function loadProducts() {
     if (!isAdminAuthenticated) {
         productsTableBody.innerHTML = '<tr><td colspan="5">Please sign in first.</td></tr>';
@@ -96,6 +117,7 @@ async function loadProducts() {
                 const product = list.find((p) => p._id === btn.dataset.editId);
                 if (!product) return;
                 editingProduct = product;
+                editingProduct.images = Array.isArray(product.images) ? [...product.images] : [];
                 editingIdInput.value = product._id;
                 formTitle.textContent = `Edit Product: ${product.name}`;
                 submitBtn.textContent = 'Update Product';
@@ -110,7 +132,7 @@ async function loadProducts() {
                 document.getElementById('description').value = product.description || '';
                 document.getElementById('inStock').value = product.inStock === false ? 'false' : 'true';
 
-                previewList.innerHTML = (Array.isArray(product.images) ? product.images : []).map((img) => `<img src="${img}" alt="existing image">`).join('');
+                renderExistingImages(editingProduct.images);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });
         });
@@ -122,11 +144,14 @@ async function loadProducts() {
 imagesInput.addEventListener('change', () => {
     previewList.innerHTML = '';
     const files = Array.from(imagesInput.files || []);
-    files.slice(0, 5).forEach((file) => {
-        const img = document.createElement('img');
+        files.slice(0, 5).forEach((file) => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'preview-item';
+            const img = document.createElement('img');
         img.src = URL.createObjectURL(file);
         img.alt = file.name;
-        previewList.appendChild(img);
+            wrapper.appendChild(img);
+            previewList.appendChild(wrapper);
     });
 
     if (files.length > 5) {
