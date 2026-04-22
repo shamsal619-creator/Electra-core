@@ -8,11 +8,43 @@ const editingIdInput = document.getElementById('editingId');
 const productsTableBody = document.getElementById('productsTableBody');
 const cancelEditBtn = document.getElementById('cancelEditBtn');
 const migrateBtn = document.getElementById('migrateBtn');
+const authStatus = document.getElementById('authStatus');
 let editingProduct = null;
+let isAdminAuthenticated = false;
 
 function showStatus(message, ok = false) {
     statusBox.textContent = message;
     statusBox.style.color = ok ? '#0a8' : '#c0392b';
+}
+
+function setControlsEnabled(enabled) {
+    const controls = form.querySelectorAll('input, textarea, select, button');
+    controls.forEach((el) => {
+        if (el.id === 'cancelEditBtn') return;
+        el.disabled = !enabled;
+    });
+    if (migrateBtn) migrateBtn.disabled = !enabled;
+}
+
+async function checkAdminAuth() {
+    try {
+        const response = await fetch('/api/session', { credentials: 'include' });
+        const payload = await response.json();
+        if (!response.ok || !payload.ok || !payload.user?.email) {
+            isAdminAuthenticated = false;
+            authStatus.textContent = 'Not signed in. Please sign in first.';
+            setControlsEnabled(false);
+            return;
+        }
+
+        isAdminAuthenticated = true;
+        authStatus.textContent = `Signed in as: ${payload.user.email}`;
+        setControlsEnabled(true);
+    } catch (_err) {
+        isAdminAuthenticated = false;
+        authStatus.textContent = 'Could not verify login. Please sign in again.';
+        setControlsEnabled(false);
+    }
 }
 
 function resetToCreateMode() {
@@ -33,6 +65,10 @@ function escapeHtml(value) {
 }
 
 async function loadProducts() {
+    if (!isAdminAuthenticated) {
+        productsTableBody.innerHTML = '<tr><td colspan="5">Please sign in first.</td></tr>';
+        return;
+    }
     try {
         const response = await fetch('/api/products');
         const payload = await response.json();
@@ -104,6 +140,12 @@ form.addEventListener('submit', async (event) => {
     submitBtn.disabled = true;
 
     try {
+        if (!isAdminAuthenticated) {
+            showStatus('Please sign in first.');
+            submitBtn.disabled = false;
+            return;
+        }
+
         const files = Array.from(imagesInput.files || []);
         if (files.length === 0 && !editingIdInput.value) {
             showStatus('Please select at least one image.');
@@ -184,3 +226,5 @@ if (migrateBtn) {
         }
     });
 }
+
+checkAdminAuth().then(loadProducts);
