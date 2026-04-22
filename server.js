@@ -473,7 +473,11 @@ app.get('/api/products/:id', async (req, res) => {
 });
 
 app.post('/api/products', requireAdmin, imageUpload.array('images', 5), async (req, res) => {
+    console.log('📸 Product creation request received');
+    console.log('📁 Files received:', req.files ? req.files.length : 0);
+    
     if (!isConnected) {
+        console.log('❌ Database not connected');
         return res.status(503).json({ error: 'Database not connected. Please try again later.' });
     }
     try {
@@ -488,16 +492,36 @@ app.post('/api/products', requireAdmin, imageUpload.array('images', 5), async (r
             inStock
         } = req.body;
 
+        console.log('📝 Form data:', { name, category, price, filesCount: req.files?.length });
+
         if (!name || !category || price === undefined || price === null) {
+            console.log('❌ Missing required fields');
             return res.status(400).json({ error: 'name, category and price are required' });
         }
 
         const files = Array.isArray(req.files) ? req.files : [];
+        console.log('🖼️ Files array:', files.map(f => ({ originalname: f.originalname, filename: f.filename, size: f.size })));
+        
         if (files.length === 0) {
+            console.log('❌ No image files provided');
             return res.status(400).json({ error: 'At least one image file is required' });
         }
 
+        // Validate uploaded files
+        for (const file of files) {
+            if (!file.filename || !file.path) {
+                console.log('❌ File upload failed for:', file.originalname);
+                return res.status(400).json({ error: 'File upload failed. Please try again.' });
+            }
+            // Check if file actually exists on disk
+            if (!fs.existsSync(file.path)) {
+                console.log('❌ Uploaded file not found on disk:', file.path);
+                return res.status(500).json({ error: 'File upload verification failed' });
+            }
+        }
+
         const imageUrls = files.map(file => `/uploads/${file.filename}`);
+        console.log('🔗 Generated image URLs:', imageUrls);
 
         const product = new Product({
             name: String(name).trim(),
@@ -512,6 +536,7 @@ app.post('/api/products', requireAdmin, imageUpload.array('images', 5), async (r
         });
 
         await product.save();
+        console.log('✅ Product saved successfully:', product._id);
 
         return res.status(201).json({
             ok: true,
@@ -525,12 +550,17 @@ app.post('/api/products', requireAdmin, imageUpload.array('images', 5), async (r
 });
 
 app.put('/api/products/:id', requireAdmin, imageUpload.array('images', 5), async (req, res) => {
+    console.log('📝 Product update request received for ID:', req.params.id);
+    console.log('📁 Files received:', req.files ? req.files.length : 0);
+    
     if (!isConnected) {
+        console.log('❌ Database not connected');
         return res.status(503).json({ error: 'Database not connected. Please try again later.' });
     }
     try {
         const existing = await Product.findById(req.params.id);
         if (!existing) {
+            console.log('❌ Product not found:', req.params.id);
             return res.status(404).json({ error: 'Product not found' });
         }
 
@@ -546,6 +576,8 @@ app.put('/api/products/:id', requireAdmin, imageUpload.array('images', 5), async
             existingImages
         } = req.body;
 
+        console.log('📝 Update data:', { name, category, price, existingImagesCount: existingImages ? 'provided' : 'none', filesCount: req.files?.length });
+
         if (name !== undefined) existing.name = String(name).trim();
         if (category !== undefined) existing.category = String(category).trim().toLowerCase();
         if (price !== undefined && price !== '') existing.price = Number(price);
@@ -556,27 +588,48 @@ app.put('/api/products/:id', requireAdmin, imageUpload.array('images', 5), async
         if (inStock !== undefined) existing.inStock = String(inStock).toLowerCase() !== 'false';
 
         let keptImages = Array.isArray(existing.images) ? existing.images : [];
+        console.log('🖼️ Current images:', keptImages);
+        
         if (existingImages !== undefined) {
             try {
                 const parsed = JSON.parse(existingImages);
+                console.log('📋 Parsed existingImages:', parsed);
                 if (Array.isArray(parsed)) {
                     keptImages = parsed.filter((img) => typeof img === 'string' && img.trim() !== '');
                 }
-            } catch (_) {
+            } catch (parseErr) {
+                console.log('⚠️ Failed to parse existingImages JSON:', parseErr.message);
                 // Keep current images if parsing fails.
             }
         }
 
         const newFiles = Array.isArray(req.files) ? req.files : [];
+        console.log('🆕 New files:', newFiles.map(f => ({ originalname: f.originalname, filename: f.filename })));
+        
+        // Validate new uploaded files
+        for (const file of newFiles) {
+            if (!file.filename || !file.path) {
+                console.log('❌ New file upload failed for:', file.originalname);
+                return res.status(400).json({ error: 'File upload failed. Please try again.' });
+            }
+            if (!fs.existsSync(file.path)) {
+                console.log('❌ New uploaded file not found on disk:', file.path);
+                return res.status(500).json({ error: 'File upload verification failed' });
+            }
+        }
+
         const newUrls = newFiles.map((file) => `/uploads/${file.filename}`);
         const mergedImages = [...keptImages, ...newUrls].slice(0, 10);
+        console.log('🔗 Merged images:', mergedImages);
 
         if (mergedImages.length === 0) {
+            console.log('❌ No images after merge');
             return res.status(400).json({ error: 'At least one image is required' });
         }
 
         existing.images = mergedImages;
         await existing.save();
+        console.log('✅ Product updated successfully:', existing._id);
 
         return res.json({
             ok: true,
@@ -806,6 +859,23 @@ app.get('/api/users', async (req, res) => {
 
 // Test route to confirm server is working
 app.get('/ping', (req, res) => res.send('pong'));
+
+// Debug route to check upload functionality
+app.post('/api/test-upload', requireAdmin, imageUpload.single('testImage'), (req, res) => {
+    console.log('🧪 Test upload received');
+    if (!req.file) {
+        console.log('❌ No test file received');
+        return res.status(400).json({ error: 'No file uploaded' });
+    }
+    console.log('✅ Test file uploaded:', req.file.filename);
+    res.json({
+        ok: true,
+        message: 'Test upload successful',
+        filename: req.file.filename,
+        path: req.file.path,
+        size: req.file.size
+    });
+});
 
 // Debug route to check connection status (NOT for production use!)
 app.get('/api/status', (req, res) => {

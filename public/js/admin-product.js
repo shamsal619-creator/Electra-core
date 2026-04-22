@@ -144,18 +144,54 @@ async function loadProducts() {
 imagesInput.addEventListener('change', () => {
     previewList.innerHTML = '';
     const files = Array.from(imagesInput.files || []);
-        files.slice(0, 5).forEach((file) => {
-            const wrapper = document.createElement('div');
-            wrapper.className = 'preview-item';
-            const img = document.createElement('img');
+    
+    // Validate files
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    let hasErrors = false;
+    
+    files.slice(0, 5).forEach((file, index) => {
+        // Check file type
+        if (!allowedTypes.includes(file.type)) {
+            showStatus(`File "${file.name}" is not a valid image type. Only JPEG, PNG, GIF, and WebP are allowed.`);
+            hasErrors = true;
+            return;
+        }
+        
+        // Check file size
+        if (file.size > maxSize) {
+            showStatus(`File "${file.name}" is too large (${(file.size / 1024 / 1024).toFixed(1)}MB). Maximum size is 5MB.`);
+            hasErrors = true;
+            return;
+        }
+        
+        // Check if file is actually an image
+        if (!file.type.startsWith('image/')) {
+            showStatus(`File "${file.name}" is not a valid image.`);
+            hasErrors = true;
+            return;
+        }
+        
+        const wrapper = document.createElement('div');
+        wrapper.className = 'preview-item';
+        const img = document.createElement('img');
         img.src = URL.createObjectURL(file);
         img.alt = file.name;
-            wrapper.appendChild(img);
-            previewList.appendChild(wrapper);
+        img.onerror = () => {
+            showStatus(`Failed to load preview for "${file.name}". The file may be corrupted.`);
+            hasErrors = true;
+        };
+        wrapper.appendChild(img);
+        previewList.appendChild(wrapper);
     });
 
     if (files.length > 5) {
         showStatus('You selected more than 5 files. Only first 5 will be uploaded.');
+        hasErrors = true;
+    }
+    
+    if (!hasErrors && files.length > 0) {
+        showStatus(`${files.length} image(s) selected successfully.`, true);
     }
 });
 
@@ -172,10 +208,28 @@ form.addEventListener('submit', async (event) => {
         }
 
         const files = Array.from(imagesInput.files || []);
+        
+        // Additional validation before sending
         if (files.length === 0 && !editingIdInput.value) {
             showStatus('Please select at least one image.');
             submitBtn.disabled = false;
             return;
+        }
+        
+        // Validate files again before upload
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+        for (const file of files.slice(0, 5)) {
+            if (!allowedTypes.includes(file.type)) {
+                showStatus(`Invalid file type for "${file.name}". Only JPEG, PNG, GIF, and WebP are allowed.`);
+                submitBtn.disabled = false;
+                return;
+            }
+            if (file.size > maxSize) {
+                showStatus(`File "${file.name}" is too large. Maximum size is 5MB.`);
+                submitBtn.disabled = false;
+                return;
+            }
         }
 
         const formData = new FormData();
@@ -194,18 +248,36 @@ form.addEventListener('submit', async (event) => {
 
         const endpoint = editingId ? `/api/products/${editingId}` : '/api/products';
         const method = editingId ? 'PUT' : 'POST';
+        
+        console.log('🚀 Sending request to:', endpoint, 'Method:', method);
+        console.log('📦 FormData contents:', [...formData.entries()].map(([k, v]) => `${k}: ${v instanceof File ? `File(${v.name}, ${v.size} bytes)` : v}`));
+        
         const response = await fetch(endpoint, {
             method,
             body: formData
         });
-        const payload = await response.json();
-
-        if (!response.ok || !payload.ok) {
-            showStatus(payload.error || 'Failed to create product.');
+        
+        console.log('📡 Response status:', response.status, response.statusText);
+        
+        let payload;
+        try {
+            payload = await response.json();
+            console.log('📋 Response payload:', payload);
+        } catch (parseError) {
+            console.error('❌ Failed to parse response JSON:', parseError);
+            showStatus('Server returned invalid response. Please try again.');
             submitBtn.disabled = false;
             return;
         }
 
+        if (!response.ok || !payload.ok) {
+            console.error('❌ Request failed:', payload.error || 'Unknown error');
+            showStatus(payload.error || 'Failed to save product.');
+            submitBtn.disabled = false;
+            return;
+        }
+
+        console.log('✅ Product saved successfully');
         form.reset();
         previewList.innerHTML = '';
         if (editingId) {
@@ -216,7 +288,12 @@ form.addEventListener('submit', async (event) => {
         resetToCreateMode();
         await loadProducts();
     } catch (error) {
-        showStatus(`Request failed: ${error.message || 'Unknown error'}`);
+        console.error('💥 Request error:', error);
+        if (error.name === 'TypeError' && error.message.includes('fetch')) {
+            showStatus('Network error. Please check your connection and try again.');
+        } else {
+            showStatus(`Request failed: ${error.message || 'Unknown error'}`);
+        }
     } finally {
         submitBtn.disabled = false;
     }
@@ -248,6 +325,48 @@ if (migrateBtn) {
             showStatus(`Migration request failed: ${error.message || 'Unknown error'}`);
         } finally {
             migrateBtn.disabled = false;
+        }
+    });
+}
+
+const testUploadBtn = document.getElementById('testUploadBtn');
+const testImageInput = document.getElementById('testImageInput');
+
+if (testUploadBtn && testImageInput) {
+    testUploadBtn.addEventListener('click', () => {
+        testImageInput.click();
+    });
+
+    testImageInput.addEventListener('change', async () => {
+        const file = testImageInput.files[0];
+        if (!file) return;
+
+        try {
+            testUploadBtn.disabled = true;
+            showStatus('Testing image upload...');
+
+            const formData = new FormData();
+            formData.append('testImage', file);
+
+            const response = await fetch('/api/test-upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            const payload = await response.json();
+
+            if (!response.ok || !payload.ok) {
+                showStatus(`Test upload failed: ${payload.error || 'Unknown error'}`);
+                return;
+            }
+
+            showStatus(`Test upload successful! File: ${payload.filename}, Size: ${payload.size} bytes`, true);
+            console.log('Test upload result:', payload);
+        } catch (error) {
+            showStatus(`Test upload error: ${error.message || 'Unknown error'}`);
+        } finally {
+            testUploadBtn.disabled = false;
+            testImageInput.value = '';
         }
     });
 }
