@@ -16,7 +16,7 @@ const FRONTEND_URL = (process.env.FRONTEND_URL || 'http://localhost:3000').repla
 /** Public HTTPS URL of this app (same host as OAuth routes). Used when GOOGLE_CALLBACK_URL is unset. */
 const PUBLIC_URL = (process.env.PUBLIC_URL || FRONTEND_URL).replace(/\/$/, '');
 const isProduction = process.env.NODE_ENV === 'production';
-const useSecureCookies = isProduction || process.env.USE_SECURE_COOKIES === 'true';
+const forceSecureCookies = process.env.USE_SECURE_COOKIES === 'true';
 
 if (process.env.TRUST_PROXY !== '0') {
     app.set('trust proxy', 1);
@@ -30,7 +30,8 @@ app.use(session({
     saveUninitialized: false,
     cookie: {
         sameSite: 'lax',
-        secure: useSecureCookies,
+        // "auto" allows local HTTP while still using secure cookies behind HTTPS proxy in production.
+        secure: forceSecureCookies ? true : 'auto',
         maxAge: 1000 * 60 * 60 * 24
     }
 }));
@@ -128,12 +129,22 @@ passport.deserializeUser(async (id, done) => {
     }
 });
 
-const googleCallbackURL = process.env.GOOGLE_CALLBACK_URL || `${PUBLIC_URL}/auth/google/callback`;
+const DEFAULT_GOOGLE_CALLBACK_PATH = '/auth/google/callback';
+const staticGoogleCallbackURL = process.env.GOOGLE_CALLBACK_URL || `${PUBLIC_URL}${DEFAULT_GOOGLE_CALLBACK_PATH}`;
+
+function getRuntimeCallbackURL(req) {
+    if (process.env.GOOGLE_CALLBACK_URL) return process.env.GOOGLE_CALLBACK_URL;
+    const forwardedProto = req.headers['x-forwarded-proto'];
+    const protocol = (typeof forwardedProto === 'string' && forwardedProto.length)
+        ? forwardedProto.split(',')[0].trim()
+        : req.protocol;
+    return `${protocol}://${req.get('host')}${DEFAULT_GOOGLE_CALLBACK_PATH}`;
+}
 
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID || '',
     clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
-    callbackURL: googleCallbackURL
+    callbackURL: staticGoogleCallbackURL
 }, async (accessToken, refreshToken, profile, done) => {
     try {
         const email = profile.emails?.[0]?.value;
@@ -344,9 +355,21 @@ app.post('/auth/logout', (req, res) => {
     });
 });
 
-app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+app.get('/auth/google', (req, res, next) => {
+    const callbackURL = getRuntimeCallbackURL(req);
+    passport.authenticate('google', {
+        scope: ['profile', 'email'],
+        callbackURL
+    })(req, res, next);
+});
 
-app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/signin.html?error=google' }), (req, res) => {
+app.get('/auth/google/callback', (req, res, next) => {
+    const callbackURL = getRuntimeCallbackURL(req);
+    passport.authenticate('google', {
+        failureRedirect: '/signin.html?error=google',
+        callbackURL
+    })(req, res, next);
+}, (req, res) => {
     res.redirect('/?google=success');
 });
 
@@ -512,7 +535,7 @@ const HOST = process.env.HOST || '0.0.0.0';
 const server = app.listen(PORT, HOST, () => {
     console.log(`🚀 Server running on http://${HOST}:${PORT}`);
     if (process.env.GOOGLE_CLIENT_ID) {
-        console.log('🔐 Google OAuth callback URL:', googleCallbackURL);
+        console.log('🔐 Google OAuth callback URL:', staticGoogleCallbackURL);
     }
 });
 
