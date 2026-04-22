@@ -2,14 +2,40 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
+const session = require('express-session');
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const nodemailer = require('nodemailer');
+const crypto = require('crypto');
 const User = require('./models/User');
 require('@dotenvx/dotenvx').config({ path: path.join(__dirname, '.env') });
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const FRONTEND_URL = (process.env.FRONTEND_URL || 'http://localhost:3000').replace(/\/$/, '');
+/** Public HTTPS URL of this app (same host as OAuth routes). Used when GOOGLE_CALLBACK_URL is unset. */
+const PUBLIC_URL = (process.env.PUBLIC_URL || FRONTEND_URL).replace(/\/$/, '');
+const isProduction = process.env.NODE_ENV === 'production';
+const useSecureCookies = isProduction || process.env.USE_SECURE_COOKIES === 'true';
 
-app.use(cors());
+if (process.env.TRUST_PROXY !== '0') {
+    app.set('trust proxy', 1);
+}
+
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'electra-secret',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        sameSite: 'lax',
+        secure: useSecureCookies,
+        maxAge: 1000 * 60 * 60 * 24
+    }
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
@@ -35,6 +61,9 @@ async function connectToDatabase() {
         retryWrites: true,
         w: 'majority'
     };
+    if (process.env.MONGODB_DB && String(process.env.MONGODB_DB).trim()) {
+        mongooseOptions.dbName = String(process.env.MONGODB_DB).trim();
+    }
 
     try {
         if (MONGODB_URI.startsWith('mongodb+srv')) {
@@ -85,6 +114,77 @@ mongoose.connection.on('error', (err) => {
     isConnected = false;
     console.error('❌ MongoDB runtime error:', err.message);
 });
+
+passport.serializeUser((user, done) => {
+    done(null, user.id);
+});
+
+passport.deserializeUser(async (id, done) => {
+    try {
+        const user = await User.findById(id).lean();
+        done(null, user || false);
+    } catch (err) {
+        done(err);
+    }
+});
+
+const googleCallbackURL = process.env.GOOGLE_CALLBACK_URL || `${PUBLIC_URL}/auth/google/callback`;
+
+passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID || '',
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+    callbackURL: googleCallbackURL
+}, async (accessToken, refreshToken, profile, done) => {
+    try {
+        const email = profile.emails?.[0]?.value;
+        if (!email) return done(new Error('Google account has no email'));
+
+        const trimmedEmail = email.trim().toLowerCase();
+        let user = await User.findOne({ email: trimmedEmail }).select('+password');
+        if (!user) {
+            const randomPassword = crypto.randomBytes(16).toString('hex');
+            user = new User({
+                first: profile.name?.givenName || 'Google',
+                last: profile.name?.familyName || 'User',
+                email: trimmedEmail,
+                password: randomPassword,
+                googleId: profile.id
+            });
+            await user.save();
+        } else if (!user.googleId) {
+            user.googleId = profile.id;
+            await user.save();
+        }
+        return done(null, user);
+    } catch (err) {
+        return done(err);
+    }
+}));
+
+async function sendResetEmail(toEmail, resetUrl) {
+    if (process.env.EMAIL_HOST && process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+        const transporter = nodemailer.createTransport({
+            host: process.env.EMAIL_HOST,
+            port: Number(process.env.EMAIL_PORT) || 587,
+            secure: process.env.EMAIL_SECURE === 'true',
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS
+            }
+        });
+
+        await transporter.sendMail({
+            from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
+            to: toEmail,
+            subject: 'Reset your ElectraCore password',
+            text: `Use this link to reset your password:\n${resetUrl}`,
+            html: `<p>Use this link to reset your password:</p><p><a href="${resetUrl}">${resetUrl}</a></p>`
+        });
+        return true;
+    }
+    console.log('Password reset link for', toEmail, resetUrl);
+    return false;
+}
 
 // Serve home page
 app.get('/', (req, res) => {
@@ -214,6 +314,103 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
+app.get('/api/session', async (req, res) => {
+    if (!req.user) {
+        return res.status(401).json({ ok: false, error: 'Not authenticated' });
+    }
+    const user = { 
+        id: req.user._id,
+        first: req.user.first,
+        last: req.user.last,
+        email: req.user.email,
+        nick: req.user.nick || '',
+        gender: req.user.gender || '',
+        language: req.user.language || '',
+        country: req.user.country || '',
+        timezone: req.user.timezone || '',
+        address: req.user.address || ''
+    };
+    res.json({ ok: true, user });
+});
+
+app.post('/auth/logout', (req, res) => {
+    req.logout((err) => {
+        if (err) {
+            return res.status(500).json({ error: 'Logout failed' });
+        }
+        req.session.destroy(() => {
+            res.json({ ok: true });
+        });
+    });
+});
+
+app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/signin.html?error=google' }), (req, res) => {
+    res.redirect('/?google=success');
+});
+
+app.post('/api/forgot-password', async (req, res) => {
+    if (!isConnected) {
+        return res.status(503).json({ error: 'Database not connected. Please try again later.' });
+    }
+    try {
+        const { email } = req.body;
+        if (!email) return res.status(400).json({ error: 'Email is required' });
+
+        const trimmedEmail = String(email).trim().toLowerCase();
+        const user = await User.findOne({ email: trimmedEmail });
+        if (!user) {
+            return res.json({ ok: true, message: 'If the email exists, a reset link has been sent.' });
+        }
+
+        const token = crypto.randomBytes(32).toString('hex');
+        user.resetPasswordToken = token;
+        user.resetPasswordExpires = Date.now() + 3600000;
+        await user.save();
+
+        const resetUrl = `${FRONTEND_URL}/reset-password.html?token=${token}`;
+        const emailSent = await sendResetEmail(user.email, resetUrl);
+        const payload = { ok: true, message: 'If the email exists, a reset link has been sent.' };
+        if (!emailSent) payload.debugLink = resetUrl;
+        return res.json(payload);
+    } catch (err) {
+        console.error('❌ Forgot password error:', err);
+        res.status(500).json({ error: 'Unable to start password reset. Please try again.' });
+    }
+});
+
+app.post('/api/reset-password', async (req, res) => {
+    if (!isConnected) {
+        return res.status(503).json({ error: 'Database not connected. Please try again later.' });
+    }
+    try {
+        const { token, password } = req.body;
+        if (!token || !password) {
+            return res.status(400).json({ error: 'Token and new password are required' });
+        }
+
+        const user = await User.findOne({
+            resetPasswordToken: token,
+            resetPasswordExpires: { $gt: Date.now() }
+        }).select('+password +resetPasswordToken +resetPasswordExpires');
+
+        if (!user) {
+            return res.status(400).json({ error: 'Invalid or expired token' });
+        }
+
+        user.password = password;
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpires = undefined;
+        await user.save();
+
+        res.json({ ok: true, message: 'Password has been reset successfully.' });
+    } catch (err) {
+        console.error('❌ Reset password error:', err);
+        res.status(500).json({ error: 'Unable to reset password. Please try again.' });
+    }
+});
+
 // Update profile (supports all fields)
 app.put('/api/profile', async (req, res) => {
     if (!isConnected) {
@@ -302,7 +499,9 @@ app.get('/api/status', (req, res) => {
         ok: true,
         databaseConnected: isConnected,
         envLoaded: !!MONGODB_URI,
-        port: PORT
+        port: PORT,
+        mongooseReadyState: mongoose.connection.readyState,
+        googleOAuthConfigured: !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET)
     });
 });
 
@@ -312,6 +511,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 const HOST = process.env.HOST || '0.0.0.0';
 const server = app.listen(PORT, HOST, () => {
     console.log(`🚀 Server running on http://${HOST}:${PORT}`);
+    if (process.env.GOOGLE_CLIENT_ID) {
+        console.log('🔐 Google OAuth callback URL:', googleCallbackURL);
+    }
 });
 
 server.on('error', (err) => {

@@ -267,20 +267,36 @@ function initSearch() {
     });
 }
 
-function setupHeaderAuth() {
+async function setupHeaderAuth() {
     const container = document.getElementById('headerUserActions') || document.querySelector('.user-actions');
     if (!container) return;
 
+    let user = null;
     const raw = localStorage.getItem('currentUser');
-    
     if (raw) {
-        let user;
         try {
             user = JSON.parse(raw);
         } catch {
             localStorage.removeItem('currentUser');
-            return;
         }
+    }
+
+    if (!user) {
+        try {
+            const res = await fetch('/api/session', { credentials: 'include' });
+            if (res.ok) {
+                const data = await res.json();
+                if (data.ok && data.user) {
+                    user = data.user;
+                    localStorage.setItem('currentUser', JSON.stringify(user));
+                }
+            }
+        } catch (err) {
+            // Ignore session fetch failures and show login links
+        }
+    }
+
+    if (user) {
         const fullName = [user.first, user.last].filter(Boolean).join(' ').trim() || 'User';
 
         container.innerHTML = `
@@ -306,8 +322,11 @@ function setupHeaderAuth() {
 
         const logoutBtn = document.getElementById('logoutBtn');
         if (logoutBtn) {
-            logoutBtn.addEventListener('click', () => {
+            logoutBtn.addEventListener('click', async () => {
                 localStorage.removeItem('currentUser');
+                try {
+                    await fetch('/auth/logout', { method: 'POST', credentials: 'include' });
+                } catch (err) {}
                 window.location.href = 'signin.html';
             });
         }
