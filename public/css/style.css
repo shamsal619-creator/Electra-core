@@ -188,6 +188,24 @@ a {
     color: var(--dark);
 }
 
+.auth-pill-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(0, 168, 136, 0.3);
+    background: #f2fffb;
+    color: var(--teal) !important;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.auth-pill-link:hover {
+    background: #e6fffb;
+    border-color: var(--teal);
+}
+
 .logout-btn {
     padding: 8px 16px;
     border-radius: 999px;

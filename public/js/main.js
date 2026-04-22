@@ -281,19 +281,17 @@ async function setupHeaderAuth() {
         }
     }
 
-    if (!user) {
-        try {
-            const res = await fetch('/api/session', { credentials: 'include' });
-            if (res.ok) {
-                const data = await res.json();
-                if (data.ok && data.user) {
-                    user = data.user;
-                    localStorage.setItem('currentUser', JSON.stringify(user));
-                }
+    try {
+        const res = await fetch('/api/session', { credentials: 'include' });
+        if (res.ok) {
+            const data = await res.json();
+            if (data.ok && data.user) {
+                user = data.user;
+                localStorage.setItem('currentUser', JSON.stringify(user));
             }
-        } catch (err) {
-            // Ignore session fetch failures and show login links
         }
+    } catch (err) {
+        // Ignore session fetch failures and show cached login links
     }
 
     if (user) {
@@ -301,6 +299,7 @@ async function setupHeaderAuth() {
 
         container.innerHTML = `
             <span class="user-welcome">Hi, ${fullName}</span>
+            ${user.isAdmin ? '<a href="/admin-product.html" class="auth-pill-link">Admin</a>' : ''}
             <button type="button" class="avatar-pill" id="headerProfileAvatar" aria-label="Open profile">
                 <svg viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />

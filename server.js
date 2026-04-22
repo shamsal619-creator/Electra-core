@@ -358,22 +358,29 @@ app.post('/api/login', async (req, res) => {
             return res.status(401).json({ error: 'Invalid email or password' });
         }
         
-        res.status(200).json({
-            ok: true,
-            message: 'Login successful',
-            user: { 
-                id: user._id, 
-                first: user.first, 
-                last: user.last, 
-                email: user.email,
-                nick: user.nick || '',
-                gender: user.gender || '',
-                language: user.language || '',
-                country: user.country || '',
-                timezone: user.timezone || '',
-                address: user.address || '',
-                created: user.created
+        req.login(user, (loginErr) => {
+            if (loginErr) {
+                console.error('❌ Session login error:', loginErr);
+                return res.status(500).json({ error: 'Login session failed. Please try again.' });
             }
+            return res.status(200).json({
+                ok: true,
+                message: 'Login successful',
+                user: { 
+                    id: user._id, 
+                    first: user.first, 
+                    last: user.last, 
+                    email: user.email,
+                    nick: user.nick || '',
+                    gender: user.gender || '',
+                    language: user.language || '',
+                    country: user.country || '',
+                    timezone: user.timezone || '',
+                    address: user.address || '',
+                    created: user.created,
+                    isAdmin: ADMIN_EMAILS.has(String(user.email || '').trim().toLowerCase())
+                }
+            });
         });
     } catch (err) {
         console.error('❌ Login error:', err);
@@ -395,7 +402,8 @@ app.get('/api/session', async (req, res) => {
         language: req.user.language || '',
         country: req.user.country || '',
         timezone: req.user.timezone || '',
-        address: req.user.address || ''
+        address: req.user.address || '',
+        isAdmin: ADMIN_EMAILS.has(String(req.user.email || '').trim().toLowerCase())
     };
     res.json({ ok: true, user });
 });
@@ -412,6 +420,10 @@ app.post('/auth/logout', (req, res) => {
 });
 
 app.get('/auth/google', (req, res, next) => {
+    const returnToRaw = typeof req.query.returnTo === 'string' ? req.query.returnTo : '';
+    if (returnToRaw.startsWith('/')) {
+        req.session.returnTo = returnToRaw;
+    }
     const callbackURL = getRuntimeCallbackURL(req);
     passport.authenticate('google', {
         scope: ['profile', 'email'],
@@ -426,7 +438,11 @@ app.get('/auth/google/callback', (req, res, next) => {
         callbackURL
     })(req, res, next);
 }, (req, res) => {
-    res.redirect('/?google=success');
+    const returnTo = (req.session && typeof req.session.returnTo === 'string' && req.session.returnTo.startsWith('/'))
+        ? req.session.returnTo
+        : '/?google=success';
+    if (req.session) delete req.session.returnTo;
+    res.redirect(returnTo);
 });
 
 app.get('/api/products', async (_req, res) => {
