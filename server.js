@@ -2,12 +2,15 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 const session = require('express-session');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
+const multer = require('multer');
 const User = require('./models/User');
+const Product = require('./models/Product');
 require('@dotenvx/dotenvx').config({ path: path.join(__dirname, '.env') });
 
 const app = express();
@@ -37,6 +40,49 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
+
+const uploadsDir = path.join(__dirname, 'public', 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+const uploadStorage = multer.diskStorage({
+    destination: (_req, _file, cb) => cb(null, uploadsDir),
+    filename: (_req, file, cb) => {
+        const ext = path.extname(file.originalname || '').toLowerCase() || '.jpg';
+        const fileName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`;
+        cb(null, fileName);
+    }
+});
+
+const imageUpload = multer({
+    storage: uploadStorage,
+    limits: { fileSize: 5 * 1024 * 1024, files: 5 },
+    fileFilter: (_req, file, cb) => {
+        if (!file.mimetype || !file.mimetype.startsWith('image/')) {
+            return cb(new Error('Only image files are allowed'));
+        }
+        cb(null, true);
+    }
+});
+
+const ADMIN_EMAILS = new Set(
+    String(process.env.ADMIN_EMAILS || 'shamsal619@gmail.com')
+        .split(',')
+        .map((email) => email.trim().toLowerCase())
+        .filter(Boolean)
+);
+
+function requireAdmin(req, res, next) {
+    if (!req.user || !req.user.email) {
+        return res.status(401).json({ error: 'Authentication required' });
+    }
+    const email = String(req.user.email).trim().toLowerCase();
+    if (!ADMIN_EMAILS.has(email)) {
+        return res.status(403).json({ error: 'Admin access required' });
+    }
+    return next();
+}
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
@@ -373,6 +419,150 @@ app.get('/auth/google/callback', (req, res, next) => {
     res.redirect('/?google=success');
 });
 
+app.get('/api/products', async (_req, res) => {
+    if (!isConnected) {
+        return res.status(503).json({ error: 'Database not connected. Please try again later.' });
+    }
+    try {
+        const products = await Product.find().sort({ createdAt: -1 }).lean();
+        return res.json({ ok: true, count: products.length, products });
+    } catch (err) {
+        console.error('❌ Get products error:', err);
+        return res.status(500).json({ error: 'Failed to fetch products' });
+    }
+});
+
+app.get('/api/products/:id', async (req, res) => {
+    if (!isConnected) {
+        return res.status(503).json({ error: 'Database not connected. Please try again later.' });
+    }
+    try {
+        const product = await Product.findById(req.params.id).lean();
+        if (!product) return res.status(404).json({ error: 'Product not found' });
+        return res.json({ ok: true, product });
+    } catch (err) {
+        console.error('❌ Get product by id error:', err);
+        return res.status(500).json({ error: 'Failed to fetch product' });
+    }
+});
+
+app.post('/api/products', requireAdmin, imageUpload.array('images', 5), async (req, res) => {
+    if (!isConnected) {
+        return res.status(503).json({ error: 'Database not connected. Please try again later.' });
+    }
+    try {
+        const {
+            name,
+            category,
+            price,
+            oldPrice,
+            description,
+            brand,
+            color,
+            inStock
+        } = req.body;
+
+        if (!name || !category || price === undefined || price === null) {
+            return res.status(400).json({ error: 'name, category and price are required' });
+        }
+
+        const files = Array.isArray(req.files) ? req.files : [];
+        if (files.length === 0) {
+            return res.status(400).json({ error: 'At least one image file is required' });
+        }
+
+        const imageUrls = files.map(file => `/uploads/${file.filename}`);
+
+        const product = new Product({
+            name: String(name).trim(),
+            category: String(category).trim().toLowerCase(),
+            price: Number(price),
+            oldPrice: oldPrice !== undefined && oldPrice !== '' ? Number(oldPrice) : undefined,
+            description: description ? String(description).trim() : '',
+            brand: brand ? String(brand).trim() : '',
+            color: color ? String(color).trim() : '',
+            inStock: String(inStock).toLowerCase() !== 'false',
+            images: imageUrls
+        });
+
+        await product.save();
+
+        return res.status(201).json({
+            ok: true,
+            message: 'Product created successfully',
+            product
+        });
+    } catch (err) {
+        console.error('❌ Create product error:', err);
+        return res.status(500).json({ error: err.message || 'Failed to create product' });
+    }
+});
+
+app.put('/api/products/:id', requireAdmin, imageUpload.array('images', 5), async (req, res) => {
+    if (!isConnected) {
+        return res.status(503).json({ error: 'Database not connected. Please try again later.' });
+    }
+    try {
+        const existing = await Product.findById(req.params.id);
+        if (!existing) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+
+        const {
+            name,
+            category,
+            price,
+            oldPrice,
+            description,
+            brand,
+            color,
+            inStock,
+            existingImages
+        } = req.body;
+
+        if (name !== undefined) existing.name = String(name).trim();
+        if (category !== undefined) existing.category = String(category).trim().toLowerCase();
+        if (price !== undefined && price !== '') existing.price = Number(price);
+        if (oldPrice !== undefined) existing.oldPrice = oldPrice === '' ? undefined : Number(oldPrice);
+        if (description !== undefined) existing.description = String(description).trim();
+        if (brand !== undefined) existing.brand = String(brand).trim();
+        if (color !== undefined) existing.color = String(color).trim();
+        if (inStock !== undefined) existing.inStock = String(inStock).toLowerCase() !== 'false';
+
+        let keptImages = Array.isArray(existing.images) ? existing.images : [];
+        if (existingImages !== undefined) {
+            try {
+                const parsed = JSON.parse(existingImages);
+                if (Array.isArray(parsed)) {
+                    keptImages = parsed.filter((img) => typeof img === 'string' && img.trim() !== '');
+                }
+            } catch (_) {
+                // Keep current images if parsing fails.
+            }
+        }
+
+        const newFiles = Array.isArray(req.files) ? req.files : [];
+        const newUrls = newFiles.map((file) => `/uploads/${file.filename}`);
+        const mergedImages = [...keptImages, ...newUrls].slice(0, 10);
+
+        if (mergedImages.length === 0) {
+            return res.status(400).json({ error: 'At least one image is required' });
+        }
+
+        existing.images = mergedImages;
+        await existing.save();
+
+        return res.json({
+            ok: true,
+            message: 'Product updated successfully',
+            product: existing
+        });
+    } catch (err) {
+        console.error('❌ Update product error:', err);
+        return res.status(500).json({ error: err.message || 'Failed to update product' });
+    }
+});
+
 app.post('/api/forgot-password', async (req, res) => {
     if (!isConnected) {
         return res.status(503).json({ error: 'Database not connected. Please try again later.' });
@@ -526,6 +716,16 @@ app.get('/api/status', (req, res) => {
         mongooseReadyState: mongoose.connection.readyState,
         googleOAuthConfigured: !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET)
     });
+});
+
+app.use((err, _req, res, next) => {
+    if (err instanceof multer.MulterError) {
+        return res.status(400).json({ error: err.message });
+    }
+    if (err && err.message === 'Only image files are allowed') {
+        return res.status(400).json({ error: err.message });
+    }
+    return next(err);
 });
 
 // Static files (must come after API routes so /api/* and /ping are not treated as file paths)

@@ -22,14 +22,44 @@
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
+            gap: 12px;
         }
 
-        .product-image-section img {
+        .product-main-image {
             max-width: 100%;
-            height: auto;
+            max-height: 430px;
+            object-fit: contain;
             border-radius: 10px;
+        }
+
+        .product-thumbs {
+            width: 100%;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .product-thumb {
+            border: 2px solid transparent;
+            border-radius: 8px;
+            padding: 0;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        .product-thumb.active {
+            border-color: var(--teal);
+        }
+
+        .product-thumb img {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 6px;
+            display: block;
         }
 
         .product-info-section {
@@ -407,6 +437,7 @@
     </footer>
 
     <script src="js/products.js"></script>
+    <script src="js/product-images.js"></script>
     <script src="js/main.js"></script>
     <script>
         // Reviews data
@@ -560,7 +591,7 @@
                     id: product.id,
                     name: product.name,
                     price: product.price,
-                    image: product.image,
+                    image: getPrimaryProductImage(product),
                     quantity: currentQty
                 });
             }
@@ -572,9 +603,21 @@
 
         function renderProductDetails(product) {
             const container = document.getElementById('productDetail');
+            const productImages = getProductImages(product);
+            const mainImage = productImages[0] || '';
+
             container.innerHTML = `
                 <div class="product-image-section">
-                    <img src="${product.image}" alt="${product.name}">
+                    <img src="${mainImage}" alt="${product.name}" class="product-main-image" id="productMainImage">
+                    ${productImages.length > 1 ? `
+                        <div class="product-thumbs">
+                            ${productImages.map((img, idx) => `
+                                <button type="button" class="product-thumb ${idx === 0 ? 'active' : ''}" data-image="${img}">
+                                    <img src="${img}" alt="${product.name} thumbnail ${idx + 1}">
+                                </button>
+                            `).join('')}
+                        </div>
+                    ` : ''}
                 </div>
                 <div class="product-info-section">
                     <span class="product-category">${product.category}</span>
@@ -595,6 +638,17 @@
                     </div>
                 </div>
             `;
+
+            const thumbButtons = container.querySelectorAll('.product-thumb');
+            thumbButtons.forEach((button) => {
+                button.addEventListener('click', () => {
+                    const nextImage = button.dataset.image;
+                    const mainImgEl = document.getElementById('productMainImage');
+                    if (nextImage && mainImgEl) mainImgEl.src = nextImage;
+                    thumbButtons.forEach((btn) => btn.classList.remove('active'));
+                    button.classList.add('active');
+                });
+            });
         }
 
         document.addEventListener('DOMContentLoaded', () => {

@@ -192,7 +192,7 @@ function initQuickView() {
             if (typeof products !== 'undefined') {
                 const p = products.find(prod => prod.id === id);
                 if (p) {
-                    document.getElementById('qvImage').src = p.image;
+                    document.getElementById('qvImage').src = getPrimaryProductImage(p);
                     document.getElementById('qvName').textContent = p.name;
                     document.getElementById('qvPrice').textContent = `${p.price} EGP`;
                     document.getElementById('qvDescription').textContent = p.description || "No description available.";
@@ -237,7 +237,7 @@ function initSearch() {
             if (filtered.length > 0) {
                 dropdown.innerHTML = filtered.map(p => `
                     <div class="search-result-item" onclick="window.location.href='product.html?id=${p.id}'">
-                        <img src="${p.image}" alt="${p.name}">
+                        <img src="${getPrimaryProductImage(p)}" alt="${p.name}">
                         <div class="search-result-info">
                             <span class="search-result-name">${p.name}</span>
                             <span class="search-result-price">${p.price} EGP</span>

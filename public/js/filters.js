@@ -306,8 +306,8 @@ function applyFilters() {
                 <button class="fav-btn">♡</button>
                 <a href="product.html?id=${p.id}">
                     ${typeof ImageLoader !== 'undefined' ? 
-                        ImageLoader.generateImgTag(p.image, p.name) : 
-                        `<img src="${p.image}" alt="${p.name}" loading="lazy">`
+                        ImageLoader.generateImgTag(getPrimaryProductImage(p), p.name) : 
+                        `<img src="${getPrimaryProductImage(p)}" alt="${p.name}" loading="lazy">`
                     }
                 </a>
                 <h3><a href="product.html?id=${p.id}">${p.name}</a></h3>
