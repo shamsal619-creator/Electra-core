@@ -1,4 +1,7 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    if (window.productsReadyPromise) {
+        await window.productsReadyPromise;
+    }
     // Determine category from page title or URL
     const pageTitle = document.title.toLowerCase();
     let category = '';

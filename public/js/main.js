@@ -1,4 +1,7 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    if (window.productsReadyPromise) {
+        await window.productsReadyPromise;
+    }
     // Hamburger menu toggle
     const hamburger = document.querySelector('.hamburger');
     const userActions = document.querySelector('.user-actions');

@@ -437,6 +437,7 @@
     </footer>
 
     <script src="js/products.js"></script>
+    <script src="js/products-api.js"></script>
     <script src="js/product-images.js"></script>
     <script src="js/main.js"></script>
     <script>
@@ -651,7 +652,10 @@
             });
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (window.productsReadyPromise) {
+                await window.productsReadyPromise;
+            }
             const urlParams = new URLSearchParams(window.location.search);
             const productId = urlParams.get('id');
             const product = getProductById(productId);

@@ -121,12 +121,16 @@
     </footer>
 
     <script src="js/products.js"></script>
+    <script src="js/products-api.js"></script>
     <script src="js/product-images.js"></script>
     <script src="js/image-loader.js"></script>
     <script src="js/main.js"></script>
     <script>
         // Simple script to render featured products on index page
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (window.productsReadyPromise) {
+                await window.productsReadyPromise;
+            }
             const newArrivalsGrid = document.getElementById('new-arrivals');
             const bestSellersGrid = document.getElementById('best-sellers');
             
@@ -135,11 +139,11 @@
                 renderProducts(products.slice(0, 5), newArrivalsGrid);
                 // Best Sellers: A few from different categories
                 const bestSellers = [
-                    products.find(p => p.id === 'laptop-1'),
-                    products.find(p => p.id === 'phone-1'),
-                    products.find(p => p.id === 'watch-1'),
-                    products.find(p => p.id === 'acc-1'),
-                    products.find(p => p.id === 'headphone-1')
+                    products.find(p => p.category === 'laptops'),
+                    products.find(p => p.category === 'phones'),
+                    products.find(p => p.category === 'watches'),
+                    products.find(p => p.category === 'accessories'),
+                    products.find(p => p.category === 'headphones')
                 ].filter(p => p);
                 renderProducts(bestSellers, bestSellersGrid);
             }
