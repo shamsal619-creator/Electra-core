@@ -7,6 +7,7 @@ const formTitle = document.getElementById('formTitle');
 const editingIdInput = document.getElementById('editingId');
 const productsTableBody = document.getElementById('productsTableBody');
 const cancelEditBtn = document.getElementById('cancelEditBtn');
+const migrateBtn = document.getElementById('migrateBtn');
 let editingProduct = null;
 
 function showStatus(message, ok = false) {
@@ -162,3 +163,24 @@ cancelEditBtn.addEventListener('click', () => {
 });
 
 loadProducts();
+
+if (migrateBtn) {
+    migrateBtn.addEventListener('click', async () => {
+        try {
+            migrateBtn.disabled = true;
+            showStatus('Migrating old static products...');
+            const response = await fetch('/api/admin/migrate-static-products', { method: 'POST' });
+            const payload = await response.json();
+            if (!response.ok || !payload.ok) {
+                showStatus(payload.error || 'Migration failed.');
+                return;
+            }
+            showStatus(`Migration done. Created: ${payload.created}, Skipped: ${payload.skipped}`, true);
+            await loadProducts();
+        } catch (error) {
+            showStatus(`Migration request failed: ${error.message || 'Unknown error'}`);
+        } finally {
+            migrateBtn.disabled = false;
+        }
+    });
+}

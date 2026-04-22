@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
+const vm = require('vm');
 const session = require('express-session');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
@@ -82,6 +83,15 @@ function requireAdmin(req, res, next) {
         return res.status(403).json({ error: 'Admin access required' });
     }
     return next();
+}
+
+function loadStaticProductsFromFile() {
+    const productsFilePath = path.join(__dirname, 'public', 'js', 'products.js');
+    const source = fs.readFileSync(productsFilePath, 'utf8');
+    const sandbox = {};
+    vm.runInNewContext(`${source}\nthis.__products = products;`, sandbox);
+    if (!Array.isArray(sandbox.__products)) return [];
+    return sandbox.__products;
 }
 
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -560,6 +570,81 @@ app.put('/api/products/:id', requireAdmin, imageUpload.array('images', 5), async
     } catch (err) {
         console.error('❌ Update product error:', err);
         return res.status(500).json({ error: err.message || 'Failed to update product' });
+    }
+});
+
+app.post('/api/admin/migrate-static-products', requireAdmin, async (_req, res) => {
+    if (!isConnected) {
+        return res.status(503).json({ error: 'Database not connected. Please try again later.' });
+    }
+    try {
+        const staticProducts = loadStaticProductsFromFile();
+        if (!staticProducts.length) {
+            return res.status(400).json({ error: 'No static products found to migrate' });
+        }
+
+        let created = 0;
+        let skipped = 0;
+        const errors = [];
+
+        for (const item of staticProducts) {
+            try {
+                const name = String(item?.name || '').trim();
+                const category = String(item?.category || '').trim().toLowerCase();
+                const price = Number(item?.price);
+                if (!name || !category || !Number.isFinite(price)) {
+                    skipped += 1;
+                    continue;
+                }
+
+                const duplicate = await Product.findOne({
+                    name,
+                    category,
+                    price
+                }).lean();
+
+                if (duplicate) {
+                    skipped += 1;
+                    continue;
+                }
+
+                const imageValue = String(item?.image || '').trim();
+                const images = imageValue ? [imageValue] : [];
+                if (!images.length) {
+                    skipped += 1;
+                    continue;
+                }
+
+                const product = new Product({
+                    name,
+                    category,
+                    price,
+                    oldPrice: item?.oldPrice !== undefined ? Number(item.oldPrice) : undefined,
+                    description: String(item?.description || '').trim(),
+                    brand: String(item?.brand || '').trim(),
+                    color: String(item?.color || '').trim(),
+                    inStock: item?.inStock !== false,
+                    images
+                });
+                await product.save();
+                created += 1;
+            } catch (err) {
+                skipped += 1;
+                errors.push(String(err?.message || err));
+            }
+        }
+
+        return res.json({
+            ok: true,
+            message: 'Static products migration completed',
+            created,
+            skipped,
+            total: staticProducts.length,
+            errors: errors.slice(0, 10)
+        });
+    } catch (err) {
+        console.error('❌ Static products migration error:', err);
+        return res.status(500).json({ error: err.message || 'Failed to migrate static products' });
     }
 });
 
