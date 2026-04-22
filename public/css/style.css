@@ -883,7 +883,7 @@ a {
 /* Mobile Tweaks */
 @media (max-width: 768px) {
     body {
-        padding-top: 200px; /* Increased for mobile two-row header with larger logo */
+        padding-top: 150px; /* Adjusted for optimized mobile header layout */
     }
 
     .header { 
@@ -905,7 +905,7 @@ a {
     }
 
     .logo img { 
-        height: 150px; /* Significantly increased for brand prominence */
+        height: 100px; /* Optimized for mobile layout */
         width: auto;
     }
 
@@ -1348,8 +1348,8 @@ a {
 
 .filter-panel-overlay.active {
     display: block;
-    pointer-events: none;
-    z-index: 900;
+    pointer-events: auto;
+    z-index: 901;
 }
 
 .filter-toggle-btn {
@@ -1497,6 +1497,35 @@ a {
     
     .filter-sidebar.active {
         transform: translateX(0);
+    }
+    
+    .filter-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    .filter-header h2 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 600;
+    }
+    
+    .filter-close-btn {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        padding: 5px;
+        color: var(--text);
+        transition: color 0.2s;
+    }
+    
+    .filter-close-btn:hover {
+        color: var(--primary);
     }
     
     .filter-section-content {

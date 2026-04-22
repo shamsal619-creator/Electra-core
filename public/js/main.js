@@ -8,6 +8,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (hamburger && userActions) {
         hamburger.addEventListener('click', () => {
+            // Mutual exclusion: close filter panel if opening user menu
+            if (!userActions.classList.contains('active') && window.toggleFilterPanel) {
+                const sidebar = document.querySelector('.filter-sidebar');
+                if (sidebar && sidebar.classList.contains('active')) {
+                    window.toggleFilterPanel();
+                }
+            }
             userActions.classList.toggle('active');
             hamburger.classList.toggle('active');
         });

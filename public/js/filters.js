@@ -51,6 +51,10 @@ function renderFiltersUI(brands, colors, minPrice, maxPrice) {
     `).join('');
     
     filterSidebar.innerHTML = `
+        <div class="filter-header">
+            <h2>Filters</h2>
+            <button class="filter-close-btn">✕</button>
+        </div>
         <div class="filter-container">
             <!-- Price Filter Section -->
             <div class="filter-section">
@@ -246,6 +250,12 @@ function setupFilterListeners() {
     if (resetBtn) {
         resetBtn.addEventListener('click', resetFilters);
     }
+    
+    // Close button
+    const closeBtn = document.querySelector('.filter-close-btn');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', toggleFilterPanel);
+    }
 }
 
 function updatePriceDisplay() {
@@ -336,6 +346,11 @@ function applyFilters() {
     if (typeof initQuickView === 'function') {
         initQuickView();
     }
+    
+    // Auto-close filter panel on mobile after applying filters
+    if (window.innerWidth < 768) {
+        setTimeout(() => toggleFilterPanel(), 300);
+    }
 }
 
 function resetFilters() {
@@ -373,6 +388,16 @@ function toggleFilterPanel() {
     const sidebar = document.querySelector('.filter-sidebar');
     const overlay = document.querySelector('.filter-panel-overlay');
     
+    // Mutual exclusion: close user menu if opening filter
+    if (!sidebar.classList.contains('active')) {
+        const userActions = document.querySelector('.user-actions');
+        const hamburger = document.querySelector('.hamburger');
+        if (userActions && userActions.classList.contains('active')) {
+            userActions.classList.remove('active');
+            if (hamburger) hamburger.classList.remove('active');
+        }
+    }
+    
     if (sidebar) {
         sidebar.classList.toggle('active');
     }
@@ -389,12 +414,33 @@ function toggleFilterPanel() {
             document.addEventListener('click', closeHandler);
             // Store the handler to remove later
             overlay._closeHandler = closeHandler;
+            
+            // Add escape key listener
+            const escapeHandler = (e) => {
+                if (e.key === 'Escape') {
+                    toggleFilterPanel();
+                }
+            };
+            document.addEventListener('keydown', escapeHandler);
+            overlay._escapeHandler = escapeHandler;
         } else {
-            // Remove the listener when deactivating
+            // Remove the listeners when deactivating
             if (overlay._closeHandler) {
                 document.removeEventListener('click', overlay._closeHandler);
                 delete overlay._closeHandler;
             }
+            if (overlay._escapeHandler) {
+                document.removeEventListener('keydown', overlay._escapeHandler);
+                delete overlay._escapeHandler;
+            }
         }
     }
+    
+    // Update toggle button text
+    const toggleBtn = document.querySelector('.filter-toggle-btn');
+    if (toggleBtn) {
+        toggleBtn.textContent = sidebar.classList.contains('active') ? 'Hide Filters' : 'Show Filters';
+    }
 }
+
+window.toggleFilterPanel = toggleFilterPanel;
