@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     else if (pageTitle.includes('headphone')) category = 'headphones';
     else if (pageTitle.includes('phone')) category = 'phones';
     else if (pageTitle.includes('watch')) category = 'watches';
+    else if (pageTitle.includes('kitchen')) category = 'kitchen';
     else if (pageTitle.includes('accessory') || pageTitle.includes('accessories')) category = 'accessories';
     
     // Initialize filters
@@ -49,6 +50,7 @@ function renderCategoryProducts() {
     else if (pageTitle.includes('headphone')) category = 'headphones';
     else if (pageTitle.includes('phone')) category = 'phones';
     else if (pageTitle.includes('watch')) category = 'watches';
+    else if (pageTitle.includes('kitchen')) category = 'kitchen';
     else if (pageTitle.includes('accessory') || pageTitle.includes('accessories')) category = 'accessories';
 
     if (!category || typeof products === 'undefined') return;

@@ -146,7 +146,7 @@ imagesInput.addEventListener('change', () => {
     const files = Array.from(imagesInput.files || []);
     
     // Validate files
-    const maxSize = 5 * 1024 * 1024; // 5MB
+    const maxSize = 25 * 1024 * 1024; // 25MB
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
     let hasErrors = false;
     
@@ -160,7 +160,7 @@ imagesInput.addEventListener('change', () => {
         
         // Check file size
         if (file.size > maxSize) {
-            showStatus(`File "${file.name}" is too large (${(file.size / 1024 / 1024).toFixed(1)}MB). Maximum size is 5MB.`);
+            showStatus(`File "${file.name}" is too large (${(file.size / 1024 / 1024).toFixed(1)}MB). Maximum size is 25MB.`);
             hasErrors = true;
             return;
         }
@@ -217,7 +217,7 @@ form.addEventListener('submit', async (event) => {
         }
         
         // Validate files again before upload
-        const maxSize = 5 * 1024 * 1024; // 5MB
+        const maxSize = 25 * 1024 * 1024; // 25MB
         const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
         for (const file of files.slice(0, 5)) {
             if (!allowedTypes.includes(file.type)) {
@@ -226,7 +226,7 @@ form.addEventListener('submit', async (event) => {
                 return;
             }
             if (file.size > maxSize) {
-                showStatus(`File "${file.name}" is too large. Maximum size is 5MB.`);
+                showStatus(`File "${file.name}" is too large. Maximum size is 25MB.`);
                 submitBtn.disabled = false;
                 return;
             }
@@ -254,7 +254,8 @@ form.addEventListener('submit', async (event) => {
         
         const response = await fetch(endpoint, {
             method,
-            body: formData
+            body: formData,
+            credentials: 'include'
         });
         
         console.log('📡 Response status:', response.status, response.statusText);

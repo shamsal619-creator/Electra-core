@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kitchen Appliances - ElectraCore</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="header">
+        <a href="index.html" class="logo">
+            <img src="design/logo.png" alt="ElectraCore logo">
+        </a>
+        <div class="search-bar">
+            <input type="text" placeholder="Search kitchen appliances...">
+        </div>
+        <div class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div class="user-actions" id="headerUserActions"></div>
+    </header>
+
+    <h1 class="page-title fade-in-up">Kitchen Appliances</h1>
+
+    <button class="filter-toggle-btn fade-in-up">Show Filters</button>
+
+    <div class="filter-wrapper fade-in-up">
+        <div class="filters-section">
+            <div class="filter-sidebar">
+                <!-- Filters will be rendered here by JavaScript -->
+            </div>
+        </div>
+        <div class="products-content">
+            <div class="products-grid">
+                <!-- Products rendered dynamically from js/category.js -->
+            </div>
+        </div>
+    </div>
+
+    <div class="filter-panel-overlay"></div>
+
+    <footer class="footer fade-in-up">
+        <div class="footer-content">
+            <div class="footer-col">
+                <h4>About Us</h4>
+                <p>We will always give our clients the best in order to get the best experience.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <a href="index.html">Home</a>
+                <a href="#">Shop</a>
+                <a href="#">About</a>
+                <a href="#">Contact</a>
+            </div>
+            <div class="footer-col">
+                <h4>Policies</h4>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms & Conditions</a>
+                <a href="#">Return Policy</a>
+            </div>
+            <div class="footer-col">
+                <h4>Follow Us</h4>
+                <div class="social-links">
+                    <a href="#">f</a>
+                    <a href="#">t</a>
+                    <a href="#">i</a>
+                    <a href="#">y</a>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            &copy; 2026 ElectraCore. All rights reserved.
+        </div>
+    </footer>
+    <script src="js/products.js"></script>
+    <script src="js/products-api.js"></script>
+    <script src="js/product-images.js"></script>
+    <script src="js/image-loader.js"></script>
+    <script src="js/filters.js"></script>
+    <script src="js/sort.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/category.js"></script>
+</body>
+</html>

@@ -927,6 +927,128 @@ const products = [
         brand: "SanDisk",
         color: "Silver",
         inStock: true
+    },
+    
+    // Kitchen Appliances
+    {
+        id: "kitchen-1",
+        category: "kitchen",
+        name: "Samsung Fully Auto Washing Machine",
+        price: 8500,
+        oldPrice: 10000,
+        image: "https://images.unsplash.com/photo-1584622281867-8d4c0adde3e5?q=80&w=400&h=300&fm=jpg&fit=crop",
+        description: "Advanced fully automatic washing machine with AI wash technology, multiple wash modes, and energy-efficient operation.",
+        brand: "Samsung",
+        color: "Silver",
+        inStock: true
+    },
+    {
+        id: "kitchen-2",
+        category: "kitchen",
+        name: "LG French Door Refrigerator",
+        price: 12000,
+        oldPrice: 15000,
+        image: "https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?q=80&w=400&h=300&fm=jpg&fit=crop",
+        description: "Spacious French door refrigerator with inverter compressor, smart temperature control, and premium finish.",
+        brand: "LG",
+        color: "Stainless Steel",
+        inStock: true
+    },
+    {
+        id: "kitchen-3",
+        category: "kitchen",
+        name: "Bosch Gas Cooker 5-Burner",
+        price: 6500,
+        oldPrice: 8000,
+        image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?q=80&w=400&h=300&fm=jpg&fit=crop",
+        description: "Professional-grade 5-burner gas cooker with precision temperature control and durable cast iron grates.",
+        brand: "Bosch",
+        color: "Black",
+        inStock: true
+    },
+    {
+        id: "kitchen-4",
+        category: "kitchen",
+        name: "Panasonic Microwave Oven 25L",
+        price: 3500,
+        oldPrice: 4500,
+        image: "https://images.unsplash.com/photo-1585518419759-47a49bda9406?q=80&w=400&h=300&fm=jpg&fit=crop",
+        description: "Compact yet powerful 25L microwave oven with multiple power levels, timer function, and easy-to-use controls.",
+        brand: "Panasonic",
+        color: "White",
+        inStock: true
+    },
+    {
+        id: "kitchen-5",
+        category: "kitchen",
+        name: "Whirlpool Top Load Washing Machine",
+        price: 5000,
+        oldPrice: 6500,
+        image: "https://images.unsplash.com/photo-1517958808700-9cd0d3668ffa?q=80&w=400&h=300&fm=jpg&fit=crop",
+        description: "Efficient top-load washing machine with multiple wash cycles, gentle care for delicates, and large capacity.",
+        brand: "Whirlpool",
+        color: "White",
+        inStock: true
+    },
+    {
+        id: "kitchen-6",
+        category: "kitchen",
+        name: "Hitachi Double Door Refrigerator",
+        price: 9000,
+        oldPrice: 11000,
+        image: "https://images.unsplash.com/photo-1540932239986-5ec71b8bd501?q=80&w=400&h=300&fm=jpg&fit=crop",
+        description: "Premium double-door refrigerator with advanced cooling technology, smart storage, and sleek design.",
+        brand: "Hitachi",
+        color: "Silver",
+        inStock: true
+    },
+    {
+        id: "kitchen-7",
+        category: "kitchen",
+        name: "Ariston Electric Cooker 4-Burner",
+        price: 4500,
+        oldPrice: 5500,
+        image: "https://images.unsplash.com/photo-1593618179915-e94f873f88da?q=80&w=400&h=300&fm=jpg&fit=crop",
+        description: "Modern electric cooker with 4 hotplates, oven functionality, and precision temperature management.",
+        brand: "Ariston",
+        color: "Black",
+        inStock: true
+    },
+    {
+        id: "kitchen-8",
+        category: "kitchen",
+        name: "Sharp Microwave Oven Grill 30L",
+        price: 4800,
+        oldPrice: 6000,
+        image: "https://images.unsplash.com/photo-1574069528701-e970a7e0b802?q=80&w=400&h=300&fm=jpg&fit=crop",
+        description: "Advanced 30L microwave with grill function, multiple cooking modes, and stainless steel interior.",
+        brand: "Sharp",
+        color: "Stainless Steel",
+        inStock: false
+    },
+    {
+        id: "kitchen-9",
+        category: "kitchen",
+        name: "Mabe Front Load Washing Machine",
+        price: 7500,
+        oldPrice: 9000,
+        image: "https://images.unsplash.com/photo-1622496515250-8554db3ebb71?q=80&w=400&h=300&fm=jpg&fit=crop",
+        description: "Energy-efficient front-load washing machine with steam function, digital controls, and quiet operation.",
+        brand: "Mabe",
+        color: "Silver",
+        inStock: true
+    },
+    {
+        id: "kitchen-10",
+        category: "kitchen",
+        name: "Toshiba Double Door Refrigerator Premium",
+        price: 10000,
+        oldPrice: 12500,
+        image: "https://images.unsplash.com/photo-1557257441-51ce2c3fca4d?q=80&w=400&h=300&fm=jpg&fit=crop",
+        description: "Premium Toshiba refrigerator with advanced temperature zones, smart compartments, and elegant design.",
+        brand: "Toshiba",
+        color: "Stainless Steel",
+        inStock: true
     }
 ];
 

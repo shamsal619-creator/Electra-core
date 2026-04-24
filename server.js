@@ -27,7 +27,8 @@ if (process.env.TRUST_PROXY !== '0') {
 }
 
 app.use(cors({ origin: true, credentials: true }));
-app.use(express.json());
+app.use(express.json({ limit: '100mb' }));
+app.use(express.urlencoded({ limit: '100mb', extended: true }));
 app.use(session({
     secret: process.env.SESSION_SECRET || 'electra-secret',
     resave: false,
@@ -42,10 +43,18 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-const uploadsDir = path.join(__dirname, 'public', 'uploads');
+// New uploads directory location - outside public folder for better permissions
+const uploadsDir = path.join(__dirname, 'uploads_data');
 if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true });
+    console.log('✅ Created uploads_data directory');
 }
+
+// Serve uploaded images with proper access control
+app.use('/uploads', express.static(uploadsDir, {
+    maxAge: '1d',
+    etag: false
+}));
 
 const uploadStorage = multer.diskStorage({
     destination: (_req, _file, cb) => cb(null, uploadsDir),
@@ -58,7 +67,7 @@ const uploadStorage = multer.diskStorage({
 
 const imageUpload = multer({
     storage: uploadStorage,
-    limits: { fileSize: 5 * 1024 * 1024, files: 5 },
+    limits: { fileSize: 100 * 1024 * 1024, files: 10 },
     fileFilter: (_req, file, cb) => {
         if (!file.mimetype || !file.mimetype.startsWith('image/')) {
             return cb(new Error('Only image files are allowed'));
