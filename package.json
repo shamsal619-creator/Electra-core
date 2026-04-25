@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "migrate:images:cloudinary": "node scripts/migrate-images-to-cloudinary.js"
+    "migrate:images:cloudinary": "node scripts/migrate-images-to-cloudinary.js",
+    "migrate:mongo:firestore": "node scripts/migrate-mongo-to-firestore.js"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +21,7 @@
     "express": "^5.2.1",
     "express-session": "^1.17.3",
     "firebase-admin": "^13.8.0",
+    "mongodb": "^7.2.0",
     "multer": "^2.1.1",
     "nodemailer": "^6.9.4",
     "passport": "^0.6.0",
