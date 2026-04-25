@@ -1,5 +1,4 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
@@ -10,8 +9,11 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const multer = require('multer');
+const sharp = require('sharp');
 const User = require('./models/User');
 const Product = require('./models/Product');
+const { initializeFirebase, getStorageBucket } = require('./lib/firebase');
+const { configureCloudinary } = require('./lib/cloudinary');
 require('@dotenvx/dotenvx').config({ path: path.join(__dirname, '.env') });
 
 const app = express();
@@ -21,6 +23,7 @@ const FRONTEND_URL = (process.env.FRONTEND_URL || 'http://localhost:3000').repla
 const PUBLIC_URL = (process.env.PUBLIC_URL || FRONTEND_URL).replace(/\/$/, '');
 const isProduction = process.env.NODE_ENV === 'production';
 const forceSecureCookies = process.env.USE_SECURE_COOKIES === 'true';
+const imageStorageProvider = String(process.env.IMAGE_STORAGE_PROVIDER || 'local').trim().toLowerCase();
 
 if (process.env.TRUST_PROXY !== '0') {
     app.set('trust proxy', 1);
@@ -56,17 +59,8 @@ app.use('/uploads', express.static(uploadsDir, {
     etag: false
 }));
 
-const uploadStorage = multer.diskStorage({
-    destination: (_req, _file, cb) => cb(null, uploadsDir),
-    filename: (_req, file, cb) => {
-        const ext = path.extname(file.originalname || '').toLowerCase() || '.jpg';
-        const fileName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`;
-        cb(null, fileName);
-    }
-});
-
 const imageUpload = multer({
-    storage: uploadStorage,
+    storage: multer.memoryStorage(),
     limits: { fileSize: 100 * 1024 * 1024, files: 10 },
     fileFilter: (_req, file, cb) => {
         if (!file.mimetype || !file.mimetype.startsWith('image/')) {
@@ -75,6 +69,90 @@ const imageUpload = multer({
         cb(null, true);
     }
 });
+
+function sanitizeFilename(value) {
+    return String(value || '')
+        .replace(/\.[^/.]+$/, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9_-]+/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '')
+        .slice(0, 80) || 'image';
+}
+
+function buildLocalImagePublicUrl(fileName) {
+    return `/uploads/${fileName}`;
+}
+
+async function optimizeImageBuffer(file) {
+    return sharp(file.buffer)
+        .rotate()
+        .resize({ width: 1600, height: 1600, fit: 'inside', withoutEnlargement: true })
+        .webp({ quality: 82 })
+        .toBuffer();
+}
+
+function uploadBufferToCloudinary(buffer, publicId) {
+    const cloudinary = configureCloudinary();
+    return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+            {
+                resource_type: 'image',
+                public_id: publicId,
+                overwrite: false,
+                folder: 'electra-core/products'
+            },
+            (err, result) => {
+                if (err) return reject(err);
+                resolve(result);
+            }
+        );
+        stream.end(buffer);
+    });
+}
+
+async function storeImage(file, productName = 'product') {
+    if (!file || !file.buffer) {
+        throw new Error('Image upload buffer is missing.');
+    }
+
+    const fileBase = sanitizeFilename(productName || file.originalname);
+    const fileName = `${Date.now()}-${Math.round(Math.random() * 1e9)}-${fileBase}.webp`;
+    const optimizedBuffer = await optimizeImageBuffer(file);
+
+    if (imageStorageProvider === 'cloudinary') {
+        const uploadResult = await uploadBufferToCloudinary(optimizedBuffer, fileName.replace(/\.webp$/, ''));
+        if (!uploadResult?.secure_url) {
+            throw new Error('Cloudinary upload failed.');
+        }
+        return uploadResult.secure_url;
+    }
+
+    if (imageStorageProvider === 'firebase') {
+        const bucket = getStorageBucket();
+        const storagePath = `products/${fileName}`;
+        const target = bucket.file(storagePath);
+        await target.save(optimizedBuffer, {
+            contentType: 'image/webp',
+            resumable: false,
+            metadata: { cacheControl: 'public, max-age=31536000, immutable' }
+        });
+        await target.makePublic();
+        return `https://storage.googleapis.com/${bucket.name}/${storagePath}`;
+    }
+
+    const absolutePath = path.join(uploadsDir, fileName);
+    fs.writeFileSync(absolutePath, optimizedBuffer);
+    return buildLocalImagePublicUrl(fileName);
+}
+
+async function storeImages(files, productName) {
+    const uploaded = [];
+    for (const file of files) {
+        uploaded.push(await storeImage(file, productName));
+    }
+    return uploaded;
+}
 
 const ADMIN_EMAILS = new Set(
     String(process.env.ADMIN_EMAILS || 'shamsal619@gmail.com')
@@ -103,83 +181,20 @@ function loadStaticProductsFromFile() {
     return sandbox.__products;
 }
 
-const MONGODB_URI = process.env.MONGODB_URI;
-
-if (!MONGODB_URI) {
-    console.error('❌ MONGODB_URI environment variable is missing.');
-}
-
-// Improved connection function for better error reporting
-async function connectToDatabase() {
-    if (!MONGODB_URI) return;
-
-    console.log('🔍 Attempting to connect to database...');
-    
-    // Safety check for common password mistake
-    if (MONGODB_URI.includes('<') || MONGODB_URI.includes('>')) {
-        console.error('⚠️ Warning: MONGODB_URI seems to contain brackets < or >. These should be replaced with your actual password.');
-    }
-
-    const mongooseOptions = {
-        serverSelectionTimeoutMS: 20000,
-        socketTimeoutMS: 45000,
-        connectTimeoutMS: 30000,
-        retryWrites: true,
-        w: 'majority'
-    };
-    if (process.env.MONGODB_DB && String(process.env.MONGODB_DB).trim()) {
-        mongooseOptions.dbName = String(process.env.MONGODB_DB).trim();
-    }
-
-    try {
-        if (MONGODB_URI.startsWith('mongodb+srv')) {
-            console.log('🔄 Connecting with SRV record...');
-        } else {
-            console.log('🔄 Connecting with Standard Connection String...');
-        }
-        await mongoose.connect(MONGODB_URI, mongooseOptions);
-        isConnected = true;
-        console.log('✅ MongoDB connected successfully to:', mongoose.connection.name);
-    } catch (err) {
-        isConnected = false;
-        console.error('❌ MongoDB connection error details:');
-        console.error('- Name:', err.name);
-        console.error('- Message:', err.message);
-        
-        if (err.message.includes('ENOTFOUND') || err.message.includes('getaddrinfo')) {
-            console.error('\n💡 DNS Lookup Failed. Possible causes:');
-            console.error('   1. Internet connection issue');
-            console.error('   2. Invalid MongoDB URI in .env file');
-            console.error('   3. MongoDB Atlas cluster address is incorrect');
-        }
-        
-        if (err.message.includes('IP address not whitelisted')) {
-            console.error('\n💡 IP Whitelist Issue: Add your IP to MongoDB Atlas IP whitelist.');
-            console.error('   Go to Atlas > Network Access > Add IP Address');
-        }
-        
-        if (err.reason) console.error('- Reason:', err.reason);
-    }
-}
-
 let isConnected = false;
-// Start connection attempt immediately
-connectToDatabase().catch(err => {
-    console.error('Unexpected error during DB connection:', err);
-});
+let firebaseInitialized = false;
 
-mongoose.connection.on('disconnected', () => {
-    isConnected = false;
-    console.log('🟡 MongoDB disconnected');
-});
-mongoose.connection.on('reconnected', () => {
+try {
+    initializeFirebase();
+    firebaseInitialized = true;
     isConnected = true;
-    console.log('🟢 MongoDB reconnected');
-});
-mongoose.connection.on('error', (err) => {
+    console.log('✅ Firebase Firestore initialized successfully.');
+} catch (err) {
     isConnected = false;
-    console.error('❌ MongoDB runtime error:', err.message);
-});
+    console.error('❌ Firebase initialization error:');
+    console.error('- Name:', err.name);
+    console.error('- Message:', err.message);
+}
 
 passport.serializeUser((user, done) => {
     done(null, user.id);
@@ -509,27 +524,21 @@ app.post('/api/products', requireAdmin, imageUpload.array('images', 5), async (r
         }
 
         const files = Array.isArray(req.files) ? req.files : [];
-        console.log('🖼️ Files array:', files.map(f => ({ originalname: f.originalname, filename: f.filename, size: f.size })));
+        console.log('🖼️ Files array:', files.map(f => ({ originalname: f.originalname, mimetype: f.mimetype, size: f.size })));
         
         if (files.length === 0) {
             console.log('❌ No image files provided');
             return res.status(400).json({ error: 'At least one image file is required' });
         }
 
-        // Validate uploaded files
         for (const file of files) {
-            if (!file.filename || !file.path) {
-                console.log('❌ File upload failed for:', file.originalname);
+            if (!file.buffer || !file.size) {
+                console.log('❌ File upload buffer missing for:', file.originalname);
                 return res.status(400).json({ error: 'File upload failed. Please try again.' });
-            }
-            // Check if file actually exists on disk
-            if (!fs.existsSync(file.path)) {
-                console.log('❌ Uploaded file not found on disk:', file.path);
-                return res.status(500).json({ error: 'File upload verification failed' });
             }
         }
 
-        const imageUrls = files.map(file => `/uploads/${file.filename}`);
+        const imageUrls = await storeImages(files, name);
         console.log('🔗 Generated image URLs:', imageUrls);
 
         const product = new Product({
@@ -613,21 +622,16 @@ app.put('/api/products/:id', requireAdmin, imageUpload.array('images', 5), async
         }
 
         const newFiles = Array.isArray(req.files) ? req.files : [];
-        console.log('🆕 New files:', newFiles.map(f => ({ originalname: f.originalname, filename: f.filename })));
+        console.log('🆕 New files:', newFiles.map(f => ({ originalname: f.originalname, mimetype: f.mimetype, size: f.size })));
         
-        // Validate new uploaded files
         for (const file of newFiles) {
-            if (!file.filename || !file.path) {
-                console.log('❌ New file upload failed for:', file.originalname);
+            if (!file.buffer || !file.size) {
+                console.log('❌ New file upload buffer missing for:', file.originalname);
                 return res.status(400).json({ error: 'File upload failed. Please try again.' });
-            }
-            if (!fs.existsSync(file.path)) {
-                console.log('❌ New uploaded file not found on disk:', file.path);
-                return res.status(500).json({ error: 'File upload verification failed' });
             }
         }
 
-        const newUrls = newFiles.map((file) => `/uploads/${file.filename}`);
+        const newUrls = await storeImages(newFiles, name || existing.name);
         const mergedImages = [...keptImages, ...newUrls].slice(0, 10);
         console.log('🔗 Merged images:', mergedImages);
 
@@ -800,7 +804,7 @@ app.put('/api/profile', async (req, res) => {
         }
         
         const id = String(userId).trim();
-        if (!mongoose.Types.ObjectId.isValid(id)) {
+        if (id.length < 8) {
             return res.status(400).json({ error: 'Invalid user ID. Please sign in again.' });
         }
         
@@ -876,12 +880,12 @@ app.post('/api/test-upload', requireAdmin, imageUpload.single('testImage'), (req
         console.log('❌ No test file received');
         return res.status(400).json({ error: 'No file uploaded' });
     }
-    console.log('✅ Test file uploaded:', req.file.filename);
+    console.log('✅ Test file uploaded:', req.file.originalname);
     res.json({
         ok: true,
         message: 'Test upload successful',
-        filename: req.file.filename,
-        path: req.file.path,
+        originalname: req.file.originalname,
+        mimetype: req.file.mimetype,
         size: req.file.size
     });
 });
@@ -891,9 +895,10 @@ app.get('/api/status', (req, res) => {
     res.json({
         ok: true,
         databaseConnected: isConnected,
-        envLoaded: !!MONGODB_URI,
+        envLoaded: firebaseInitialized,
         port: PORT,
-        mongooseReadyState: mongoose.connection.readyState,
+        databaseProvider: 'firebase-firestore',
+        imageStorageProvider,
         googleOAuthConfigured: !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET)
     });
 });

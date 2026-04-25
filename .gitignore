@@ -2,3 +2,4 @@ node_modules/
 .env
 uploads_data/
 public/uploads/
+firebase-service-account.json

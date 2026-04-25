@@ -1,6 +1,6 @@
 # ElectraCore - E-Commerce Platform
 
-ElectraCore is a modern, responsive e-commerce platform built with Node.js, Express, and MongoDB. It features a clean user interface, secure user authentication, and a dynamic product catalog.
+ElectraCore is a modern, responsive e-commerce platform built with Node.js, Express, and Firebase Firestore. It features a clean user interface, secure user authentication, and a dynamic product catalog.
 
 ## 🚀 Key Features
 
@@ -13,16 +13,16 @@ ElectraCore is a modern, responsive e-commerce platform built with Node.js, Expr
 
 ### 🛡️ Security & Backend
 - **Secure Authentication**: User registration and login system.
-- **Password Hashing**: Passwords are securely hashed using `bcryptjs` before being stored in MongoDB.
+- **Password Hashing**: Passwords are securely hashed using `bcryptjs` before being stored in Firebase Firestore.
 - **Input Validation**: Robust client-side and server-side validation for all user-provided data.
 - **Duplicate Prevention**: Prevents multiple registrations with the same email address.
-- **Database Integration**: Powered by MongoDB Atlas for reliable data storage.
+- **Database Integration**: Powered by Firebase Firestore for reliable data storage.
 
 ## 🛠️ Tech Stack
 
 - **Frontend**: HTML5, CSS3, JavaScript (Vanilla)
 - **Backend**: Node.js, Express.js
-- **Database**: MongoDB Atlas with Mongoose ODM
+- **Database**: Firebase Firestore (Spark free tier supported)
 - **Security**: bcryptjs for password encryption
 - **Environment Management**: @dotenvx/dotenvx for secure configuration
 
@@ -30,7 +30,7 @@ ElectraCore is a modern, responsive e-commerce platform built with Node.js, Expr
 
 ```text
 📁 shorouk 9/
-├── 📁 models/          # Mongoose schemas (User.js)
+├── 📁 models/          # Firestore-backed data models (User.js, Product.js)
 ├── 📁 public/          # Static assets
 │   ├── 📁 css/         # Global styles (style.css)
 │   ├── 📁 design/      # Project images and logo
@@ -41,7 +41,7 @@ ElectraCore is a modern, responsive e-commerce platform built with Node.js, Expr
 │   ├── accessories.html # Accessories category
 │   └── ...             # Auth and profile pages
 ├── 📄 server.js        # Express server and API routes
-├── 📄 .env             # Environment variables (MongoDB URI, PORT)
+├── 📄 .env             # Environment variables (Firebase credentials, PORT)
 ├── 📄 package.json     # Dependencies and scripts
 └── 📄 README.md        # Project documentation
 ```
@@ -56,7 +56,7 @@ ElectraCore is a modern, responsive e-commerce platform built with Node.js, Expr
 2. **Configure Environment Variables:**
    Create a `.env` file in the root directory and add your credentials:
    ```env
-   MONGODB_URI=your_mongodb_atlas_uri
+   FIREBASE_SERVICE_ACCOUNT_JSON=./firebase-service-account.json
    PORT=3000
    ```
 
