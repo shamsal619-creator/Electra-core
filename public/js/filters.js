@@ -388,6 +388,7 @@ function toggleFilterPanel() {
     const sidebar = document.querySelector('.filter-sidebar');
     const overlay = document.querySelector('.filter-panel-overlay');
     const toggleBtn = document.querySelector('.filter-toggle-btn');
+    const isMobile = window.innerWidth < 768;
     
     // Mutual exclusion: close user menu if opening filter
     const isOpening = !!sidebar && !sidebar.classList.contains('active');
@@ -405,7 +406,12 @@ function toggleFilterPanel() {
     }
     
     if (overlay) {
-        overlay.classList.toggle('active');
+        // Overlay is only used on mobile. Force-hide on desktop to avoid "stuck dim" UI.
+        if (!isMobile) {
+            overlay.classList.remove('active');
+        } else {
+            overlay.classList.toggle('active');
+        }
         if (overlay.classList.contains('active')) {
             // Close on overlay click (single source of truth; avoid double toggles)
             const overlayClickHandler = (e) => {
@@ -444,3 +450,13 @@ function toggleFilterPanel() {
 }
 
 window.toggleFilterPanel = toggleFilterPanel;
+
+// Safety: if viewport becomes desktop, ensure overlay can't remain active.
+window.addEventListener('resize', () => {
+    const overlay = document.querySelector('.filter-panel-overlay');
+    const sidebar = document.querySelector('.filter-sidebar');
+    if (window.innerWidth >= 768) {
+        if (overlay) overlay.classList.remove('active');
+        if (sidebar) sidebar.classList.remove('active');
+    }
+});

@@ -81,7 +81,20 @@ async function main() {
         const url = `${baseUrl}/${file}`;
         const page = await context.newPage();
         await page.goto(url, { waitUntil: 'networkidle', timeout: 60000 });
-        await page.waitForTimeout(400);
+        // Make screenshots deterministic: disable animations/overlays that can leave pages "washed out".
+        await page.addStyleTag({
+            content: `
+                *, *::before, *::after { 
+                    animation: none !important; 
+                    transition: none !important; 
+                    caret-color: transparent !important;
+                }
+                .page-transition-overlay { display: none !important; opacity: 0 !important; visibility: hidden !important; }
+                .filter-panel-overlay { display: none !important; opacity: 0 !important; visibility: hidden !important; }
+                .fade-in-up { opacity: 1 !important; transform: none !important; }
+            `
+        });
+        await page.waitForTimeout(1200);
         const outPath = path.join(SHOTS_DIR, file.replace(/\.html$/i, '.png'));
         await page.screenshot({ path: outPath, fullPage: true });
         shotPaths.push({ file, outPath });
