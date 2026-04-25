@@ -126,6 +126,8 @@ function initPageTransitions() {
         `;
         document.body.appendChild(overlay);
     }
+    // Safety: ensure overlay never remains active after load.
+    overlay.classList.remove('active');
 
     // Handle all internal links
     document.addEventListener('click', (e) => {
@@ -150,9 +152,7 @@ function initPageTransitions() {
 
     // Handle initial page load
     window.addEventListener('pageshow', (event) => {
-        if (event.persisted) {
-            overlay.classList.remove('active');
-        }
+        overlay.classList.remove('active');
     });
 }
 

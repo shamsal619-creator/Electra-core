@@ -387,9 +387,11 @@ function resetFilters() {
 function toggleFilterPanel() {
     const sidebar = document.querySelector('.filter-sidebar');
     const overlay = document.querySelector('.filter-panel-overlay');
+    const toggleBtn = document.querySelector('.filter-toggle-btn');
     
     // Mutual exclusion: close user menu if opening filter
-    if (!sidebar.classList.contains('active')) {
+    const isOpening = !!sidebar && !sidebar.classList.contains('active');
+    if (isOpening) {
         const userActions = document.querySelector('.user-actions');
         const hamburger = document.querySelector('.hamburger');
         if (userActions && userActions.classList.contains('active')) {
@@ -405,16 +407,15 @@ function toggleFilterPanel() {
     if (overlay) {
         overlay.classList.toggle('active');
         if (overlay.classList.contains('active')) {
-            // Add document click listener to close when clicking outside
-            const closeHandler = (e) => {
-                if (!sidebar.contains(e.target) && e.target !== document.querySelector('.filter-toggle-btn')) {
-                    toggleFilterPanel();
-                }
+            // Close on overlay click (single source of truth; avoid double toggles)
+            const overlayClickHandler = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleFilterPanel();
             };
-            document.addEventListener('click', closeHandler);
-            // Store the handler to remove later
-            overlay._closeHandler = closeHandler;
-            
+            overlay.addEventListener('click', overlayClickHandler);
+            overlay._overlayClickHandler = overlayClickHandler;
+
             // Add escape key listener
             const escapeHandler = (e) => {
                 if (e.key === 'Escape') {
@@ -425,9 +426,9 @@ function toggleFilterPanel() {
             overlay._escapeHandler = escapeHandler;
         } else {
             // Remove the listeners when deactivating
-            if (overlay._closeHandler) {
-                document.removeEventListener('click', overlay._closeHandler);
-                delete overlay._closeHandler;
+            if (overlay._overlayClickHandler) {
+                overlay.removeEventListener('click', overlay._overlayClickHandler);
+                delete overlay._overlayClickHandler;
             }
             if (overlay._escapeHandler) {
                 document.removeEventListener('keydown', overlay._escapeHandler);
@@ -437,7 +438,6 @@ function toggleFilterPanel() {
     }
     
     // Update toggle button text
-    const toggleBtn = document.querySelector('.filter-toggle-btn');
     if (toggleBtn) {
         toggleBtn.textContent = sidebar.classList.contains('active') ? 'Hide Filters' : 'Show Filters';
     }
