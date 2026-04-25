@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
     "migrate:images:cloudinary": "node scripts/migrate-images-to-cloudinary.js",
-    "migrate:mongo:firestore": "node scripts/migrate-mongo-to-firestore.js"
+    "migrate:mongo:firestore": "node scripts/migrate-mongo-to-firestore.js",
+    "export:pdf": "node scripts/export-pages-to-pdf.js"
   },
   "keywords": [],
   "author": "",
@@ -27,5 +28,9 @@
     "passport": "^0.6.0",
     "passport-google-oauth20": "^2.0.0",
     "sharp": "^0.34.5"
+  },
+  "devDependencies": {
+    "pdf-lib": "^1.17.1",
+    "playwright": "^1.59.1"
   }
 }
