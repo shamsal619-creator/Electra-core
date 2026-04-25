@@ -1,6 +1,7 @@
 const form = document.getElementById('productForm');
 const imagesInput = document.getElementById('images');
-const previewList = document.getElementById('previewList');
+const existingPreviewList = document.getElementById('existingPreviewList');
+const newPreviewList = document.getElementById('newPreviewList');
 const statusBox = document.getElementById('status');
 const submitBtn = document.getElementById('submitBtn');
 const formTitle = document.getElementById('formTitle');
@@ -9,8 +10,15 @@ const productsTableBody = document.getElementById('productsTableBody');
 const cancelEditBtn = document.getElementById('cancelEditBtn');
 const migrateBtn = document.getElementById('migrateBtn');
 const authStatus = document.getElementById('authStatus');
+const systemChips = document.getElementById('systemChips');
+const modeChip = document.getElementById('modeChip');
+const countChip = document.getElementById('countChip');
+const searchInput = document.getElementById('searchInput');
+const refreshBtn = document.getElementById('refreshBtn');
 let editingProduct = null;
 let isAdminAuthenticated = false;
+let allProducts = [];
+let debounceTimer = null;
 
 function showStatus(message, ok = false) {
     statusBox.textContent = message;
@@ -24,6 +32,7 @@ function setControlsEnabled(enabled) {
         el.disabled = !enabled;
     });
     if (migrateBtn) migrateBtn.disabled = !enabled;
+    if (refreshBtn) refreshBtn.disabled = !enabled;
 }
 
 async function checkAdminAuth() {
@@ -37,8 +46,15 @@ async function checkAdminAuth() {
             return;
         }
 
+        if (!payload.user.isAdmin) {
+            isAdminAuthenticated = false;
+            authStatus.textContent = `Signed in as: ${payload.user.email} — Admin access required.`;
+            setControlsEnabled(false);
+            return;
+        }
+
         isAdminAuthenticated = true;
-        authStatus.textContent = `Signed in as: ${payload.user.email}`;
+        authStatus.textContent = `Signed in as: ${payload.user.email} (Admin)`;
         setControlsEnabled(true);
     } catch (_err) {
         isAdminAuthenticated = false;
@@ -47,12 +63,27 @@ async function checkAdminAuth() {
     }
 }
 
+function setMode(isEdit) {
+    if (!modeChip) return;
+    if (isEdit) {
+        modeChip.textContent = 'Edit mode';
+        modeChip.className = 'chip bad';
+    } else {
+        modeChip.textContent = 'Create mode';
+        modeChip.className = 'chip ok';
+    }
+}
+
 function resetToCreateMode() {
     editingProduct = null;
     editingIdInput.value = '';
-    formTitle.textContent = 'Create Product (Multiple Images)';
+    formTitle.textContent = 'Create Product';
     submitBtn.textContent = 'Create Product';
     cancelEditBtn.style.display = 'none';
+    if (existingPreviewList) existingPreviewList.innerHTML = '';
+    if (newPreviewList) newPreviewList.innerHTML = '';
+    if (imagesInput) imagesInput.value = '';
+    setMode(false);
 }
 
 function escapeHtml(value) {
@@ -66,14 +97,14 @@ function escapeHtml(value) {
 
 function renderExistingImages(images) {
     const safeImages = Array.isArray(images) ? images : [];
-    previewList.innerHTML = safeImages.map((img, idx) => `
+    existingPreviewList.innerHTML = safeImages.map((img, idx) => `
         <div class="preview-item">
             <img src="${img}" alt="existing image ${idx + 1}">
             <button type="button" class="remove-image-btn" data-remove-index="${idx}" title="Remove image">×</button>
         </div>
     `).join('');
 
-    previewList.querySelectorAll('[data-remove-index]').forEach((btn) => {
+    existingPreviewList.querySelectorAll('[data-remove-index]').forEach((btn) => {
         btn.addEventListener('click', () => {
             if (!editingProduct || !Array.isArray(editingProduct.images)) return;
             const index = Number(btn.dataset.removeIndex);
@@ -83,6 +114,91 @@ function renderExistingImages(images) {
             showStatus('Image removed from edit list. Click Update Product to save.', true);
         });
     });
+}
+
+function renderNewImages(files) {
+    if (!newPreviewList) return;
+    const list = Array.from(files || []).slice(0, 5);
+    newPreviewList.innerHTML = '';
+    list.forEach((file) => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'preview-item';
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(file);
+        img.alt = file.name;
+        wrapper.appendChild(img);
+        newPreviewList.appendChild(wrapper);
+    });
+}
+
+function renderProductsTable(list) {
+    if (!Array.isArray(list) || list.length === 0) {
+        productsTableBody.innerHTML = '<tr><td colspan="5">No products found.</td></tr>';
+        if (countChip) countChip.textContent = '0 products';
+        return;
+    }
+
+    if (countChip) countChip.textContent = `${list.length} products`;
+
+    productsTableBody.innerHTML = list.map((p) => {
+        const imgs = Array.isArray(p.images) ? p.images : [];
+        const thumbs = imgs.slice(0, 3).map((u) => `<img src="${u}" alt="thumb">`).join('');
+        return `
+            <tr>
+                <td>${escapeHtml(p.name)}</td>
+                <td>${escapeHtml(p.category)}</td>
+                <td>${Number(p.price || 0).toLocaleString()} EGP</td>
+                <td>
+                    <div class="thumbs">
+                        ${thumbs || '<span class="muted">No images</span>'}
+                        ${imgs.length > 3 ? `<span class="muted">+${imgs.length - 3}</span>` : ''}
+                    </div>
+                </td>
+                <td><button type="button" class="small-btn" data-edit-id="${p._id}">Edit</button></td>
+            </tr>
+        `;
+    }).join('');
+
+    productsTableBody.querySelectorAll('[data-edit-id]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            const product = allProducts.find((p) => p._id === btn.dataset.editId);
+            if (!product) return;
+            editingProduct = product;
+            editingProduct.images = Array.isArray(product.images) ? [...product.images] : [];
+            editingIdInput.value = product._id;
+            formTitle.textContent = `Edit Product: ${product.name}`;
+            submitBtn.textContent = 'Update Product';
+            cancelEditBtn.style.display = 'inline-block';
+            setMode(true);
+
+            document.getElementById('name').value = product.name || '';
+            document.getElementById('category').value = product.category || '';
+            document.getElementById('price').value = product.price ?? '';
+            document.getElementById('oldPrice').value = product.oldPrice ?? '';
+            document.getElementById('brand').value = product.brand || '';
+            document.getElementById('color').value = product.color || '';
+            document.getElementById('description').value = product.description || '';
+            document.getElementById('inStock').value = product.inStock === false ? 'false' : 'true';
+
+            renderExistingImages(editingProduct.images);
+            renderNewImages(imagesInput.files || []);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    });
+}
+
+function applySearchFilter() {
+    const q = String(searchInput?.value || '').trim().toLowerCase();
+    if (!q) {
+        renderProductsTable(allProducts);
+        return;
+    }
+    const filtered = allProducts.filter((p) => {
+        const name = String(p?.name || '').toLowerCase();
+        const cat = String(p?.category || '').toLowerCase();
+        return name.includes(q) || cat.includes(q);
+    });
+    renderProductsTable(filtered);
 }
 
 async function loadProducts() {
@@ -98,51 +214,14 @@ async function loadProducts() {
             return;
         }
         const list = Array.isArray(payload.products) ? payload.products : [];
-        if (list.length === 0) {
-            productsTableBody.innerHTML = '<tr><td colspan="5">No products in database yet.</td></tr>';
-            return;
-        }
-        productsTableBody.innerHTML = list.map((p) => `
-            <tr>
-                <td>${escapeHtml(p.name)}</td>
-                <td>${escapeHtml(p.category)}</td>
-                <td>${Number(p.price || 0).toLocaleString()} EGP</td>
-                <td>${Array.isArray(p.images) ? p.images.length : 0}</td>
-                <td><button type="button" class="small-btn" data-edit-id="${p._id}">Edit</button></td>
-            </tr>
-        `).join('');
-
-        productsTableBody.querySelectorAll('[data-edit-id]').forEach((btn) => {
-            btn.addEventListener('click', () => {
-                const product = list.find((p) => p._id === btn.dataset.editId);
-                if (!product) return;
-                editingProduct = product;
-                editingProduct.images = Array.isArray(product.images) ? [...product.images] : [];
-                editingIdInput.value = product._id;
-                formTitle.textContent = `Edit Product: ${product.name}`;
-                submitBtn.textContent = 'Update Product';
-                cancelEditBtn.style.display = 'inline-block';
-
-                document.getElementById('name').value = product.name || '';
-                document.getElementById('category').value = product.category || '';
-                document.getElementById('price').value = product.price ?? '';
-                document.getElementById('oldPrice').value = product.oldPrice ?? '';
-                document.getElementById('brand').value = product.brand || '';
-                document.getElementById('color').value = product.color || '';
-                document.getElementById('description').value = product.description || '';
-                document.getElementById('inStock').value = product.inStock === false ? 'false' : 'true';
-
-                renderExistingImages(editingProduct.images);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
-        });
+        allProducts = list;
+        applySearchFilter();
     } catch (_err) {
         productsTableBody.innerHTML = '<tr><td colspan="5">Failed to load products.</td></tr>';
     }
 }
 
 imagesInput.addEventListener('change', () => {
-    previewList.innerHTML = '';
     const files = Array.from(imagesInput.files || []);
     
     // Validate files
@@ -172,17 +251,8 @@ imagesInput.addEventListener('change', () => {
             return;
         }
         
-        const wrapper = document.createElement('div');
-        wrapper.className = 'preview-item';
-        const img = document.createElement('img');
-        img.src = URL.createObjectURL(file);
-        img.alt = file.name;
-        img.onerror = () => {
-            showStatus(`Failed to load preview for "${file.name}". The file may be corrupted.`);
-            hasErrors = true;
-        };
-        wrapper.appendChild(img);
-        previewList.appendChild(wrapper);
+        // Preview
+        renderNewImages(files);
     });
 
     if (files.length > 5) {
@@ -280,7 +350,8 @@ form.addEventListener('submit', async (event) => {
 
         console.log('✅ Product saved successfully');
         form.reset();
-        previewList.innerHTML = '';
+        if (existingPreviewList) existingPreviewList.innerHTML = '';
+        if (newPreviewList) newPreviewList.innerHTML = '';
         if (editingId) {
             showStatus(`Product updated successfully. ID: ${payload.product._id}`, true);
         } else {
@@ -302,7 +373,8 @@ form.addEventListener('submit', async (event) => {
 
 cancelEditBtn.addEventListener('click', () => {
     form.reset();
-    previewList.innerHTML = '';
+    if (existingPreviewList) existingPreviewList.innerHTML = '';
+    if (newPreviewList) newPreviewList.innerHTML = '';
     resetToCreateMode();
     showStatus('');
 });
@@ -361,7 +433,7 @@ if (testUploadBtn && testImageInput) {
                 return;
             }
 
-            showStatus(`Test upload successful! File: ${payload.filename}, Size: ${payload.size} bytes`, true);
+            showStatus(`Test upload successful! File: ${payload.originalname || 'image'}, Size: ${payload.size} bytes`, true);
             console.log('Test upload result:', payload);
         } catch (error) {
             showStatus(`Test upload error: ${error.message || 'Unknown error'}`);
@@ -372,4 +444,36 @@ if (testUploadBtn && testImageInput) {
     });
 }
 
-checkAdminAuth().then(loadProducts);
+async function loadSystemStatus() {
+    if (!systemChips) return;
+    try {
+        const res = await fetch('/api/status', { credentials: 'include' });
+        const payload = await res.json();
+        const dbOk = !!payload.databaseConnected;
+        const envOk = !!payload.envLoaded;
+        const provider = payload.imageStorageProvider || 'unknown';
+        systemChips.innerHTML = [
+            `<span class="chip ${dbOk ? 'ok' : 'bad'}">DB: ${dbOk ? 'connected' : 'down'}</span>`,
+            `<span class="chip ${envOk ? 'ok' : 'bad'}">ENV: ${envOk ? 'loaded' : 'missing'}</span>`,
+            `<span class="chip">Images: ${escapeHtml(provider)}</span>`
+        ].join('');
+    } catch (_e) {
+        systemChips.innerHTML = `<span class="chip bad">System status unavailable</span>`;
+    }
+}
+
+if (searchInput) {
+    searchInput.addEventListener('input', () => {
+        if (debounceTimer) clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(applySearchFilter, 120);
+    });
+}
+
+if (refreshBtn) {
+    refreshBtn.addEventListener('click', () => loadProducts());
+}
+
+checkAdminAuth().then(async () => {
+    await loadSystemStatus();
+    await loadProducts();
+});

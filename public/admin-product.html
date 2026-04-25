@@ -3,17 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Product - ElectraCore</title>
+    <title>Admin المنتجات - ElectraCore</title>
     <link rel="stylesheet" href="css/style.css">
     <style>
-        .admin-wrap { max-width: 900px; margin: 30px auto; padding: 20px; }
-        .admin-card { background: #fff; border: 1px solid #e5e5e5; border-radius: 12px; padding: 20px; }
+        body { padding-top: 24px; }
+        .admin-wrap { max-width: 1200px; margin: 24px auto; padding: 0 16px; }
+        .admin-shell { display: grid; grid-template-columns: 420px 1fr; gap: 16px; align-items: start; }
+        @media (max-width: 980px) { .admin-shell { grid-template-columns: 1fr; } }
+        .admin-card { background: #fff; border: 1px solid #e6eaef; border-radius: 14px; padding: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); }
+        .admin-title { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom: 10px; }
+        .admin-title h2 { font-size: 18px; margin: 0; }
+        .chips { display:flex; gap:8px; flex-wrap:wrap; }
+        .chip { font-size: 12px; padding: 6px 10px; border-radius: 999px; border: 1px solid #e6eaef; background:#f7f9fb; color:#334; }
+        .chip.ok { border-color: rgba(5,163,145,0.35); background: rgba(5,163,145,0.10); color: #066b60; }
+        .chip.bad { border-color: rgba(192,57,43,0.35); background: rgba(192,57,43,0.10); color: #8b2a21; }
         .auth-bar {
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 10px;
-            background: #f7f9fb;
+            background: linear-gradient(180deg, #f7f9fb, #ffffff);
             border: 1px solid #e6eaef;
             border-radius: 10px;
             padding: 12px;
@@ -39,7 +48,9 @@
         }
         .field textarea { min-height: 110px; resize: vertical; }
         .full { grid-column: 1 / -1; }
-        .preview-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-top: 8px; }
+        .section-title { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top: 8px; }
+        .muted { color: #60707a; font-size: 13px; }
+        .preview-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; margin-top: 8px; }
         .preview-list img { width: 100%; height: 100px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd; }
         .preview-item { position: relative; }
         .remove-image-btn {
@@ -62,89 +73,141 @@
         .status { margin-top: 12px; font-weight: 600; }
         .btn-save { margin-top: 10px; background: #0a8; color: #fff; border: none; border-radius: 8px; padding: 12px 16px; cursor: pointer; }
         .btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
-        .products-table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+        .toolbar { display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; margin-bottom: 12px; }
+        .toolbar .left, .toolbar .right { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+        .search { min-width: 260px; flex: 1; }
+        .products-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         .products-table th, .products-table td { border-bottom: 1px solid #eee; text-align: left; padding: 10px 6px; font-size: 14px; }
         .small-btn { border: 1px solid #0a8; color: #0a8; background: #fff; border-radius: 6px; padding: 6px 10px; cursor: pointer; }
+        .small-btn.danger { border-color:#c0392b; color:#c0392b; }
+        .thumbs { display:flex; gap:6px; align-items:center; }
+        .thumbs img { width: 42px; height: 36px; object-fit: cover; border-radius: 8px; border: 1px solid #e6eaef; }
+        .split-previews { display:grid; grid-template-columns: 1fr; gap: 12px; }
     </style>
 </head>
 <body>
     <div class="admin-wrap">
-        <div class="admin-card">
-            <div class="auth-bar">
+        <div class="auth-bar">
+            <div>
                 <div id="authStatus">Checking login status...</div>
-                <div class="auth-actions">
-                    <a class="auth-btn" href="/signin.html?returnTo=%2Fadmin-product.html">Sign in</a>
-                    <a class="auth-btn primary" href="/auth/google?returnTo=%2Fadmin-product.html">Sign in with Google</a>
+                <div id="systemChips" class="chips" style="margin-top:8px;">
+                    <span class="chip">Loading system status…</span>
                 </div>
             </div>
-            <h2 id="formTitle">Create Product (Multiple Images)</h2>
-            <form id="productForm">
-                <input type="hidden" id="editingId">
-                <div class="grid">
-                    <div class="field">
-                        <label for="name">Name *</label>
-                        <input type="text" id="name" name="name" required>
-                    </div>
-                    <div class="field">
-                        <label for="category">Category *</label>
-                        <input type="text" id="category" name="category" placeholder="laptops / phones / watches" required>
-                    </div>
-                    <div class="field">
-                        <label for="price">Price *</label>
-                        <input type="number" id="price" name="price" min="0" step="0.01" required>
-                    </div>
-                    <div class="field">
-                        <label for="oldPrice">Old Price</label>
-                        <input type="number" id="oldPrice" name="oldPrice" min="0" step="0.01">
-                    </div>
-                    <div class="field">
-                        <label for="brand">Brand</label>
-                        <input type="text" id="brand" name="brand">
-                    </div>
-                    <div class="field">
-                        <label for="color">Color</label>
-                        <input type="text" id="color" name="color">
-                    </div>
-                    <div class="field">
-                        <label for="inStock">In Stock</label>
-                        <select id="inStock" name="inStock">
-                            <option value="true" selected>Yes</option>
-                            <option value="false">No</option>
-                        </select>
-                    </div>
-                    <div class="field full">
-                        <label for="description">Description</label>
-                        <textarea id="description" name="description"></textarea>
-                    </div>
-                    <div class="field full">
-                        <label for="images">Images (up to 5) *</label>
-                        <input type="file" id="images" name="images" accept="image/*" multiple required>
-                        <div id="previewList" class="preview-list"></div>
+            <div class="auth-actions">
+                <a class="auth-btn" href="/signin.html?returnTo=%2Fadmin-product.html">Sign in</a>
+                <a class="auth-btn primary" href="/auth/google?returnTo=%2Fadmin-product.html">Sign in with Google</a>
+            </div>
+        </div>
+
+        <div class="admin-shell">
+            <div class="admin-card">
+                <div class="admin-title">
+                    <h2 id="formTitle">Create Product</h2>
+                    <div class="chips">
+                        <span id="modeChip" class="chip ok">Create mode</span>
                     </div>
                 </div>
-                <button id="submitBtn" class="btn-save" type="submit">Create Product</button>
-                <button id="cancelEditBtn" class="btn-save" type="button" style="display:none;background:#666;">Cancel Edit</button>
-                <div id="status" class="status"></div>
-            </form>
+                <div class="muted" style="margin-bottom: 10px;">
+                    الصور سيتم ضغطها وتحويلها تلقائيًا، وسيتم حفظ روابطها على Cloudinary.
+                </div>
+                <form id="productForm">
+                    <input type="hidden" id="editingId">
+                    <div class="grid">
+                        <div class="field">
+                            <label for="name">Name *</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="field">
+                            <label for="category">Category *</label>
+                            <input type="text" id="category" name="category" placeholder="laptops / phones / watches" required>
+                        </div>
+                        <div class="field">
+                            <label for="price">Price *</label>
+                            <input type="number" id="price" name="price" min="0" step="0.01" required>
+                        </div>
+                        <div class="field">
+                            <label for="oldPrice">Old Price</label>
+                            <input type="number" id="oldPrice" name="oldPrice" min="0" step="0.01">
+                        </div>
+                        <div class="field">
+                            <label for="brand">Brand</label>
+                            <input type="text" id="brand" name="brand">
+                        </div>
+                        <div class="field">
+                            <label for="color">Color</label>
+                            <input type="text" id="color" name="color">
+                        </div>
+                        <div class="field">
+                            <label for="inStock">In Stock</label>
+                            <select id="inStock" name="inStock">
+                                <option value="true" selected>Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                        </div>
+                        <div class="field full">
+                            <label for="description">Description</label>
+                            <textarea id="description" name="description"></textarea>
+                        </div>
+                        <div class="field full">
+                            <div class="section-title">
+                                <label for="images">Images (up to 5)</label>
+                                <span class="muted">في حالة Edit: ارفع صور جديدة فقط إذا تريد إضافتها</span>
+                            </div>
+                            <input type="file" id="images" name="images" accept="image/*" multiple>
+                            <div class="split-previews">
+                                <div>
+                                    <div class="muted" style="margin-top:8px;">Existing images (DB)</div>
+                                    <div id="existingPreviewList" class="preview-list"></div>
+                                </div>
+                                <div>
+                                    <div class="muted" style="margin-top:8px;">New images (to upload)</div>
+                                    <div id="newPreviewList" class="preview-list"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="submitBtn" class="btn-save" type="submit">Create Product</button>
+                    <button id="cancelEditBtn" class="btn-save" type="button" style="display:none;background:#666;">Cancel Edit</button>
+                    <div id="status" class="status"></div>
+                </form>
+            </div>
 
-            <h3 style="margin-top:28px;">Existing Products (Database)</h3>
-            <button id="migrateBtn" class="small-btn" type="button" style="margin-bottom:10px;">Migrate old static products to DB</button>
-            <button id="testUploadBtn" class="small-btn" type="button" style="margin-bottom:10px; margin-left: 10px;">Test Image Upload</button>
-            <input type="file" id="testImageInput" accept="image/*" style="display: none;">
-            <table class="products-table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Category</th>
-                        <th>Price</th>
-                        <th>Images</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="productsTableBody">
-                    <tr><td colspan="5">Loading...</td></tr>
-                </tbody>
-            </table>
+            <div class="admin-card">
+                <div class="admin-title">
+                    <h2>Products</h2>
+                    <div class="chips">
+                        <span id="countChip" class="chip">0 products</span>
+                    </div>
+                </div>
+
+                <div class="toolbar">
+                    <div class="left">
+                        <input id="searchInput" class="search" type="search" placeholder="Search by name/category…">
+                        <button id="refreshBtn" class="small-btn" type="button">Refresh</button>
+                    </div>
+                    <div class="right">
+                        <button id="migrateBtn" class="small-btn" type="button">Migrate static products</button>
+                        <button id="testUploadBtn" class="small-btn" type="button">Test Image Upload</button>
+                        <input type="file" id="testImageInput" accept="image/*" style="display: none;">
+                    </div>
+                </div>
+
+                <table class="products-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 34%;">Name</th>
+                            <th style="width: 18%;">Category</th>
+                            <th style="width: 14%;">Price</th>
+                            <th style="width: 20%;">Images</th>
+                            <th style="width: 14%;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productsTableBody">
+                        <tr><td colspan="5">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
