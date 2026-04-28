@@ -1262,23 +1262,42 @@ a {
         position: relative;
         display: flex;
         align-items: center;
-        gap: 5px;
+        gap: 8px;
         text-decoration: none;
+        color: var(--dark);
+        transition: all 0.2s ease;
+    }
+
+    .cart-icon-link:hover {
+        color: var(--teal);
+    }
+
+    .cart-icon-link svg {
+        color: var(--dark);
+        transition: color 0.2s ease;
+    }
+
+    .cart-icon-link:hover svg {
+        color: var(--teal);
     }
 
     .cart-icon {
-        font-size: 20px;
+        font-size: 24px;
     }
 
     .cart-count {
         background: var(--teal);
         color: white;
         border-radius: 50%;
-        padding: 2px 6px;
-        font-size: 11px;
+        padding: 2px 8px;
+        font-size: 12px;
         font-weight: 700;
-        min-width: 18px;
+        min-width: 20px;
         text-align: center;
+    }
+
+    .desktop-only {
+        display: none !important;
     }
 
     /* 2-Column Grid Like Noon/Amazon */

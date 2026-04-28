@@ -35,6 +35,23 @@ async function hydrateProductsFromApi() {
         products.splice(0, products.length, ...mapped);
         window.__productsHydrated = true;
         document.dispatchEvent(new CustomEvent('products:hydrated', { detail: { count: mapped.length } }));
+
+        // Re-initialize filters if on a category page to include new brands
+        if (typeof initFilters === 'function') {
+            const pageTitle = document.title.toLowerCase();
+            let category = '';
+            if (pageTitle.includes('laptop')) category = 'laptops';
+            else if (pageTitle.includes('headphone')) category = 'headphones';
+            else if (pageTitle.includes('phone')) category = 'phones';
+            else if (pageTitle.includes('watch')) category = 'watches';
+            else if (pageTitle.includes('kitchen')) category = 'kitchen';
+            else if (pageTitle.includes('accessory') || pageTitle.includes('accessories')) category = 'accessories';
+
+            if (category) {
+                initFilters(category);
+            }
+        }
+
         return products;
     } catch (_err) {
         return products;

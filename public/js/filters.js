@@ -9,21 +9,29 @@ let filtersState = {
 // Initialize filters
 function initFilters(category) {
     const filteredProducts = products.filter(p => p.category === category);
-    
+
+    if (filteredProducts.length === 0) {
+        const filterSidebar = document.querySelector('.filter-sidebar');
+        if (filterSidebar) {
+            filterSidebar.innerHTML = '<p class="no-products">No products available in this category.</p>';
+        }
+        return;
+    }
+
     // Generate filter options
-    const brands = [...new Set(filteredProducts.map(p => p.brand))].sort();
-    const colors = [...new Set(filteredProducts.map(p => p.color))].sort();
+    const brands = [...new Set(filteredProducts.map(p => p.brand))].filter(b => b && b !== 'Unknown').sort();
+    const colors = [...new Set(filteredProducts.map(p => p.color))].filter(c => c && c !== 'Unknown').sort();
     const prices = filteredProducts.map(p => p.price).sort((a, b) => a - b);
-    
+
     const minPrice = Math.min(...prices);
     const maxPrice = Math.max(...prices);
-    
+
     // Set initial state
     filtersState.priceRange = { min: minPrice, max: maxPrice };
-    
+
     // Render filter UI
     renderFiltersUI(brands, colors, minPrice, maxPrice);
-    
+
     // Set up event listeners
     setupFilterListeners();
 }
@@ -272,8 +280,9 @@ function applyFilters() {
     else if (pageTitle.includes('headphone')) category = 'headphones';
     else if (pageTitle.includes('phone')) category = 'phones';
     else if (pageTitle.includes('watch')) category = 'watches';
+    else if (pageTitle.includes('kitchen')) category = 'kitchen';
     else if (pageTitle.includes('accessory') || pageTitle.includes('accessories')) category = 'accessories';
-    
+
     if (!category) return;
     
     const cart = typeof getCart === 'function' ? getCart() : [];
