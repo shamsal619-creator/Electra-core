@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order System Test - ElectraCore</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 8px; }
+        .test-result { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 5px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Order System Test Suite</h1>
+    <p>This page tests the fixes for both order issues:</p>
+    <ol>
+        <li><strong>Orders from different accounts showing in admin panel</strong></li>
+        <li><strong>Customer data validation during checkout</strong></li>
+    </ol>
+
+    <div class="test-section">
+        <h2>📋 Test 1: Admin Panel Order Display</h2>
+        <button onclick="testAdminOrders()">Test Admin Orders API</button>
+        <button onclick="testDebugOrders()">Test Debug Orders API</button>
+        <div id="adminTestResults"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>🛒 Test 2: Checkout Validation</h2>
+        <button onclick="testEmptyCheckout()">Test Empty Form Validation</button>
+        <button onclick="testInvalidEmail()">Test Invalid Email</button>
+        <button onclick="testInvalidPhone()">Test Invalid Phone</button>
+        <button onclick="testValidCheckout()">Test Valid Checkout Data</button>
+        <div id="checkoutTestResults"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>🔍 Test 3: Order Creation with Missing Data</h2>
+        <button onclick="testOrderWithoutData()">Test Order Without Customer Data</button>
+        <div id="orderCreationResults"></div>
+    </div>
+
+    <script>
+        async function makeRequest(url, options = {}) {
+            try {
+                const response = await fetch(url, {
+                    credentials: 'include',
+                    ...options
+                });
+                const data = await response.json();
+                return { success: response.ok, data, status: response.status };
+            } catch (error) {
+                return { success: false, error: error.message };
+            }
+        }
+
+        function addResult(containerId, message, type = 'info') {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.innerHTML = message;
+            container.appendChild(div);
+        }
+
+        function addCode(containerId, title, code) {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.innerHTML = `<h4>${title}</h4><pre>${JSON.stringify(code, null, 2)}</pre>`;
+            container.appendChild(div);
+        }
+
+        // Test 1: Admin Panel Orders
+        async function testAdminOrders() {
+            const results = document.getElementById('adminTestResults');
+            results.innerHTML = '';
+            
+            addResult('adminTestResults', 'Testing admin orders API...', 'info');
+            
+            // Test the main admin orders endpoint
+            const result1 = await makeRequest('/api/admin/orders-v2');
+            if (result1.success) {
+                addResult('adminTestResults', `✅ Admin orders API works! Found ${result1.data.count || 0} orders`, 'success');
+                if (result1.data.orders && result1.data.orders.length > 0) {
+                    addCode('adminTestResults', 'Sample Order Data:', result1.data.orders[0]);
+                }
+            } else {
+                addResult('adminTestResults', `❌ Admin orders API failed: ${result1.error || result1.data?.error}`, 'error');
+            }
+
+            // Test the legacy admin orders endpoint
+            const result2 = await makeRequest('/api/admin/orders');
+            if (result2.success) {
+                addResult('adminTestResults', `✅ Legacy admin orders API works! Found ${result2.data.count || 0} orders`, 'success');
+            } else {
+                addResult('adminTestResults', `❌ Legacy admin orders API failed: ${result2.error || result2.data?.error}`, 'error');
+            }
+        }
+
+        async function testDebugOrders() {
+            const results = document.getElementById('adminTestResults');
+            
+            addResult('adminTestResults', 'Testing debug orders API...', 'info');
+            
+            const result = await makeRequest('/api/debug/orders');
+            if (result.success) {
+                addResult('adminTestResults', `✅ Debug API works! Total orders: ${result.data.totalOrders}`, 'success');
+                addResult('adminTestResults', `📊 Unique users with orders: ${result.data.uniqueUsers.length}`, 'info');
+                if (result.data.uniqueUsers.length > 0) {
+                    addCode('adminTestResults', 'Users with orders:', result.data.uniqueUsers);
+                }
+                addCode('adminTestResults', 'Recent Orders (by createdAt):', result.data.orderByCreatedAt.slice(0, 3));
+                addCode('adminTestResults', 'Recent Orders (by order_date):', result.data.orderByOrderDate.slice(0, 3));
+            } else {
+                addResult('adminTestResults', `❌ Debug API failed: ${result.error || result.data?.error}`, 'error');
+            }
+        }
+
+        // Test 2: Checkout Validation
+        async function testEmptyCheckout() {
+            const results = document.getElementById('checkoutTestResults');
+            results.innerHTML = '';
+            
+            addResult('checkoutTestResults', 'Testing empty form validation...', 'info');
+            
+            const emptyData = {
+                shippingInfo: {},
+                billing: { subtotal: 0, tax: 0, shippingFee: 50, total: 50 },
+                items: [{ id: 1, name: 'Test Product', price: 100, quantity: 1 }]
+            };
+
+            const result = await makeRequest('/api/orders', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(emptyData)
+            });
+
+            if (!result.success && result.data?.error?.includes('required fields')) {
+                addResult('checkoutTestResults', '✅ Empty form validation works! Order rejected correctly', 'success');
+                addResult('checkoutTestResults', `Error message: ${result.data.error}`, 'info');
+            } else {
+                addResult('checkoutTestResults', '❌ Empty form validation failed! Order should have been rejected', 'error');
+            }
+        }
+
+        async function testInvalidEmail() {
+            const results = document.getElementById('checkoutTestResults');
+            
+            addResult('checkoutTestResults', 'Testing invalid email validation...', 'info');
+            
+            const invalidEmailData = {
+                shippingInfo: {
+                    firstName: 'John',
+                    lastName: 'Doe',
+                    email: 'invalid-email',
+                    phone: '01234567890',
+                    address: '123 Test St',
+                    city: 'Cairo',
+                    postalCode: '12345'
+                },
+                billing: { subtotal: 100, tax: 14, shippingFee: 50, total: 164 },
+                items: [{ id: 1, name: 'Test Product', price: 100, quantity: 1 }]
+            };
+
+            const result = await makeRequest('/api/orders', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(invalidEmailData)
+            });
+
+            if (!result.success && result.data?.error?.includes('Invalid email')) {
+                addResult('checkoutTestResults', '✅ Invalid email validation works!', 'success');
+            } else {
+                addResult('checkoutTestResults', '❌ Invalid email validation failed!', 'error');
+            }
+        }
+
+        async function testInvalidPhone() {
+            const results = document.getElementById('checkoutTestResults');
+            
+            addResult('checkoutTestResults', 'Testing invalid phone validation...', 'info');
+            
+            const invalidPhoneData = {
+                shippingInfo: {
+                    firstName: 'John',
+                    lastName: 'Doe',
+                    email: 'test@example.com',
+                    phone: '123',
+                    address: '123 Test St',
+                    city: 'Cairo',
+                    postalCode: '12345'
+                },
+                billing: { subtotal: 100, tax: 14, shippingFee: 50, total: 164 },
+                items: [{ id: 1, name: 'Test Product', price: 100, quantity: 1 }]
+            };
+
+            const result = await makeRequest('/api/orders', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(invalidPhoneData)
+            });
+
+            if (!result.success && result.data?.error?.includes('Phone number must be at least 10 digits')) {
+                addResult('checkoutTestResults', '✅ Invalid phone validation works!', 'success');
+            } else {
+                addResult('checkoutTestResults', '❌ Invalid phone validation failed!', 'error');
+            }
+        }
+
+        async function testValidCheckout() {
+            const results = document.getElementById('checkoutTestResults');
+            
+            addResult('checkoutTestResults', 'Testing valid checkout data...', 'info');
+            
+            const validData = {
+                shippingInfo: {
+                    firstName: 'John',
+                    lastName: 'Doe',
+                    email: 'test@example.com',
+                    phone: '01234567890',
+                    address: '123 Test St, Apt 4B',
+                    city: 'Cairo',
+                    postalCode: '12345',
+                    country: 'Egypt'
+                },
+                billing: { subtotal: 100, tax: 14, shippingFee: 50, total: 164 },
+                items: [{ id: 1, name: 'Test Product', price: 100, quantity: 1 }]
+            };
+
+            const result = await makeRequest('/api/orders', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(validData)
+            });
+
+            if (result.success) {
+                addResult('checkoutTestResults', '✅ Valid checkout data accepted! Order created', 'success');
+                addResult('checkoutTestResults', `Order ID: ${result.data.orderId}, Code: ${result.data.orderCode}`, 'info');
+            } else {
+                // This might fail due to authentication, which is expected
+                if (result.status === 401) {
+                    addResult('checkoutTestResults', '⚠️ Valid data but authentication required (expected)', 'info');
+                } else {
+                    addResult('checkoutTestResults', `❌ Valid checkout failed: ${result.data?.error}`, 'error');
+                }
+            }
+        }
+
+        // Test 3: Order Creation Issues
+        async function testOrderWithoutData() {
+            const results = document.getElementById('orderCreationResults');
+            results.innerHTML = '';
+            
+            addResult('orderCreationResults', 'Testing order creation without customer data...', 'info');
+            
+            // Test with minimal data (should fail)
+            const minimalData = {
+                items: [{ id: 1, name: 'Test', price: 100, quantity: 1 }],
+                billing: { total: 150 }
+                // Missing shippingInfo entirely
+            };
+
+            const result = await makeRequest('/api/orders', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(minimalData)
+            });
+
+            if (!result.success && result.data?.error?.includes('required')) {
+                addResult('orderCreationResults', '✅ Order creation without data blocked correctly!', 'success');
+                addResult('orderCreationResults', `Protection working: ${result.data.error}`, 'info');
+            } else {
+                addResult('orderCreationResults', '❌ Order creation without data should have been blocked!', 'error');
+            }
+        }
+
+        // Auto-run some tests on page load
+        window.addEventListener('load', () => {
+            addResult('adminTestResults', '👋 Ready to test! Click buttons above to run tests.', 'info');
+            addResult('checkoutTestResults', '👋 Ready to test! Click buttons above to run tests.', 'info');
+            addResult('orderCreationResults', '👋 Ready to test! Click buttons above to run tests.', 'info');
+        });
+    </script>
+</body>
+</html>

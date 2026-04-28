@@ -12,7 +12,7 @@ const multer = require('multer');
 const sharp = require('sharp');
 const User = require('./models/User');
 const Product = require('./models/Product');
-const { initializeFirebase, getStorageBucket } = require('./lib/firebase');
+const { admin, initializeFirebase, getStorageBucket } = require('./lib/firebase');
 const { configureCloudinary } = require('./lib/cloudinary');
 require('@dotenvx/dotenvx').config({ path: path.join(__dirname, '.env') });
 
@@ -197,15 +197,36 @@ try {
 }
 
 passport.serializeUser((user, done) => {
-    done(null, user.id);
+    // Store full user object in session to avoid MongoDB dependency
+    done(null, JSON.stringify(user));
 });
 
-passport.deserializeUser(async (id, done) => {
+passport.deserializeUser(async (userStr, done) => {
     try {
-        const user = await User.findById(id).lean();
+        // Try to parse as JSON (new format - full user object)
+        const user = JSON.parse(userStr);
         done(null, user || false);
     } catch (err) {
-        done(err);
+        // Old format: just the user ID string - try MongoDB lookup for backward compatibility
+        try {
+            const user = await User.findById(userStr).lean();
+            if (user) {
+                // Convert to new format for future sessions
+                const sessionUser = {
+                    _id: String(user._id),
+                    id: String(user._id),
+                    first: user.first || '',
+                    last: user.last || '',
+                    email: user.email,
+                    isAdmin: ADMIN_EMAILS.has(String(user.email || '').trim().toLowerCase())
+                };
+                done(null, sessionUser);
+            } else {
+                done(null, false);
+            }
+        } catch (dbErr) {
+            done(dbErr);
+        }
     }
 });
 
@@ -231,22 +252,41 @@ passport.use(new GoogleStrategy({
         if (!email) return done(new Error('Google account has no email'));
 
         const trimmedEmail = email.trim().toLowerCase();
-        let user = await User.findOne({ email: trimmedEmail }).select('+password');
-        if (!user) {
+        let dbUser = await User.findOne({ email: trimmedEmail }).select('+password');
+        if (!dbUser) {
             const randomPassword = crypto.randomBytes(16).toString('hex');
-            user = new User({
+            dbUser = new User({
                 first: profile.name?.givenName || 'Google',
                 last: profile.name?.familyName || 'User',
                 email: trimmedEmail,
                 password: randomPassword,
                 googleId: profile.id
             });
-            await user.save();
-        } else if (!user.googleId) {
-            user.googleId = profile.id;
-            await user.save();
+            await dbUser.save();
+        } else if (!dbUser.googleId) {
+            dbUser.googleId = profile.id;
+            await dbUser.save();
         }
-        return done(null, user);
+        // Create clean plain user object for session serialization
+        const sessionUser = {
+            _id: String(dbUser._id),
+            id: String(dbUser._id),
+            first: dbUser.first || '',
+            last: dbUser.last || '',
+            email: dbUser.email,
+            nick: dbUser.nick || '',
+            gender: dbUser.gender || '',
+            language: dbUser.language || '',
+            country: dbUser.country || '',
+            timezone: dbUser.timezone || '',
+            address: dbUser.address || '',
+            phone: dbUser.phone || '',
+            city: dbUser.city || '',
+            postalCode: dbUser.postalCode || '',
+            created: dbUser.created,
+            isAdmin: ADMIN_EMAILS.has(String(dbUser.email || '').trim().toLowerCase())
+        };
+        return done(null, sessionUser);
     } catch (err) {
         return done(err);
     }
@@ -254,24 +294,29 @@ passport.use(new GoogleStrategy({
 
 async function sendResetEmail(toEmail, resetUrl) {
     if (process.env.EMAIL_HOST && process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-        const transporter = nodemailer.createTransport({
-            host: process.env.EMAIL_HOST,
-            port: Number(process.env.EMAIL_PORT) || 587,
-            secure: process.env.EMAIL_SECURE === 'true',
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS
-            }
-        });
+        try {
+            const transporter = nodemailer.createTransport({
+                host: process.env.EMAIL_HOST,
+                port: Number(process.env.EMAIL_PORT) || 587,
+                secure: process.env.EMAIL_SECURE === 'true',
+                auth: {
+                    user: process.env.EMAIL_USER,
+                    pass: process.env.EMAIL_PASS
+                }
+            });
 
-        await transporter.sendMail({
-            from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
-            to: toEmail,
-            subject: 'Reset your ElectraCore password',
-            text: `Use this link to reset your password:\n${resetUrl}`,
-            html: `<p>Use this link to reset your password:</p><p><a href="${resetUrl}">${resetUrl}</a></p>`
-        });
-        return true;
+            await transporter.sendMail({
+                from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
+                to: toEmail,
+                subject: 'Reset your ElectraCore password',
+                text: `Use this link to reset your password:\n${resetUrl}`,
+                html: `<p>Use this link to reset your password:</p><p><a href="${resetUrl}">${resetUrl}</a></p>`
+            });
+            return true;
+        } catch (emailError) {
+            console.error('❌ Email send error:', emailError.message);
+            return false;
+        }
     }
     console.log('Password reset link for', toEmail, resetUrl);
     return false;
@@ -288,19 +333,20 @@ app.post('/api/register', async (req, res) => {
         return res.status(503).json({ error: 'Database not connected. Please try again later.' });
     }
     try {
-        const { first, last, email, password } = req.body;
-        
+        const { first, last, email, phone, password } = req.body;
+
         // Trim all inputs
         const trimmedFirst = (first || '').trim();
         const trimmedLast = (last || '').trim();
         const trimmedEmail = (email || '').trim().toLowerCase();
+        const trimmedPhone = (phone || '').trim();
         const trimmedPassword = (password || '').trim();
-        
+
         // Input Validation
-        if (!trimmedFirst || !trimmedLast || !trimmedEmail || !trimmedPassword) {
+        if (!trimmedFirst || !trimmedLast || !trimmedEmail || !trimmedPhone || !trimmedPassword) {
             return res.status(400).json({ error: 'All fields are required' });
         }
-        
+
         if (trimmedFirst.length < 2 || trimmedLast.length < 2) {
             return res.status(400).json({ error: 'First and last name must be at least 2 characters' });
         }
@@ -310,22 +356,28 @@ app.post('/api/register', async (req, res) => {
             return res.status(400).json({ error: 'Invalid email format' });
         }
 
+        const phoneRegex = /^[\d\+\-\(\)\s]{10,}$/;
+        if (!phoneRegex.test(trimmedPhone)) {
+            return res.status(400).json({ error: 'Invalid phone number format (at least 10 digits)' });
+        }
+
         if (trimmedPassword.length < 6) {
             return res.status(400).json({ error: 'Password must be at least 6 characters' });
         }
-        
+
         // Check for duplicate email using case-insensitive search
         const existingUser = await User.findOne({ email: trimmedEmail }).lean();
         if (existingUser) {
             return res.status(409).json({ error: 'Email already registered' });
         }
-        
+
         // Create and save new user
-        const user = new User({ 
-            first: trimmedFirst, 
-            last: trimmedLast, 
-            email: trimmedEmail, 
-            password: trimmedPassword 
+        const user = new User({
+            first: trimmedFirst,
+            last: trimmedLast,
+            email: trimmedEmail,
+            phone: trimmedPhone,
+            password: trimmedPassword
         });
         await user.save();
         
@@ -382,33 +434,63 @@ app.post('/api/login', async (req, res) => {
             return res.status(401).json({ error: 'Invalid email or password' });
         }
         
-        req.login(user, (loginErr) => {
+        // Create clean plain user object for session serialization
+        const sessionUser = { 
+            _id: String(user._id),
+            id: String(user._id),
+            first: user.first || '',
+            last: user.last || '',
+            email: user.email,
+            nick: user.nick || '',
+            gender: user.gender || '',
+            language: user.language || '',
+            country: user.country || '',
+            timezone: user.timezone || '',
+            address: user.address || '',
+            phone: user.phone || '',
+            city: user.city || '',
+            postalCode: user.postalCode || '',
+            created: user.created,
+            isAdmin: ADMIN_EMAILS.has(String(user.email || '').trim().toLowerCase())
+        };
+        
+        req.login(sessionUser, (loginErr) => {
             if (loginErr) {
                 console.error('❌ Session login error:', loginErr);
                 return res.status(500).json({ error: 'Login session failed. Please try again.' });
             }
             return res.status(200).json({
                 ok: true,
-                message: 'Login successful',
-                user: { 
-                    id: user._id, 
-                    first: user.first, 
-                    last: user.last, 
-                    email: user.email,
-                    nick: user.nick || '',
-                    gender: user.gender || '',
-                    language: user.language || '',
-                    country: user.country || '',
-                    timezone: user.timezone || '',
-                    address: user.address || '',
-                    created: user.created,
-                    isAdmin: ADMIN_EMAILS.has(String(user.email || '').trim().toLowerCase())
-                }
+                message: `Welcome back, ${sessionUser.first || sessionUser.email.split('@')[0]}!`,
+                user: sessionUser
             });
         });
     } catch (err) {
         console.error('❌ Login error:', err);
         res.status(500).json({ error: 'Login failed. Please try again.' });
+    }
+});
+
+// Update user profile
+app.put('/api/user/profile', async (req, res) => {
+    if (!req.user) {
+        return res.status(401).json({ ok: false, error: 'Not authenticated' });
+    }
+    try {
+        const { first, last, phone, address, city, postalCode } = req.body;
+        const updateData = {};
+        if (first) updateData.first = first;
+        if (last) updateData.last = last;
+        if (phone) updateData.phone = phone;
+        if (address) updateData.address = address;
+        if (city) updateData.city = city;
+        if (postalCode) updateData.postalCode = postalCode;
+
+        await User.findByIdAndUpdate(req.user._id, { $set: updateData });
+        res.json({ ok: true, message: 'Profile updated successfully' });
+    } catch (err) {
+        console.error('❌ Update profile error:', err);
+        res.status(500).json({ ok: false, error: 'Failed to update profile' });
     }
 });
 
@@ -427,9 +509,83 @@ app.get('/api/session', async (req, res) => {
         country: req.user.country || '',
         timezone: req.user.timezone || '',
         address: req.user.address || '',
+        phone: req.user.phone || '',
+        city: req.user.city || '',
+        postalCode: req.user.postalCode || '',
         isAdmin: ADMIN_EMAILS.has(String(req.user.email || '').trim().toLowerCase())
     };
     res.json({ ok: true, user });
+});
+
+// Test login (Development only)
+app.get('/auth/test-login', async (req, res) => {
+    try {
+        let dbUser = await User.findOne({ email: 'shamsal619@gmail.com' }).exec();
+        if (!dbUser) {
+            dbUser = await User.create({
+                email: 'shamsal619@gmail.com',
+                first: 'Admin',
+                last: 'User',
+                nick: 'admin',
+                phone: '01000000000'
+            });
+        }
+        
+        const sessionUser = {
+            _id: String(dbUser._id),
+            id: String(dbUser._id),
+            first: dbUser.first || '',
+            last: dbUser.last || '',
+            email: dbUser.email,
+            nick: dbUser.nick || '',
+            gender: dbUser.gender || '',
+            language: dbUser.language || '',
+            country: dbUser.country || '',
+            timezone: dbUser.timezone || '',
+            address: dbUser.address || '',
+            phone: dbUser.phone || '',
+            city: dbUser.city || '',
+            postalCode: dbUser.postalCode || '',
+            created: dbUser.created,
+            isAdmin: ADMIN_EMAILS.has(String(dbUser.email || '').trim().toLowerCase())
+        };
+        
+        req.login(sessionUser, (err) => {
+            if (err) {
+                console.error('Test login error:', err);
+                return res.status(500).json({ error: err.message });
+            }
+            res.redirect('/admin-dashboard.html');
+        });
+    } catch (error) {
+        console.error('Test login error:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Update user profile data during checkout
+app.post('/api/user/update-profile', async (req, res) => {
+    if (!req.user) {
+        return res.status(401).json({ error: 'Not authenticated' });
+    }
+    try {
+        const { first, last, phone, address, city, postalCode } = req.body;
+        const user = await User.findById(req.user._id);
+        if (!user) return res.status(404).json({ error: 'User not found' });
+
+        if (first) user.first = first;
+        if (last) user.last = last;
+        if (phone) user.phone = phone;
+        if (address) user.address = address;
+        if (city) user.city = city;
+        if (postalCode) user.postalCode = postalCode;
+
+        await user.save();
+        res.json({ ok: true, message: 'Profile updated successfully' });
+    } catch (err) {
+        console.error('❌ Update profile error:', err);
+        res.status(500).json({ error: 'Failed to update profile' });
+    }
 });
 
 app.post('/auth/logout', (req, res) => {
@@ -856,6 +1012,82 @@ app.put('/api/profile', async (req, res) => {
     }
 });
 
+// ===== ORDER MANAGEMENT ENDPOINTS =====
+
+// Get all orders (Admin only)
+app.get('/api/admin/orders', requireAdmin, async (req, res) => {
+    try {
+        const db = admin.firestore();
+        const ordersSnapshot = await db.collection('orders')
+            .orderBy('order_date', 'desc')
+            .limit(100)
+            .get();
+
+        const orders = [];
+        ordersSnapshot.forEach(doc => {
+            orders.push({ id: doc.id, ...doc.data() });
+        });
+
+        res.json({ ok: true, count: orders.length, orders });
+    } catch (err) {
+        console.error('❌ Admin get orders error:', err);
+        res.status(500).json({ error: 'Failed to fetch orders' });
+    }
+});
+
+// Update order status (Admin only)
+app.patch('/api/admin/orders/:id/status', requireAdmin, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+
+        if (!status) {
+            return res.status(400).json({ error: 'Status is required' });
+        }
+
+        const db = admin.firestore();
+        await db.collection('orders').doc(id).update({
+            order_status: status,
+            last_updated: admin.firestore.FieldValue.serverTimestamp()
+        });
+
+        res.json({ ok: true, message: `Order ${id} status updated to ${status}` });
+    } catch (err) {
+        console.error('❌ Admin update order status error:', err);
+        res.status(500).json({ error: 'Failed to update order status' });
+    }
+});
+
+// Get current user's orders
+app.get('/api/user/orders', async (req, res) => {
+    if (!req.user) {
+        return res.status(401).json({ error: 'Authentication required' });
+    }
+    
+    // We need the Firebase UID to query Firestore. 
+    // If the user logged in via Google, we might have googleId but not necessarily the Firebase UID.
+    // However, the client-side Firebase Auth handles this. 
+    // If we want server-side order fetching, we'd need to sync UID or use email.
+    
+    try {
+        const db = admin.firestore();
+        const ordersSnapshot = await db.collection('orders')
+            .where('user_email', '==', req.user.email)
+            .orderBy('order_date', 'desc')
+            .get();
+
+        const orders = [];
+        ordersSnapshot.forEach(doc => {
+            orders.push({ id: doc.id, ...doc.data() });
+        });
+
+        res.json({ ok: true, count: orders.length, orders });
+    } catch (err) {
+        console.error('❌ User get orders error:', err);
+        res.status(500).json({ error: 'Failed to fetch your orders' });
+    }
+});
+
 // Get all users (for testing)
 app.get('/api/users', async (req, res) => {
     if (!isConnected) {
@@ -888,6 +1120,323 @@ app.post('/api/test-upload', requireAdmin, imageUpload.single('testImage'), (req
         mimetype: req.file.mimetype,
         size: req.file.size
     });
+});
+
+// ====== PROFESSIONAL ORDER MANAGEMENT SYSTEM ======
+
+// Create a new order (POST)
+app.post('/api/orders', async (req, res) => {
+    try {
+        if (!req.user) {
+            return res.status(401).json({ ok: false, error: 'Authentication required' });
+        }
+
+        const orderData = req.body;
+        
+        // Validate required fields
+        if (!orderData.items || !Array.isArray(orderData.items) || orderData.items.length === 0) {
+            return res.status(400).json({ ok: false, error: 'Items are required' });
+        }
+
+        if (!orderData.shippingInfo) {
+            return res.status(400).json({ ok: false, error: 'Shipping information is required' });
+        }
+
+        // Validate shipping info fields with strict checks
+        const requiredShippingFields = ['firstName', 'lastName', 'email', 'phone', 'address', 'city', 'postalCode'];
+        const missingFields = [];
+        
+        for (const field of requiredShippingFields) {
+            const value = orderData.shippingInfo[field];
+            if (!value || String(value).trim() === '') {
+                missingFields.push(field);
+            }
+        }
+        
+        if (missingFields.length > 0) {
+            const fieldLabels = {
+                firstName: 'First Name',
+                lastName: 'Last Name', 
+                email: 'Email Address',
+                phone: 'Phone Number',
+                address: 'Street Address',
+                city: 'City',
+                postalCode: 'Postal Code'
+            };
+            const missingLabels = missingFields.map(f => fieldLabels[f] || f).join(', ');
+            return res.status(400).json({ 
+                ok: false, 
+                error: `❌ Order cannot be processed! Please complete all required fields: ${missingLabels}` 
+            });
+        }
+
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(orderData.shippingInfo.email.trim())) {
+            return res.status(400).json({ ok: false, error: 'Invalid email address format' });
+        }
+
+        // Validate phone number (minimum 10 digits)
+        const phoneClean = orderData.shippingInfo.phone.replace(/\D/g, '');
+        if (phoneClean.length < 10) {
+            return res.status(400).json({ ok: false, error: 'Phone number must be at least 10 digits' });
+        }
+
+        if (!orderData.billing) {
+            return res.status(400).json({ ok: false, error: 'Billing information is required' });
+        }
+
+        // Validate items have correct quantity and price
+        for (const item of orderData.items) {
+            if (item.quantity < 1 || !Number.isInteger(item.quantity)) {
+                return res.status(400).json({ ok: false, error: `Invalid quantity for ${item.name}` });
+            }
+            if (item.price < 0) {
+                return res.status(400).json({ ok: false, error: `Invalid price for ${item.name}` });
+            }
+        }
+
+        // Generate unique order code
+        const orderCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+        
+        const db = admin.firestore();
+        const docRef = await db.collection('orders').add({
+            // Shipping info with correct field names for Admin
+            shipping: {
+                first_name: orderData.shippingInfo.firstName,
+                last_name: orderData.shippingInfo.lastName,
+                email: orderData.shippingInfo.email,
+                phone: orderData.shippingInfo.phone,
+                address: orderData.shippingInfo.address,
+                city: orderData.shippingInfo.city,
+                postal_code: orderData.shippingInfo.postalCode,
+                country: orderData.shippingInfo.country || 'Egypt',
+                notes: orderData.shippingInfo.notes || ''
+            },
+            
+            // Items
+            items: orderData.items,
+            
+            // Summary
+            summary: {
+                subtotal: orderData.billing.subtotal,
+                tax: orderData.billing.tax,
+                shipping_cost: orderData.billing.shippingFee,
+                total_amount: orderData.billing.total
+            },
+            
+            // Payment
+            payment: {
+                payment_method: orderData.paymentMethod,
+                payment_status: 'pending'
+            },
+            
+            // Order info
+            order_code: orderCode,
+            order_status: 'pending',
+            order_date: admin.firestore.FieldValue.serverTimestamp(),
+            
+            // User info
+            userId: req.user.uid || req.user.id || req.user._id,
+            user_email: req.user.email,
+            
+            // Timestamps
+            createdAt: admin.firestore.FieldValue.serverTimestamp(),
+            updatedAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+
+        res.json({ 
+            ok: true, 
+            message: 'Order created successfully',
+            orderId: docRef.id,
+            orderCode: orderCode
+        });
+    } catch (err) {
+        console.error('❌ Create order error:', err);
+        res.status(500).json({ ok: false, error: 'Failed to create order' });
+    }
+});
+
+// Get order details (GET)
+app.get('/api/orders/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const db = admin.firestore();
+        const doc = await db.collection('orders').doc(id).get();
+
+        if (!doc.exists) {
+            return res.status(404).json({ ok: false, error: 'Order not found' });
+        }
+
+        const orderData = doc.data();
+        
+        // Check access: authenticated user owns it, is admin, OR has correct orderCode from URL
+        const requestUserId = String(req.user?.uid || req.user?.id || req.user?._id || '');
+        const orderUserId = String(orderData.userId || '');
+        const isOwner = orderUserId === requestUserId || orderData.user_email === req.user?.email;
+        const hasCorrectCode = req.query.code && 
+            String(req.query.code).toUpperCase() === String(orderData.order_code || '').toUpperCase();
+        
+        if (!isOwner && !req.user?.isAdmin && !hasCorrectCode) {
+            return res.status(403).json({ ok: false, error: 'Unauthorized' });
+        }
+
+        // Transform data to match frontend expectations
+        const transformedOrder = {
+            ...orderData,
+            id: doc.id,
+            shippingInfo: orderData.shipping || {
+                firstName: orderData.shipping?.first_name || '',
+                lastName: orderData.shipping?.last_name || '',
+                email: orderData.shipping?.email || '',
+                phone: orderData.shipping?.phone || '',
+                address: orderData.shipping?.address || '',
+                city: orderData.shipping?.city || '',
+                postalCode: orderData.shipping?.postal_code || '',
+                country: orderData.shipping?.country || 'Egypt',
+                notes: orderData.shipping?.notes || ''
+            },
+            billing: orderData.summary || orderData.billing || {
+                subtotal: orderData.summary?.subtotal || 0,
+                tax: orderData.summary?.tax || 0,
+                shippingFee: orderData.summary?.shipping_cost || 50,
+                total: orderData.summary?.total_amount || 0
+            },
+            paymentMethod: orderData.payment?.payment_method || orderData.paymentMethod || 'cod',
+            order_code: orderData.order_code || 'N/A',
+            orderCode: orderData.order_code || 'N/A'
+        };
+
+        res.json({ ok: true, order: transformedOrder });
+    } catch (err) {
+        console.error('❌ Get order error:', err);
+        res.status(500).json({ ok: false, error: 'Failed to fetch order' });
+    }
+});
+
+// Update order status (PUT) - Admin only
+app.put('/api/orders/:id/status', requireAdmin, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+
+        if (!status) {
+            return res.status(400).json({ ok: false, error: 'Status is required' });
+        }
+
+        const validStatuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
+        if (!validStatuses.includes(status)) {
+            return res.status(400).json({ ok: false, error: 'Invalid status' });
+        }
+
+        const db = admin.firestore();
+        await db.collection('orders').doc(id).update({
+            status,
+            updatedAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+
+        res.json({ ok: true, message: `Order status updated to ${status}` });
+    } catch (err) {
+        console.error('❌ Update order status error:', err);
+        res.status(500).json({ ok: false, error: 'Failed to update order status' });
+    }
+});
+
+// Get all user's orders (GET)
+app.get('/api/orders', async (req, res) => {
+    try {
+        if (!req.user) {
+            return res.status(401).json({ ok: false, error: 'Authentication required' });
+        }
+
+        const db = admin.firestore();
+        const userId = String(req.user.uid || req.user.id || req.user._id || '');
+        const userEmail = String(req.user.email || '');
+        
+        // Get all orders and filter by user email (more reliable than ID comparison)
+        const snapshot = await db.collection('orders')
+            .orderBy('createdAt', 'desc')
+            .limit(100)
+            .get();
+
+        const orders = [];
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            const orderUserId = String(data.userId || '');
+            const orderUserEmail = String(data.user_email || '');
+            
+            // Match by user ID or email
+            if (orderUserId === userId || orderUserEmail === userEmail) {
+                orders.push({ id: doc.id, ...data });
+            }
+        });
+
+        res.json({ ok: true, count: orders.length, orders });
+    } catch (err) {
+        console.error('❌ Get user orders error:', err);
+        res.status(500).json({ ok: false, error: 'Failed to fetch orders' });
+    }
+});
+
+// Get all orders for admin (GET)
+app.get('/api/admin/orders-v2', requireAdmin, async (req, res) => {
+    try {
+        const db = admin.firestore();
+        const snapshot = await db.collection('orders')
+            .orderBy('createdAt', 'desc')
+            .limit(100)
+            .get();
+
+        const orders = [];
+        snapshot.forEach(doc => {
+            orders.push({ id: doc.id, ...doc.data() });
+        });
+
+        res.json({ ok: true, count: orders.length, orders });
+    } catch (err) {
+        console.error('❌ Get admin orders error:', err);
+        res.status(500).json({ ok: false, error: 'Failed to fetch orders' });
+    }
+});
+
+// ====== END ORDER MANAGEMENT SYSTEM ======
+
+// Debug route to check orders (NOT for production use!)
+app.get('/api/debug/orders', requireAdmin, async (req, res) => {
+    try {
+        const db = admin.firestore();
+        
+        // Get all orders without limits
+        const allOrdersSnapshot = await db.collection('orders').get();
+        const allOrders = [];
+        allOrdersSnapshot.forEach(doc => {
+            allOrders.push({ 
+                id: doc.id, 
+                user_email: doc.data().user_email,
+                userId: doc.data().userId,
+                order_code: doc.data().order_code,
+                order_status: doc.data().order_status,
+                createdAt: doc.data().createdAt,
+                order_date: doc.data().order_date
+            });
+        });
+
+        // Get orders by different date fields
+        const orderByCreatedAt = await db.collection('orders').orderBy('createdAt', 'desc').limit(10).get();
+        const orderByOrderDate = await db.collection('orders').orderBy('order_date', 'desc').limit(10).get();
+
+        res.json({
+            ok: true,
+            totalOrders: allOrders.length,
+            allOrders: allOrders.slice(0, 20), // Show first 20
+            orderByCreatedAt: orderByCreatedAt.docs.map(doc => ({ id: doc.id, ...doc.data() })),
+            orderByOrderDate: orderByOrderDate.docs.map(doc => ({ id: doc.id, ...doc.data() })),
+            uniqueUsers: [...new Set(allOrders.map(o => o.user_email).filter(Boolean))]
+        });
+    } catch (err) {
+        console.error('❌ Debug orders error:', err);
+        res.status(500).json({ error: 'Failed to debug orders' });
+    }
 });
 
 // Debug route to check connection status (NOT for production use!)

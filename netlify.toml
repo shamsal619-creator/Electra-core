@@ -1,0 +1,20 @@
+[build]
+  command = "npm start"
+  publish = "."
+
+[dev]
+  command = "node server.js"
+  port = 3001
+  targetPort = 3001
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  force = true
+
+[functions]
+  directory = "netlify/functions"
+
+[build.environment]
+  NODE_VERSION = "18"

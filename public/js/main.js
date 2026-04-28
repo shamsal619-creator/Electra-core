@@ -306,26 +306,64 @@ async function setupHeaderAuth() {
 
     if (user) {
         const fullName = [user.first, user.last].filter(Boolean).join(' ').trim() || 'User';
+        const firstName = user.first || user.email.split('@')[0];
 
         container.innerHTML = `
-            <span class="user-welcome">Hi, ${fullName}</span>
-            ${user.isAdmin ? '<a href="/admin-product.html" class="auth-pill-link">Admin</a>' : ''}
-            <button type="button" class="avatar-pill" id="headerProfileAvatar" aria-label="Open profile">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-                </svg>
-            </button>
+            <span class="user-welcome">Hi, ${firstName}</span>
+            ${user.isAdmin ? '<a href="/admin-dashboard.html" class="auth-pill-link">⚙️ Admin</a>' : ''}
+            
+            <div class="user-dropdown" id="userDropdown" style="position: relative;">
+                <button type="button" class="avatar-pill" id="headerProfileAvatar" aria-label="Open menu" style="position: relative;">
+                    <svg viewBox="0 0 24 24" aria-hidden="true" style="width: 24px; height: 24px;">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="currentColor"/>
+                    </svg>
+                </button>
+                <div class="dropdown-menu" id="headerDropdownMenu" style="
+                    position: absolute; top: calc(100% + 8px); right: 0; background: white; 
+                    border: 1px solid var(--border); border-radius: 12px; 
+                    box-shadow: 0 10px 40px rgba(0,0,0,0.15); min-width: 200px;
+                    opacity: 0; visibility: hidden; transform: translateY(-10px); 
+                    transition: all 0.3s; z-index: 1000;
+                ">
+                    <div style="padding: 12px 16px; border-bottom: 1px solid var(--border); font-weight: 800; font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px;">My Account</div>
+                    <a href="my-orders.html" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; text-decoration: none; color: var(--dark); font-weight: 600; font-size: 14px; transition: all 0.2s;" onmouseover="this.style.background='var(--light)'; this.style.color='var(--teal)'" onmouseout="this.style.background='white'; this.style.color='var(--dark)'">
+                        <span style="font-size: 18px;">�</span> My Orders
+                    </a>
+                    <a href="profile.html" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; text-decoration: none; color: var(--dark); font-weight: 600; font-size: 14px; transition: all 0.2s;" onmouseover="this.style.background='var(--light)'; this.style.color='var(--teal)'" onmouseout="this.style.background='white'; this.style.color='var(--dark)'">
+                        <span style="font-size: 18px;">👤</span> Profile
+                    </a>
+                    <div style="height: 1px; background: var(--border); margin: 4px 0;"></div>
+                    <button id="logoutBtn" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; width: 100%; border: none; background: none; color: #dc2626; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s; text-align: left;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='white'">
+                        <span style="font-size: 18px;">🚪</span> Logout
+                    </button>
+                </div>
+            </div>
+            
             <a href="cart.html" class="cart-icon-link">
                 <span class="cart-icon">🛒</span>
                 <span class="cart-count" id="headerCartCount">0</span>
             </a>
-            <button type="button" class="logout-btn" id="logoutBtn">Logout</button>
         `;
 
+        // Dropdown toggle
         const avatarBtn = document.getElementById('headerProfileAvatar');
-        if (avatarBtn) {
-            avatarBtn.addEventListener('click', () => {
-                window.location.href = 'profile.html';
+        const dropdownMenu = document.getElementById('headerDropdownMenu');
+        
+        if (avatarBtn && dropdownMenu) {
+            avatarBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isVisible = dropdownMenu.style.visibility === 'visible';
+                dropdownMenu.style.opacity = isVisible ? '0' : '1';
+                dropdownMenu.style.visibility = isVisible ? 'hidden' : 'visible';
+                dropdownMenu.style.transform = isVisible ? 'translateY(-10px)' : 'translateY(0)';
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!avatarBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                    dropdownMenu.style.opacity = '0';
+                    dropdownMenu.style.visibility = 'hidden';
+                    dropdownMenu.style.transform = 'translateY(-10px)';
+                }
             });
         }
 
@@ -376,15 +414,21 @@ window.saveCart = saveCart;
 
 function initAddToCartButtons() {
     const cartButtons = document.querySelectorAll('.add-to-cart-btn');
-    const qtySelectors = document.querySelectorAll('.qty-selector');
     
     // Initial check to show/hide selectors based on existing cart
     const cart = getCart();
     
-    cartButtons.forEach((btn, index) => {
+    cartButtons.forEach((btn) => {
+        // Prevent multiple listeners
+        if (btn.dataset.initialized) return;
+        btn.dataset.initialized = "true";
+
         const card = btn.closest('.product-card');
         const name = card.querySelector('h3').innerText;
-        const existingItem = cart.find(item => item.name === name);
+        // Also try to get ID from data-id if available
+        const id = card.dataset.id;
+        
+        const existingItem = cart.find(item => (id && item.id === id) || item.name === name);
         const selector = card.querySelector('.qty-selector');
         const qtyValue = selector.querySelector('.qty-value');
 
@@ -400,7 +444,7 @@ function initAddToCartButtons() {
             const price = parseInt(priceText.replace(/[^0-9]/g, ''));
             const image = card.querySelector('img').src;
 
-            addToCart({ name, price, image });
+            addToCart({ id, name, price, image });
             
             // UI Switch
             btn.style.display = 'none';
@@ -413,7 +457,7 @@ function initAddToCartButtons() {
             let currentQty = parseInt(qtyValue.textContent);
             currentQty++;
             qtyValue.textContent = currentQty;
-            updateCartItemQty(name, currentQty);
+            updateCartItemQty(id || name, currentQty);
         });
 
         // Qty Minus
@@ -422,18 +466,22 @@ function initAddToCartButtons() {
             currentQty--;
             if (currentQty < 1) {
                 // Remove from cart and switch back to button
-                removeFromCart(name);
+                removeFromCart(id || name);
                 btn.style.display = 'flex';
                 selector.style.display = 'none';
+                btn.dataset.initialized = ""; // Reset to allow re-init if needed, though usually not
+                delete btn.dataset.initialized;
+                initAddToCartButtons(); // Re-init to attach listener again since we might have removed it? 
+                // Actually, the listener is still there. Just need to show button.
             } else {
                 qtyValue.textContent = currentQty;
-                updateCartItemQty(name, currentQty);
+                updateCartItemQty(id || name, currentQty);
             }
         });
     });
 }
 
-function showCartToast(message) {
+function showCartToast(message, type = 'success') {
     let container = document.querySelector('.toast-container');
     if (!container) {
         container = document.createElement('div');
@@ -442,9 +490,10 @@ function showCartToast(message) {
     }
 
     const toast = document.createElement('div');
-    toast.className = 'toast';
+    toast.className = `toast ${type}`;
+    const icon = type === 'success' ? '✓' : '✕';
     toast.innerHTML = `
-        <div class="toast-icon">✓</div>
+        <div class="toast-icon">${icon}</div>
         <div class="toast-message">${message}</div>
     `;
 
@@ -462,35 +511,38 @@ function showCartToast(message) {
             if (container.children.length === 0) {
                 container.remove();
             }
-        }, 400);
-    }, 3000);
+        }, 500);
+    }, 4000);
 }
 
-function addToCart(product) {
+function addToCart(product, quantity = 1) {
     const cart = getCart();
-    const existingItem = cart.find(item => item.name === product.name);
+    const existingItem = cart.find(item => (product.id && item.id === product.id) || item.name === product.name);
 
     if (existingItem) {
-        existingItem.quantity += 1;
+        existingItem.quantity += quantity;
     } else {
-        cart.push({ ...product, quantity: 1 });
+        cart.push({ ...product, quantity: quantity });
     }
 
     saveCart(cart);
-    showCartToast(`${product.name} added to cart!`);
+    
+    // English toast message
+    const message = `${product.name} added to cart!`;
+    showCartToast(message);
 }
 
-function updateCartItemQty(name, qty) {
+function updateCartItemQty(idOrName, qty) {
     const cart = getCart();
-    const item = cart.find(item => item.name === name);
+    const item = cart.find(item => item.id === idOrName || item.name === idOrName);
     if (item) {
         item.quantity = qty;
         saveCart(cart);
     }
 }
 
-function removeFromCart(name) {
+function removeFromCart(idOrName) {
     let cart = getCart();
-    cart = cart.filter(item => item.name !== name);
+    cart = cart.filter(item => item.id !== idOrName && item.name !== idOrName);
     saveCart(cart);
 }

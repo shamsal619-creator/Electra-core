@@ -1,4 +1,5 @@
 :root {
+    /* ===== PRIMARY COLORS ===== */
     --teal: #05a391;
     --light: #f5f5f5;
     --muted: #9aa6a6;
@@ -6,6 +7,126 @@
     --white: #fff;
     --border: #e6e6e6;
     --field-bg: #fafafa;
+    
+    /* ===== BUTTON COLORS ===== */
+    --btn-primary-bg: #05a391;           /* Main button color */
+    --btn-primary-hover: #39867d;        /* Hover button color */
+    --btn-text-color: #ffffff;           /* Button text color */
+    
+    /* ===== FORM COLORS ===== */
+    --form-input-bg: #f8fafc;
+    --form-input-border: #e2e8f0;
+    --form-label-color: #555;
+    --form-text-color: #94a3b8;
+
+    /* ===== STATUS COLORS ===== */
+    --error-color: #b91c1c;              /* Red - for error messages */
+    --success-color: #0f766e;            /* Green - for success messages */
+    --warning-color: #f59e0b;            /* Amber - for warnings */
+    --info-color: #253858;               /* Dark Blue - for info messages */
+    
+    /* ===== TEAL VARIATIONS ===== */
+    --teal-dark: #048c7f;                /* Darker shade for hover states */
+    --teal-light: #e6fffb;               /* Lighter shade for active backgrounds */
+    
+    /* ===== TEXT COLOR VARIATIONS ===== */
+    --text-secondary: #475569;           /* Secondary text color */
+    --text-muted: #64748b;               /* Muted/lighter text */
+    --text-black: #000;                  /* Pure black */
+    
+    /* ===== BACKGROUND COLOR VARIATIONS ===== */
+    --bg-hover: #f9f9f9;                 /* Hover background color */
+    --bg-light-gray: #e0e0e0;            /* Light gray background */
+    
+    /* ===== SHADOW COLORS (BLACK SHADOWS) ===== */
+    --shadow-xs: rgba(0, 0, 0, 0.03);    /* Extra small shadow (3%) */
+    --shadow-sm: rgba(0, 0, 0, 0.04);    /* Small shadow (4%) */
+    --shadow-md: rgba(0, 0, 0, 0.08);    /* Medium shadow (8%) */
+    --shadow-lg: rgba(0, 0, 0, 0.1);     /* Large shadow (10%) */
+    --shadow-xl: rgba(0, 0, 0, 0.15);    /* Extra large shadow (15%) */
+    
+    /* ===== TEAL SHADOW COLORS ===== */
+    --teal-shadow-light: rgba(5, 163, 145, 0.1);      /* Light teal shadow */
+    --teal-shadow-md: rgba(5, 163, 145, 0.15);        /* Medium teal shadow */
+    --teal-shadow-dark: rgba(5, 163, 145, 0.2);       /* Dark teal shadow */
+    --teal-shadow-darker: rgba(5, 163, 145, 0.3);     /* Extra dark teal shadow */
+    
+    /* ===== WHITE OVERLAY COLORS ===== */
+    --white-overlay-light: rgba(255, 255, 255, 0.15); /* Light white overlay */
+    --white-overlay-md: rgba(255, 255, 255, 0.3);     /* Medium white overlay */
+    --white-overlay-dark: rgba(255, 255, 255, 0.4);   /* Dark white overlay */
+    --white-overlay-semi: rgba(255, 255, 255, 0.95);  /* Semi-opaque white */
+    
+    /* ===== PAGE-SPECIFIC COLOR VARIABLES ===== */
+    
+    /* SIGNIN PAGE COLORS */
+    --signin-left-bg: #05a391;                   /* Signin left panel background */
+    --signin-left-text: #ffffff;                 /* Signin left panel text */
+    --signin-heading: #333;                      /* Signin page heading color */
+    --signin-form-label: #555;                   /* Signin form labels */
+    --signin-form-input-bg: #f8fafc;             /* Signin input background */
+    --signin-form-input-border: #e2e8f0;         /* Signin input border */
+    --signin-button-bg: #05a391;                 /* Signin button background */
+    --signin-button-hover-bg: #048c7f;           /* Signin button hover */
+    --signin-text-secondary: #94a3b8;            /* Signin secondary text */
+    
+    /* SIGNUP PAGE COLORS */
+    --signup-left-bg: #05a391;                   /* Signup left panel background */
+    --signup-left-text: #ffffff;                 /* Signup left panel text */
+    --signup-heading: #333;                      /* Signup page heading */
+    --signup-button-bg: #05a391;                  /* Signup button - RED */
+    --signup-button-hover-bg: #048c7f;           /* Signup button hover - DARKER RED */
+    --signup-form-label: #555;                   /* Signup form labels */
+    
+    /* FORGOT PASSWORD PAGE COLORS */
+    --forgot-heading: #333;                      /* Forgot password heading */
+    --forgot-description-text: #64748b;          /* Forgot password description */
+    --forgot-form-label: #555;                   /* Forgot password form labels */
+    --forgot-button-bg: #05a391;                 /* Forgot password button */
+    --forgot-button-hover-bg: #048c7f;           /* Forgot password button hover */
+    --forgot-message-info: #253858;              /* Info message color */
+    --forgot-message-error: #b91c1c;             /* Error message color */
+    --forgot-message-success: #0f766e;           /* Success message color */
+    
+    /* RESET PASSWORD PAGE COLORS */
+    --reset-heading: #333;                       /* Reset password heading */
+    --reset-description-text: #64748b;           /* Reset password description */
+    --reset-form-label: #555;                    /* Reset password form labels */
+    --reset-button-bg: #05a391;                  /* Reset password button */
+    --reset-button-hover-bg: #048c7f;            /* Reset password button hover */
+    --reset-message-info: #253858;               /* Info message color */
+    --reset-message-error: #b91c1c;              /* Error message color */
+    --reset-message-success: #0f766e;            /* Success message color */
+    
+    /* CHECKOUT PAGE COLORS */
+    --checkout-heading: #333;                    /* Checkout page heading */
+    --checkout-section-border: #05a391;          /* Checkout section border */
+    --checkout-card-bg: #ffffff;                 /* Checkout card background */
+    --checkout-card-shadow: rgba(0, 0, 0, 0.04); /* Checkout card shadow */
+    --checkout-method-active-bg: #e6fffb;        /* Active payment method bg */
+    --checkout-method-active-text: #05a391;      /* Active payment method text */
+    --checkout-button-bg: #05a391;               /* Checkout button */
+    --checkout-button-hover: #048c7f;            /* Checkout button hover */
+    --checkout-summary-border: #e6e6e6;          /* Summary section border */
+    --checkout-item-bg: #f9f9f9;                 /* Cart item background */
+    
+    /* PROFILE PAGE COLORS */
+    --profile-heading: #333;                     /* Profile page heading */
+    --profile-section-bg: #ffffff;               /* Profile section background */
+    --profile-text-muted: #9aa6a6;               /* Profile muted text */
+    --profile-button-bg: #05a391;                /* Profile button background */
+    --profile-avatar-bg: #000;                   /* Profile avatar background */
+    --profile-add-btn-bg: #e0e0e0;               /* Profile add button background */
+    --profile-section-shadow: rgba(0, 0, 0, 0.03); /* Profile section shadow */
+    
+    /* INDEX (HOME) PAGE COLORS */
+    --index-hero-bg: #ffffff;                    /* Hero section background */
+    --index-button-bg: #05a391;                  /* CTA button background */
+    --index-category-bg: #ffffff;                /* Category item background */
+    --index-product-card-bg: #ffffff;            /* Product card background */
+    --index-product-price: #05a391;              /* Product price color */
+    --index-banner-gradient-from: #05a391;       /* Banner gradient start */
+    --index-banner-gradient-to: #00d2ff;         /* Banner gradient end */
 }
 
 * {
@@ -811,59 +932,65 @@ a {
 /* Toast Notifications */
 .toast-container {
     position: fixed;
-    bottom: 30px;
-    right: 30px;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
     z-index: 10000;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
+    width: auto;
+    max-width: 90%;
 }
 
 .toast {
-    background: var(--white);
-    color: var(--dark);
-    padding: 16px 24px;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    background: var(--teal);
+    color: var(--white);
+    padding: 14px 28px;
+    border-radius: 50px;
+    box-shadow: 0 15px 35px rgba(5, 163, 145, 0.3);
     display: flex;
     align-items: center;
-    gap: 12px;
-    transform: translateX(120%);
-    transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    border-left: 4px solid var(--teal);
-    min-width: 280px;
+    gap: 15px;
+    transform: translateY(-100px);
+    opacity: 0;
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    min-width: 320px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    justify-content: center;
+}
+
+.toast.error {
+    background: var(--error-color);
+    box-shadow: 0 15px 35px rgba(185, 28, 28, 0.3);
 }
 
 .toast.show {
-    transform: translateX(0);
+    transform: translateY(0);
+    opacity: 1;
 }
 
 .toast-icon {
-    width: 24px;
-    height: 24px;
-    background: var(--teal);
-    color: var(--white);
-    border-radius: 50%;
+    font-size: 18px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 14px;
-    font-weight: 900;
 }
 
 .toast-message {
-    font-weight: 700;
-    font-size: 14px;
+    font-weight: 800;
+    font-size: 15px;
+    letter-spacing: 0.5px;
 }
 
 @media (max-width: 768px) {
     .toast-container {
-        bottom: 20px;
-        right: 20px;
-        left: 20px;
+        top: 20px;
+        width: calc(100% - 40px);
     }
     .toast {
         min-width: auto;
+        padding: 12px 20px;
     }
 }
 

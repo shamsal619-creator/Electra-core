@@ -582,24 +582,37 @@
 
         window.handleAddToCart = (id) => {
             const product = getProductById(id);
-            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-            const existingItem = cart.find(item => item.id === id);
+            if (!product) return;
 
-            if (existingItem) {
-                existingItem.quantity += currentQty;
-            } else {
-                cart.push({
+            // Use the unified addToCart from main.js
+            if (typeof addToCart === 'function') {
+                addToCart({
                     id: product.id,
                     name: product.name,
                     price: product.price,
-                    image: getPrimaryProductImage(product),
-                    quantity: currentQty
-                });
-            }
+                    image: getPrimaryProductImage(product)
+                }, currentQty);
+            } else {
+                // Fallback if main.js isn't loaded correctly (shouldn't happen)
+                const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+                const existingItem = cart.find(item => item.id === id);
 
-            localStorage.setItem('cart', JSON.stringify(cart));
-            updateCartCount();
-            alert('Added to cart!');
+                if (existingItem) {
+                    existingItem.quantity += currentQty;
+                } else {
+                    cart.push({
+                        id: product.id,
+                        name: product.name,
+                        price: product.price,
+                        image: getPrimaryProductImage(product),
+                        quantity: currentQty
+                    });
+                }
+
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartCount();
+                alert('Added to cart!');
+            }
         };
 
         function renderProductDetails(product) {

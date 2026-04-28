@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation - ElectraCore</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .page {
+            max-width: 800px;
+            margin: 40px auto 80px;
+            padding: 0 20px;
+        }
+
+        .confirmation-container {
+            background: white;
+            border-radius: 20px;
+            padding: 60px 40px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .success-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: scaleInBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes scaleInBounce {
+            0% { transform: scale(0) rotate(0deg); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 900;
+            margin: 0 0 10px 0;
+            color: var(--dark);
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: var(--muted);
+            margin-bottom: 40px;
+        }
+
+        .order-info-box {
+            background: #f9f9f9;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 32px;
+            text-align: left;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: var(--muted);
+            font-weight: 600;
+        }
+
+        .info-value {
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .order-details-section {
+            background: #f9f9f9;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: left;
+            margin-bottom: 32px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 900;
+            margin: 0 0 16px 0;
+            color: var(--dark);
+            border-bottom: 2px solid var(--teal);
+            padding-bottom: 8px;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        .order-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-name {
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .item-qty {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .item-price {
+            font-weight: 700;
+            color: var(--teal);
+        }
+
+        .totals-section {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 32px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 14px;
+        }
+
+        .total-row:last-child {
+            border-top: 2px solid var(--border);
+            padding-top: 12px;
+            margin-top: 12px;
+            font-size: 18px;
+            font-weight: 900;
+            color: var(--teal);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--teal);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: var(--dark);
+            border: 2px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .next-steps {
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: left;
+        }
+
+        .next-steps h3 {
+            margin: 0 0 12px 0;
+            color: #166534;
+            font-size: 14px;
+            font-weight: 900;
+        }
+
+        .step-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .step-list li {
+            padding: 8px 0 8px 28px;
+            position: relative;
+            color: #166534;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .step-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            font-weight: 900;
+            color: #10b981;
+        }
+
+        @media (max-width: 600px) {
+            .confirmation-container {
+                padding: 40px 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .info-row,
+            .total-row {
+                flex-direction: column;
+                gap: 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="index.html" class="logo">
+            <img src="design/logo.png" alt="ElectraCore logo">
+        </a>
+        <div class="search-bar">
+            <input type="text" placeholder="Search essentials, electronics and more...">
+        </div>
+        <div class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div class="user-actions" id="headerUserActions"></div>
+    </header>
+
+    <main class="page fade-in-up">
+        <div class="confirmation-container">
+            <div class="success-icon">✅</div>
+            <h1>Order Confirmed!</h1>
+            <p class="subtitle">Thank you for your purchase. Your order has been successfully placed.</p>
+
+            <div class="order-info-box">
+                <div class="info-row">
+                    <span class="info-label">Order Number</span>
+                    <span class="info-value" id="orderNumber">#XXXXXXXXXX</span>
+                </div>
+                <div class="info-row" style="background: #f0fdf4; margin: 0 -24px; padding: 16px 24px; border-radius: 8px; border: 1px dashed #86efac;">
+                    <span class="info-label" style="color: #166534; font-weight: 900;">Order Code</span>
+                    <span class="info-value" id="orderCode" style="color: #10b981; font-size: 16px; font-family: 'Courier New', monospace;">XXXXXX</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Order Date</span>
+                    <span class="info-value" id="orderDate">Loading...</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Estimated Delivery</span>
+                    <span class="info-value" id="estimatedDelivery">3-5 Business Days</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Payment Method</span>
+                    <span class="info-value" id="paymentMethod">💰 Cash on Delivery</span>
+                </div>
+            </div>
+
+            <div class="order-details-section">
+                <h3 class="section-title">Shipping Address</h3>
+                <div id="shippingInfo" style="color: var(--dark); font-size: 14px; line-height: 1.8;">
+                    Loading...
+                </div>
+            </div>
+
+            <div class="order-details-section">
+                <h3 class="section-title">Order Items</h3>
+                <div id="orderItems">
+                    Loading...
+                </div>
+            </div>
+
+            <div class="totals-section">
+                <div class="total-row">
+                    <span>Subtotal</span>
+                    <span id="subtotalAmount">0 EGP</span>
+                </div>
+                <div class="total-row">
+                    <span>Tax (14%)</span>
+                    <span id="taxAmount">0 EGP</span>
+                </div>
+                <div class="total-row">
+                    <span>Shipping Fee</span>
+                    <span id="shippingAmount">50 EGP</span>
+                </div>
+                <div class="total-row">
+                    <span>Total Amount</span>
+                    <span id="totalAmount">0 EGP</span>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="window.location.href='/my-orders.html'">
+                    📋 View My Orders
+                </button>
+                <button class="btn btn-secondary" onclick="window.location.href='/index.html'">
+                    🛒 Continue Shopping
+                </button>
+            </div>
+
+            <div class="next-steps">
+                <h3>📦 What Happens Next?</h3>
+                <ul class="step-list">
+                    <li>Our team will review and confirm your order within 24 hours</li>
+                    <li>You'll receive an email confirmation with tracking details</li>
+                    <li>Your order will be processed and shipped within 2-3 business days</li>
+                    <li>You can track your shipment from your order history page</li>
+                    <li>Our courier will contact you before delivery</li>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer fade-in-up">
+        <div class="footer-content">
+            <div class="footer-col">
+                <h4>About Us</h4>
+                <p>We provide the best electronics with a focus on "Used Like New" quality and professional service.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <a href="index.html">Home</a>
+                <a href="about.html">About</a>
+                <a href="#">Shop</a>
+                <a href="#">Contact</a>
+            </div>
+            <div class="footer-col">
+                <h4>Policies</h4>
+                <a href="privacy-policy.html">Privacy Policy</a>
+                <a href="terms-conditions.html">Terms & Conditions</a>
+                <a href="return-policy.html">Return Policy</a>
+            </div>
+            <div class="footer-col">
+                <h4>Follow Us</h4>
+                <div class="social-links">
+                    <a href="#">f</a>
+                    <a href="#">t</a>
+                    <a href="#">i</a>
+                    <a href="#">y</a>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            &copy; 2026 ElectraCore. All rights reserved.
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const orderId = urlParams.get('orderId');
+        const orderCode = urlParams.get('orderCode');
+
+        function formatDate(date) {
+            if (!date) return 'N/A';
+            try {
+                // Handle Firestore Timestamp
+                if (date.toDate && typeof date.toDate === 'function') {
+                    date = date.toDate();
+                }
+                // Handle server timestamp (string)
+                if (typeof date === 'string') {
+                    date = new Date(date);
+                }
+                // Handle already Date object
+                if (!(date instanceof Date) || isNaN(date.getTime())) {
+                    return 'N/A';
+                }
+                return new Intl.DateTimeFormat('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }).format(date);
+            } catch (err) {
+                console.error('Date format error:', err);
+                return 'N/A';
+            }
+        }
+
+        function calculateEstimatedDelivery() {
+            const deliveryDate = new Date();
+            deliveryDate.setDate(deliveryDate.getDate() + 4); // 3-5 business days
+            return new Intl.DateTimeFormat('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            }).format(deliveryDate);
+        }
+
+        async function loadOrderDetails() {
+            if (!orderId) {
+                document.querySelector('.confirmation-container').innerHTML = `
+                    <div style="text-align: center; padding: 40px;">
+                        <p style="color: var(--muted); margin-bottom: 20px;">Order ID not found</p>
+                        <button class="btn btn-primary" onclick="window.location.href='/index.html'" style="margin: 0;">Return to Home</button>
+                    </div>
+                `;
+                return;
+            }
+
+            try {
+                // Fetch order from API with credentials + orderCode as secret token
+                const res = await fetch(`/api/orders/${orderId}?code=${orderCode}`, { credentials: 'include' });
+                const data = await res.json();
+                
+                console.log('📋 Order details response:', data);
+                
+                if (!data.ok || !data.order) {
+                    throw new Error('Order not found');
+                }
+
+                const order = data.order;
+
+                // Order Number
+                document.getElementById('orderNumber').textContent = '#' + orderId.substring(0, 8).toUpperCase();
+
+                // Order Date
+                document.getElementById('orderDate').textContent = formatDate(order.createdAt || order.order_date);
+
+                // Estimated Delivery
+                document.getElementById('estimatedDelivery').textContent = calculateEstimatedDelivery();
+
+                // Payment Method
+                const paymentMethod = order.paymentMethod === 'cod' ? '💰 Cash on Delivery' : '💳 Online Payment';
+                document.getElementById('paymentMethod').textContent = paymentMethod;
+
+                // Order Code - make sure to display it
+                const displayOrderCode = orderCode || order.orderCode || order.order_code || 'PENDING';
+                document.getElementById('orderCode').textContent = displayOrderCode;
+                console.log('Order Code:', displayOrderCode, 'from params:', orderCode);
+
+                // Shipping Info - handle both formats
+                const shipping = order.shippingInfo || order.shipping || {};
+                const firstName = shipping.firstName || shipping.first_name || '';
+                const lastName = shipping.lastName || shipping.last_name || '';
+                const address = shipping.address || '';
+                const city = shipping.city || '';
+                const postalCode = shipping.postalCode || shipping.postal_code || '';
+                const country = shipping.country || 'Egypt';
+                const email = shipping.email || '';
+                const phone = shipping.phone || '';
+                const notes = shipping.notes || '';
+                
+                document.getElementById('shippingInfo').innerHTML = `
+                    <strong>${firstName} ${lastName}</strong><br>
+                    ${address}<br>
+                    ${city}, ${postalCode}<br>
+                    ${country}<br><br>
+                    📧 ${email}<br>
+                    📱 ${phone}
+                    ${notes ? `<br><br><strong>Special Instructions:</strong><br>${notes}` : ''}
+                `;
+
+                // Order Items
+                const itemsHtml = (order.items || []).map(item => `
+                    <div class="order-item">
+                        <div>
+                            <span class="item-name">${item.name || ''}</span><br>
+                            <span class="item-qty">Qty: ${item.quantity || 1}</span>
+                        </div>
+                        <span class="item-price">${((item.subtotal || item.price * item.quantity) || 0).toLocaleString('en-US')} EGP</span>
+                    </div>
+                `).join('');
+                document.getElementById('orderItems').innerHTML = itemsHtml || '<p>No items</p>';
+
+                // Billing - handle both formats
+                const billing = order.billing || order.summary || {};
+                const subtotal = billing.subtotal || 0;
+                const tax = billing.tax || 0;
+                const shippingFee = billing.shippingFee || billing.shipping_cost || 50;
+                const total = billing.total || 0;
+                
+                document.getElementById('subtotalAmount').textContent = subtotal.toLocaleString('en-US') + ' EGP';
+                document.getElementById('taxAmount').textContent = tax.toLocaleString('en-US') + ' EGP';
+                document.getElementById('shippingAmount').textContent = shippingFee.toLocaleString('en-US') + ' EGP';
+                document.getElementById('totalAmount').textContent = total.toLocaleString('en-US') + ' EGP';
+
+            } catch (error) {
+                console.error('Error loading order:', error);
+                const errorMsg = error.message || 'Failed to load order details';
+                document.querySelector('.confirmation-container').innerHTML = `
+                    <div style="text-align: center; padding: 40px;">
+                        <p style="color: #dc2626; margin-bottom: 10px; font-weight: 700;">Failed to load order details</p>
+                        <p style="color: var(--muted); font-size: 13px; margin-bottom: 20px;">${errorMsg}</p>
+                        <button class="btn btn-primary" onclick="window.location.href='/index.html'" style="margin: 0;">Return to Home</button>
+                    </div>
+                `;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadOrderDetails);
+    </script>
+</body>
+</html>

@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار الإصلاحات - Test Fixes</title>
+    <style>
+        body { font-family: 'Inter', sans-serif; margin: 20px; background: #f8f9fa; }
+        .test-section { 
+            background: white; 
+            padding: 25px; 
+            margin: 20px 0; 
+            border-radius: 15px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 2px solid #e5e7eb;
+        }
+        .test-section h2 { 
+            color: #05a391; 
+            margin: 0 0 20px 0; 
+            font-size: 20px;
+            font-weight: 900;
+        }
+        .btn {
+            background: #05a391;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            margin: 5px;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        .btn:hover { 
+            background: #048c7f; 
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(5, 163, 145, 0.3);
+        }
+        .btn-danger {
+            background: #dc2626;
+        }
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+        .result {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        .success { 
+            background: #d1fae5; 
+            color: #065f46; 
+            border: 2px solid #10b981;
+        }
+        .error { 
+            background: #fee2e2; 
+            color: #991b1b; 
+            border: 2px solid #ef4444;
+        }
+        .info { 
+            background: #dbeafe; 
+            color: #1e40af; 
+            border: 2px solid #3b82f6;
+        }
+        .warning {
+            background: #fef3c7;
+            color: #92400e;
+            border: 2px solid #f59e0b;
+        }
+        pre { 
+            background: #1f2937; 
+            color: #f3f4f6; 
+            padding: 15px; 
+            border-radius: 8px; 
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        .step {
+            background: #f3f4f6;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #05a391;
+        }
+        .step h4 { margin: 0 0 10px 0; color: #05a391; }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center; color: #05a391; margin: 0 0 30px 0;">🧪 اختبار الإصلاحات الشخصي</h1>
+    
+    <div class="test-section">
+        <h2>📋 الخطوة 1: التحقق من السيرفر</h2>
+        <button class="btn" onclick="testServer()">اختبار السيرفر</button>
+        <div id="serverResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>👤 الخطوة 2: اختبار المستخدمين</h2>
+        <button class="btn" onclick="checkCurrentUser()">التحقق من المستخدم الحالي</button>
+        <button class="btn btn-danger" onclick="logout()">تسجيل الخروج</button>
+        <div id="userResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>📦 الخطوة 3: اختبار الطلبات في لوحة التحكم</h2>
+        <button class="btn" onclick="testAdminOrders()">عرض الطلبات الحالية</button>
+        <button class="btn" onclick="testDebugOrders()">عرض معلومات تصحيحية</button>
+        <div id="ordersResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>🛒 الخطوة 4: اختبار التحقق من البيانات</h2>
+        <div class="step">
+            <h4>اختبار 1: بيانات فارغة (يجب أن يفشل)</h4>
+            <button class="btn btn-danger" onclick="testEmptyOrder()">إرسال طلب فارغ</button>
+        </div>
+        <div class="step">
+            <h4>اختبار 2: بيانات غير مكتملة (يجب أن يفشل)</h4>
+            <button class="btn btn-danger" onclick="testIncompleteOrder()">إرسال طلب غير مكتمل</button>
+        </div>
+        <div class="step">
+            <h4>اختبار 3: بيانات صحيحة (قد ينجح إذا مسجل دخول)</h4>
+            <button class="btn" onclick="testValidOrder()">إرسال طلب صحيح</button>
+        </div>
+        <div id="validationResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>🔄 الخطوة 5: اختبار إنشاء طلب من حساب مختلف</h2>
+        <p style="background: #fef3c7; padding: 15px; border-radius: 8px; border: 2px solid #f59e0b;">
+            <strong>ملاحظة:</strong> هذا الاختبار يتطلب خطوات يدوية:
+        </p>
+        <ol style="background: #f3f4f6; padding: 15px; border-radius: 8px;">
+            <li>افتح نافذة جديدة وضعها في وضع التصفح الخفي</li>
+            <li>سجل دخول بحساب مختلف</li>
+            <li>اعمل طلب من هناك</li>
+            <li>ارجع هنا واضغط "تحديث الطلبات"</li>
+        </ol>
+        <button class="btn" onclick="testAdminOrders()">تحديث الطلبات</button>
+        <div id="multiUserResult"></div>
+    </div>
+
+    <script>
+        function addResult(containerId, message, type = 'info') {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            div.innerHTML = message;
+            container.appendChild(div);
+        }
+
+        function clearResults(containerId) {
+            document.getElementById(containerId).innerHTML = '';
+        }
+
+        async function testServer() {
+            clearResults('serverResult');
+            try {
+                const response = await fetch('/api/status');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    addResult('serverResult', 
+                        `✅ السيرفر يعمل بنجاح!<br>
+                        📊 Database: ${data.databaseConnected ? 'متصل ✅' : 'غير متصل ❌'}<br>
+                        🔥 Firebase: ${data.envLoaded ? 'جاهز ✅' : 'غير جاهز ❌'}<br>
+                        🌐 Port: ${data.port}<br>
+                        💾 Provider: ${data.databaseProvider}<br>
+                        🖼️ Image Storage: ${data.imageStorageProvider}`, 
+                        'success'
+                    );
+                } else {
+                    addResult('serverResult', '❌ السيرفر لا يستجيب', 'error');
+                }
+            } catch (error) {
+                addResult('serverResult', `❌ خطأ في الاتصال: ${error.message}`, 'error');
+            }
+        }
+
+        async function checkCurrentUser() {
+            clearResults('userResult');
+            try {
+                const response = await fetch('/api/session', { credentials: 'include' });
+                const data = await response.json();
+                
+                if (response.ok && data.ok && data.user) {
+                    const user = data.user;
+                    addResult('userResult', 
+                        `✅ مسجل دخول كـ:<br>
+                        📧 Email: ${user.email}<br>
+                        👤 Name: ${user.first} ${user.last}<br>
+                        🛡️ Admin: ${user.isAdmin ? 'نعم ✅' : 'لا ❌'}`, 
+                        'success'
+                    );
+                } else {
+                    addResult('userResult', '❌ غير مسجل دخول', 'warning');
+                    addResult('userResult', '💡 سجل دخول أولاً لاختبار الطلبات', 'info');
+                }
+            } catch (error) {
+                addResult('userResult', `❌ خطأ: ${error.message}`, 'error');
+            }
+        }
+
+        async function logout() {
+            try {
+                const response = await fetch('/auth/logout', { 
+                    method: 'POST',
+                    credentials: 'include' 
+                });
+                
+                if (response.ok) {
+                    addResult('userResult', '✅ تم تسجيل الخروج بنجاح', 'success');
+                    setTimeout(checkCurrentUser, 1000);
+                } else {
+                    addResult('userResult', '❌ فشل تسجيل الخروج', 'error');
+                }
+            } catch (error) {
+                addResult('userResult', `❌ خطأ: ${error.message}`, 'error');
+            }
+        }
+
+        async function testAdminOrders() {
+            clearResults('ordersResult');
+            try {
+                const response = await fetch('/api/admin/orders-v2', { credentials: 'include' });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    const count = data.count || data.orders?.length || 0;
+                    addResult('ordersResult', 
+                        `✅ تم العثور على ${count} طلب في لوحة التحكم`, 
+                        'success'
+                    );
+                    
+                    if (count > 0) {
+                        const orders = data.orders || [];
+                        let html = '<h4>آخر 3 طلبات:</h4>';
+                        orders.slice(0, 3).forEach((order, index) => {
+                            const shipping = order.shipping || {};
+                            html += `
+                                <div style="background: #f8f9fa; padding: 10px; margin: 5px 0; border-radius: 5px; border-right: 3px solid #05a391;">
+                                    <strong>طلب #${index + 1}</strong><br>
+                                    📋 الكود: ${order.order_code || 'N/A'}<br>
+                                    👤 العميل: ${shipping.first_name || ''} ${shipping.last_name || ''}<br>
+                                    📧 الإيميل: ${shipping.email || 'N/A'}<br>
+                                    📱 الهاتف: ${shipping.phone || 'N/A'}<br>
+                                    🏠 العنوان: ${shipping.address || 'N/A'}, ${shipping.city || 'N/A'}<br>
+                                    📊 الحالة: ${order.order_status || 'pending'}
+                                </div>
+                            `;
+                        });
+                        addResult('ordersResult', html, 'info');
+                    }
+                } else {
+                    addResult('ordersResult', `❌ خطأ: ${data.error || 'فشل في جلب الطلبات'}`, 'error');
+                    if (response.status === 401) {
+                        addResult('ordersResult', '💡 يجب تسجيل دخول كـ admin', 'info');
+                    }
+                }
+            } catch (error) {
+                addResult('ordersResult', `❌ خطأ: ${error.message}`, 'error');
+            }
+        }
+
+        async function testDebugOrders() {
+            clearResults('ordersResult');
+            try {
+                const response = await fetch('/api/debug/orders', { credentials: 'include' });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    addResult('ordersResult', 
+                        `✅ معلومات التصحيح:<br>
+                        📊 إجمالي الطلبات: ${data.totalOrders}<br>
+                        👥 المستخدمون المختلفون: ${data.uniqueUsers?.length || 0}<br>
+                        📋 الطلبات (by createdAt): ${data.orderByCreatedAt?.length || 0}<br>
+                        📋 الطلبات (by order_date): ${data.orderByOrderDate?.length || 0}`, 
+                        'success'
+                    );
+                    
+                    if (data.uniqueUsers && data.uniqueUsers.length > 0) {
+                        addResult('ordersResult', 
+                            `👥 المستخدمون الذين لديهم طلبات:<br>${data.uniqueUsers.join('<br>')}`, 
+                            'info'
+                        );
+                    }
+                } else {
+                    addResult('ordersResult', `❌ خطأ: ${data.error || 'فشل في جلب معلومات التصحيح'}`, 'error');
+                }
+            } catch (error) {
+                addResult('ordersResult', `❌ خطأ: ${error.message}`, 'error');
+            }
+        }
+
+        async function testEmptyOrder() {
+            clearResults('validationResult');
+            try {
+                const response = await fetch('/api/orders', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        items: [],
+                        shippingInfo: {},
+                        billing: {}
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (!response.ok) {
+                    addResult('validationResult', 
+                        `✅ التحقق يعمل! الطلب الفارغ تم رفضه:<br>
+                        ❌ الخطأ: ${result.error}`, 
+                        'success'
+                    );
+                } else {
+                    addResult('validationResult', 
+                        '❌ مشكلة! الطلب الفارغ تم قبوله - يجب أن يتم رفضه', 
+                        'error'
+                    );
+                }
+            } catch (error) {
+                addResult('validationResult', 
+                    `❌ خطأ في الاختبار: ${error.message}`, 
+                    'error'
+                );
+            }
+        }
+
+        async function testIncompleteOrder() {
+            clearResults('validationResult');
+            try {
+                const incompleteData = {
+                    items: [{ id: 1, name: 'Test Product', price: 100, quantity: 1 }],
+                    shippingInfo: {
+                        firstName: 'John',
+                        lastName: 'Doe',
+                        email: 'invalid-email',  // Invalid email
+                        phone: '123',  // Too short
+                        address: '',  // Empty
+                        city: 'Cairo',
+                        postalCode: '12345'
+                    },
+                    billing: { subtotal: 100, tax: 14, shippingFee: 50, total: 164 }
+                };
+
+                const response = await fetch('/api/orders', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify(incompleteData)
+                });
+
+                const result = await response.json();
+                
+                if (!response.ok) {
+                    addResult('validationResult', 
+                        `✅ التحقق يعمل! الطلب غير مكتمل تم رفضه:<br>
+                        ❌ الخطأ: ${result.error}`, 
+                        'success'
+                    );
+                } else {
+                    addResult('validationResult', 
+                        '❌ مشكلة! الطلب غير مكتمل تم قبوله - يجب أن يتم رفضه', 
+                        'error'
+                    );
+                }
+            } catch (error) {
+                addResult('validationResult', 
+                    `❌ خطأ في الاختبار: ${error.message}`, 
+                    'error'
+                );
+            }
+        }
+
+        async function testValidOrder() {
+            clearResults('validationResult');
+            try {
+                const validData = {
+                    items: [{ id: 1, name: 'Test Product', price: 100, quantity: 1 }],
+                    shippingInfo: {
+                        firstName: 'Ahmed',
+                        lastName: 'Mohamed',
+                        email: 'test@example.com',
+                        phone: '01234567890',
+                        address: '123 Test Street, Apt 4B',
+                        city: 'Cairo',
+                        postalCode: '12345',
+                        country: 'Egypt'
+                    },
+                    billing: { subtotal: 100, tax: 14, shippingFee: 50, total: 164 }
+                };
+
+                const response = await fetch('/api/orders', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify(validData)
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    addResult('validationResult', 
+                        `✅ الطلب الصحيح تم قبوله:<br>
+                        📋 Order ID: ${result.orderId}<br>
+                        🔢 Order Code: ${result.orderCode}`, 
+                        'success'
+                    );
+                    addResult('validationResult', 
+                        '💡 الآن تحقق من لوحة التحكم لرؤية هذا الطلب', 
+                        'info'
+                    );
+                } else {
+                    addResult('validationResult', 
+                        `⚠️ الطلب الصحيح تم رفضه:<br>
+                        ❌ الخطأ: ${result.error}<br>
+                        💡 قد تحتاج لتسجيل الدخول أولاً`, 
+                        'warning'
+                    );
+                }
+            } catch (error) {
+                addResult('validationResult', 
+                    `❌ خطأ في الاختبار: ${error.message}`, 
+                    'error'
+                );
+            }
+        }
+
+        // Auto-test server on load
+        window.addEventListener('load', () => {
+            testServer();
+            setTimeout(checkCurrentUser, 1000);
+        });
+    </script>
+</body>
+</html>

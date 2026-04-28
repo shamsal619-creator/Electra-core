@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Cart - ElectraCore</title>
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <title>Shopping Cart - ElectraCore</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <style>
         :root {
@@ -20,6 +20,7 @@
 
         body {
             background-color: var(--bg);
+            font-family: 'Inter', sans-serif;
         }
 
         .cart-page {
@@ -240,7 +241,7 @@
             <img src="design/logo.png" alt="ElectraCore logo">
         </a>
         <div class="search-bar">
-            <input type="text" placeholder="Search for items...">
+            <input type="text" placeholder="Search products...">
         </div>
         <div class="hamburger">
             <span></span>
@@ -267,8 +268,12 @@
                     <span id="subtotal">0 EGP</span>
                 </div>
                 <div class="summary-row">
-                    <span>Shipping</span>
-                    <span>Free</span>
+                    <span>Shipping Fee</span>
+                    <span id="shipping">Calculated at checkout</span>
+                </div>
+                <div class="summary-row">
+                    <span>Tax (14%)</span>
+                    <span id="tax">0 EGP</span>
                 </div>
                 <div class="summary-total">
                     <span>Total</span>
@@ -285,7 +290,7 @@
             <div style="font-size: 64px;">🛒</div>
             <h2>Your cart is empty</h2>
             <p>Looks like you haven't added any products to your cart yet.</p>
-            <a href="index.html" class="btn-checkout" style="max-width: 250px; margin: 30px auto;">Start Shopping</a>
+            <a href="index.html" class="btn-checkout" style="max-width: 250px; margin: 30px auto;">Start Shopping Now</a>
         </div>
     </main>
 
@@ -323,7 +328,8 @@
         </div>
     </footer>
 
-    <script src="js/products.js"></script>`n    <script src="js/main.js"></script>
+    <script src="js/products.js"></script>
+    <script src="js/main.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             renderCart();
@@ -335,6 +341,7 @@
             const cartContent = document.getElementById('cartContent');
             const emptyState = document.getElementById('emptyState');
             const subtotalEl = document.getElementById('subtotal');
+            const taxEl = document.getElementById('tax');
             const totalEl = document.getElementById('total');
 
             if (cart.length === 0) {
@@ -346,11 +353,11 @@
             cartContainer.style.display = 'grid';
             emptyState.style.display = 'none';
             cartContent.innerHTML = '';
-            let total = 0;
+            let subtotal = 0;
 
             cart.forEach((item, index) => {
                 const itemTotal = item.price * item.quantity;
-                total += itemTotal;
+                subtotal += itemTotal;
 
                 const itemRow = document.createElement('div');
                 itemRow.className = 'cart-item';
@@ -372,9 +379,12 @@
                 cartContent.appendChild(itemRow);
             });
 
-            const totalText = total.toLocaleString() + ' EGP';
-            subtotalEl.textContent = totalText;
-            totalEl.textContent = totalText;
+            const tax = Math.round(subtotal * 0.14);
+            const total = subtotal + tax;
+
+            subtotalEl.textContent = `${subtotal.toLocaleString()} EGP`;
+            taxEl.textContent = `${tax.toLocaleString()} EGP`;
+            totalEl.textContent = `${total.toLocaleString()} EGP`;
         }
 
         window.updateQty = (index, delta) => {

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Orders - ElectraCore</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --teal: #05a391; --teal-dark: #048c7f; --dark: #0f172a; --muted: #64748b; --light: #f8fafc; --border: #e2e8f0; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f8fafc; color: var(--dark); }
+        .header { background: white; border-bottom: 1px solid var(--border); padding: 16px 0; position: sticky; top: 0; z-index: 100; }
+        .header-container { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 24px; font-weight: 900; color: var(--teal); text-decoration: none; }
+        .nav-links { display: flex; gap: 24px; align-items: center; }
+        .nav-links a { text-decoration: none; color: var(--muted); font-weight: 600; font-size: 14px; }
+        .nav-links a:hover { color: var(--teal); }
+        .container { max-width: 1000px; margin: 40px auto; padding: 0 24px; }
+        .page-header { margin-bottom: 32px; }
+        .page-header h1 { font-size: 32px; font-weight: 900; }
+        .page-header p { color: var(--muted); }
+        .orders-list { display: flex; flex-direction: column; gap: 20px; }
+        .order-card { background: white; border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+        .order-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .order-code { background: var(--teal); color: white; padding: 6px 14px; border-radius: 8px; font-weight: 800; font-family: monospace; }
+        .order-status { padding: 6px 16px; border-radius: 50px; font-weight: 700; font-size: 12px; text-transform: uppercase; }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-delivered { background: #d1fae5; color: #065f46; }
+        .status-cancelled { background: #fee2e2; color: #991b1b; }
+        .order-body { padding: 20px 24px; }
+        .order-items { display: flex; flex-direction: column; gap: 12px; }
+        .order-item { display: flex; gap: 16px; align-items: center; padding: 12px; background: var(--light); border-radius: 10px; }
+        .item-details { flex: 1; }
+        .item-name { font-weight: 700; }
+        .item-price { font-weight: 800; color: var(--teal); }
+        .order-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; background: var(--light); }
+        .order-total { font-weight: 800; font-size: 18px; }
+        .shipping-info { padding: 16px 24px; background: #f0fdf4; border-top: 1px solid #bbf7d0; }
+        .shipping-title { font-weight: 700; color: var(--teal); font-size: 13px; text-transform: uppercase; }
+        .empty-state { text-align: center; padding: 60px; background: white; border-radius: 16px; border: 2px dashed var(--border); }
+        .btn-primary { background: var(--teal); color: white; border: none; padding: 14px 28px; border-radius: 10px; font-weight: 700; text-decoration: none; display: inline-block; }
+        .user-dropdown { position: relative; }
+        .user-btn { display: flex; align-items: center; gap: 8px; background: var(--light); border: 1px solid var(--border); border-radius: 50px; padding: 8px 16px; cursor: pointer; font-weight: 600; }
+        .dropdown-menu { position: absolute; top: calc(100% + 8px); right: 0; background: white; border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); min-width: 220px; opacity: 0; visibility: hidden; transform: translateY(-10px); transition: all 0.3s; z-index: 1000; }
+        .dropdown-menu.active { opacity: 1; visibility: visible; transform: translateY(0); }
+        .dropdown-item { display: flex; align-items: center; gap: 12px; padding: 14px 18px; text-decoration: none; color: var(--dark); font-weight: 600; font-size: 14px; border-bottom: 1px solid var(--border); }
+        .dropdown-item:last-child { border-bottom: none; }
+        .dropdown-item:hover { background: var(--light); color: var(--teal); }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-container">
+            <a href="index.html" class="logo">ElectraCore</a>
+            <nav class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="cart.html">Cart</a>
+                <div class="user-dropdown" id="userDropdown">
+                    <button class="user-btn" id="userBtn">
+                        <span id="userName">User</span>
+                        <span>▼</span>
+                    </button>
+                    <div class="dropdown-menu" id="dropdownMenu">
+                        <div class="dropdown-item" style="border-bottom: 1px solid var(--border); font-weight: 800; color: var(--muted);">My Account</div>
+                        <a href="my-orders.html" class="dropdown-item">📋 My Orders</a>
+                        <a href="profile.html" class="dropdown-item">👤 Profile</a>
+                        <div style="height: 1px; background: var(--border); margin: 8px 0;"></div>
+                        <a href="#" class="dropdown-item" onclick="logout()" style="color: #dc2626;">🚪 Logout</a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="page-header">
+            <h1>My Orders</h1>
+            <p>Track and view all your orders in one place</p>
+        </div>
+        <div id="ordersContainer">
+            <div class="empty-state">
+                <div style="font-size: 48px; margin-bottom: 16px;">📦</div>
+                <h3>No Orders Yet</h3>
+                <p>You haven't placed any orders yet.</p>
+                <a href="index.html" class="btn-primary">Start Shopping</a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Toggle dropdown
+        document.getElementById('userBtn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.getElementById('dropdownMenu').classList.toggle('active');
+        });
+        document.addEventListener('click', () => {
+            document.getElementById('dropdownMenu').classList.remove('active');
+        });
+
+        // Load user and orders
+        async function loadData() {
+            try {
+                const sessionRes = await fetch('/api/session', { credentials: 'include' });
+                const sessionData = await sessionRes.json();
+                
+                if (!sessionData.ok || !sessionData.user) {
+                    window.location.href = '/signin.html';
+                    return;
+                }
+
+                const user = sessionData.user;
+                document.getElementById('userName').textContent = user.first || user.email.split('@')[0];
+
+                // Load orders from correct endpoint
+                const ordersRes = await fetch('/api/orders', { credentials: 'include' });
+                const ordersData = await ordersRes.json();
+                
+                console.log('📋 User orders response:', ordersData);
+
+                console.log('📋 Orders data:', ordersData);
+                
+                if (ordersData.ok && ordersData.orders && ordersData.orders.length > 0) {
+                    renderOrders(ordersData.orders);
+                } else {
+                    console.log('ℹ️ No orders found for this user');
+                    document.getElementById('ordersContainer').innerHTML = `
+                        <div class="empty-state">
+                            <div style="font-size: 48px; margin-bottom: 16px;">📦</div>
+                            <h3>No Orders Yet</h3>
+                            <p>You haven't placed any orders yet. Start shopping to see your orders here!</p>
+                            <a href="index.html" class="btn-primary">Start Shopping</a>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading orders:', error);
+            }
+        }
+
+        function renderOrders(orders) {
+            const container = document.getElementById('ordersContainer');
+            
+            container.innerHTML = orders.map(order => {
+                // Handle both Firestore and API response formats
+                const shipping = order.shipping || {};
+                const items = order.items || [];
+                const summary = order.summary || {};
+                const payment = order.payment || {};
+                const status = order.order_status || 'pending';
+                const statusClass = `status-${status}`;
+                
+                // Handle Firestore timestamp
+                let date = 'N/A';
+                if (order.createdAt) {
+                    if (order.createdAt.toDate) {
+                        date = order.createdAt.toDate().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                    } else if (order.createdAt.seconds) {
+                        date = new Date(order.createdAt.seconds * 1000).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                    } else {
+                        date = new Date(order.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                    }
+                } else if (order.order_date) {
+                    if (order.order_date.toDate) {
+                        date = order.order_date.toDate().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                    } else {
+                        date = new Date(order.order_date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                    }
+                }
+                
+                return `
+                    <div class="order-card">
+                        <div class="order-header">
+                            <div style="display: flex; gap: 16px; align-items: center;">
+                                <div class="order-code">${order.order_code || 'N/A'}</div>
+                                <div style="color: var(--muted); font-size: 13px;">${date}</div>
+                            </div>
+                            <div class="order-status ${statusClass}">${status}</div>
+                        </div>
+                        <div class="order-body">
+                            <div class="order-items">
+                                ${items.map(item => `
+                                    <div class="order-item">
+                                        <div class="item-details">
+                                            <div class="item-name">${item.name || item.title || 'Product'}</div>
+                                            <div style="color: var(--muted); font-size: 13px;">Qty: ${item.quantity || 1}</div>
+                                        </div>
+                                        <div class="item-price">${((item.price || 0) * (item.quantity || 1)).toLocaleString()} EGP</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        <div class="order-footer">
+                            <div style="display: flex; gap: 20px; font-size: 13px; color: var(--muted);">
+                                <span><strong>${items.length}</strong> items</span>
+                                <span>Payment: ${payment.payment_method || 'COD'}</span>
+                            </div>
+                            <div class="order-total">Total: <span style="color: var(--teal);">${(summary.total_amount || 0).toLocaleString()} EGP</span></div>
+                        </div>
+                        <div class="shipping-info">
+                            <div class="shipping-title">Shipping Information</div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px; margin-top: 8px;">
+                                <div><span style="color: var(--muted);">Name:</span> <strong>${shipping.first_name || ''} ${shipping.last_name || ''}</strong></div>
+                                <div><span style="color: var(--muted);">Phone:</span> <strong>${shipping.phone || 'N/A'}</strong></div>
+                                <div><span style="color: var(--muted);">Address:</span> <strong>${shipping.address || 'N/A'}</strong></div>
+                                <div><span style="color: var(--muted);">City:</span> <strong>${shipping.city || 'N/A'}</strong></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function logout() {
+            fetch('/auth/logout', { method: 'POST', credentials: 'include' })
+                .then(() => window.location.href = '/signin.html')
+                .catch(() => window.location.href = '/signin.html');
+        }
+
+        loadData();
+    </script>
+</body>
+</html>

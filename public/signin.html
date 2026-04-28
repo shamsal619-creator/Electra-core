@@ -27,8 +27,8 @@
         }
         .left {
             flex: 0 0 42%;
-            background: var(--teal);
-            color: white;
+            background: var(--signin-left-bg);
+            color: var(--signin-left-text);
             padding: 60px 40px;
             display: flex;
             flex-direction: column;
@@ -44,7 +44,7 @@
         .logo-mark img {
             height: 140px; /* High-res large logo */
             width: auto;
-            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.1));
+            filter: drop-shadow(0 4px 10px var(--shadow-lg));
         }
         .left h1 {
             font-size: 36px;
@@ -54,7 +54,7 @@
         .left .divider {
             width: 50px;
             height: 4px;
-            background: rgba(255,255,255,0.3);
+            background: var(--white-overlay-md);
             margin: 24px 0;
             border-radius: 4px;
         }
@@ -70,16 +70,16 @@
             margin-top: 40px;
             padding: 14px 32px;
             border-radius: 12px;
-            border: 2px solid rgba(255,255,255,0.4);
+            border: 2px solid var(--white-overlay-dark);
             color: white;
             text-decoration: none;
             font-weight: 700;
             transition: all 0.3s ease;
         }
         .left .cta:hover {
-            background: rgba(255,255,255,0.15);
+            background: var(--white-overlay-light);
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px var(--shadow-lg);
         }
         .right {
             flex: 1;
@@ -91,7 +91,7 @@
             margin-bottom: 32px;
             font-size: 32px;
             font-weight: 800; /* Bolder heading */
-            color: var(--dark);
+            color: var(--signin-heading);
         }
         .form-group {
             display: flex;
@@ -102,7 +102,7 @@
         .form-group label {
             font-size: 14px;
             font-weight: 600;
-            color: #555;
+            color: var(--form-label-color);
             margin-left: 2px;
         }
         input[type="text"],
@@ -110,18 +110,18 @@
         input[type="password"] {
             height: 52px; /* Increased height */
             padding: 12px 18px; /* Increased padding */
-            border: 1px solid #e2e8f0; /* Light grey border */
+            border: 1px solid var(--signin-form-input-border); /* Light grey border */
             border-radius: 10px; /* Subtle border-radius */
             font-size: 15px;
             font-family: inherit;
             transition: all 0.3s ease;
-            background: #f8fafc;
+            background: var(--signin-form-input-bg);
         }
         input:focus {
             outline: none;
             border-color: var(--teal); /* Smooth transition to green */
             background: #fff;
-            box-shadow: 0 0 0 4px rgba(5, 163, 145, 0.1);
+            box-shadow: 0 0 0 4px var(--teal-shadow-light);
         }
         .password-wrapper {
             position: relative;
@@ -142,7 +142,7 @@
             align-items: center;
             justify-content: center;
             padding: 0;
-            color: #94a3b8;
+            color: var(--signin-text-secondary);
             transition: all 0.2s ease;
         }
         .toggle-password:hover {
@@ -155,7 +155,7 @@
         .right .btn {
             width: 100%;
             height: 52px;
-            background: var(--teal);
+            background: var(--signin-button-bg);
             color: white;
             border: none;
             border-radius: 10px;
@@ -166,7 +166,7 @@
             margin-top: 10px;
         }
         .right .btn:hover {
-            background: #048c7f;
+            background: var(--signin-button-hover-bg);
             transform: translateY(-1px);
             box-shadow: 0 4px 12px rgba(5, 163, 145, 0.2);
         }
@@ -182,7 +182,7 @@
             display: flex;
             align-items: center;
             text-align: center;
-            color: #94a3b8;
+            color: var(--signin-text-secondary);
             font-size: 13px;
             font-weight: 500;
         }
@@ -190,7 +190,7 @@
         .divider-text::after {
             content: "";
             flex: 1;
-            border-bottom: 1px solid #e2e8f0;
+            border-bottom: 1px solid var(--form-input-border);
         }
         .divider-text:not(:empty)::before {
             margin-right: 15px;
@@ -206,19 +206,19 @@
             width: 100%;
             height: 52px;
             background: white;
-            border: 1px solid #e2e8f0;
+            border: 1px solid var(--signin-form-input-border);
             border-radius: 10px;
-            color: #475569;
+            color: var(--text-secondary);
             font-size: 15px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
         }
         .google-btn:hover {
-            background: #f8fafc;
-            border-color: #cbd5e1;
+            background: var(--form-input-bg);
+            border-color: var(--form-input-border);
             transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 8px var(--shadow-sm);
         }
         .google-btn img {
             width: 20px;
@@ -226,7 +226,7 @@
         }
 
         .muted {
-            color: #64748b;
+            color: var(--text-muted);
             font-size: 14px;
             margin-top: 24px;
             text-align: center;
@@ -325,6 +325,43 @@
             googleSigninLink.href = `/auth/google?returnTo=${encodeURIComponent(safeReturnTo)}`;
         }
 
+        // Professional Toast Function
+        function showToast(message, type = 'success') {
+            let container = document.querySelector('.toast-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.className = 'toast-container';
+                container.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px;';
+                document.body.appendChild(container);
+            }
+
+            const toast = document.createElement('div');
+            const colors = {
+                success: { bg: '#05a391', icon: '✓' },
+                error: { bg: '#dc2626', icon: '✕' }
+            };
+            const color = colors[type] || colors.success;
+
+            toast.style.cssText = `
+                background: ${color.bg}; color: white; border-radius: 12px; padding: 16px 20px;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 12px;
+                min-width: 300px; transform: translateX(120%); opacity: 0; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+                font-family: 'Inter', sans-serif; font-weight: 700; font-size: 14px;
+            `;
+            toast.innerHTML = `<span style="font-size: 20px;">${color.icon}</span><div>${message}</div>`;
+
+            container.appendChild(toast);
+            toast.offsetHeight; // Force reflow
+            toast.style.transform = 'translateX(0)';
+            toast.style.opacity = '1';
+
+            setTimeout(() => {
+                toast.style.transform = 'translateX(120%)';
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 400);
+            }, 3000);
+        }
+
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('email').value;
@@ -341,13 +378,15 @@
                     try {
                         localStorage.setItem('currentUser', JSON.stringify(data.user));
                     } catch (_) {}
-                    alert('Login successful!');
-                    window.location.href = safeReturnTo;
+                    showToast(data.message || 'Welcome back! Login successful.', 'success');
+                    setTimeout(() => {
+                        window.location.href = safeReturnTo;
+                    }, 1500);
                 } else {
-                    alert('Error: ' + data.error);
+                    showToast(data.error || 'Login failed. Please try again.', 'error');
                 }
             } catch (err) {
-                alert('Failed to connect to server. Make sure it is running.');
+                showToast('Failed to connect to server. Please try again later.', 'error');
             }
         });
     </script>

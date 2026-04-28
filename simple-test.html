@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار بسيط - Simple Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; text-align: right; }
+        .test-box { border: 2px solid #007bff; padding: 20px; margin: 10px 0; border-radius: 10px; }
+        .success { background: #d4edda; border-color: #28a745; }
+        .error { background: #f8d7da; border-color: #dc3545; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 5px; text-align: left; }
+    </style>
+</head>
+<body>
+    <h1>🧪 اختبار نظام الطلبات</h1>
+    
+    <div class="test-box">
+        <h2>اختبار 1: هل السيرفر يعمل؟</h2>
+        <button onclick="testServer()">اختبار السيرفر</button>
+        <div id="serverResult"></div>
+    </div>
+
+    <div class="test-box">
+        <h2>اختبار 2: عرض الطلبات في لوحة التحكم</h2>
+        <button onclick="testAdminOrders()">عرض الطلبات</button>
+        <div id="ordersResult"></div>
+    </div>
+
+    <div class="test-box">
+        <h2>اختبار 3: التحقق من البيانات المطلوبة</h2>
+        <button onclick="testValidation()">اختبار التحقق</button>
+        <div id="validationResult"></div>
+    </div>
+
+    <script>
+        function addResult(divId, message, type = 'success') {
+            const div = document.getElementById(divId);
+            div.innerHTML = `<div class="test-box ${type}">${message}</div>`;
+        }
+
+        async function testServer() {
+            try {
+                const response = await fetch('/api/status');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    addResult('serverResult', 
+                        `✅ السيرفر يعمل!<br>
+                        Database: ${data.databaseConnected ? 'متصل' : 'غير متصل'}<br>
+                        Provider: ${data.databaseProvider}<br>
+                        Port: ${data.port}`, 
+                        'success'
+                    );
+                } else {
+                    addResult('serverResult', '❌ السيرفر لا يستجيب', 'error');
+                }
+            } catch (error) {
+                addResult('serverResult', `❌ خطأ: ${error.message}`, 'error');
+            }
+        }
+
+        async function testAdminOrders() {
+            try {
+                // Test main admin endpoint
+                const response = await fetch('/api/admin/orders-v2');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    const count = data.count || data.orders?.length || 0;
+                    addResult('ordersResult', 
+                        `✅ تم العثور على ${count} طلب<br>
+                        <button onclick="showOrderDetails()">عرض التفاصيل</button>`, 
+                        'success'
+                    );
+                    
+                    // Store data for details view
+                    window.ordersData = data.orders || [];
+                } else {
+                    addResult('ordersResult', `❌ خطأ: ${data.error || 'فشل في جلب الطلبات'}`, 'error');
+                }
+            } catch (error) {
+                addResult('ordersResult', `❌ خطأ: ${error.message}`, 'error');
+            }
+        }
+
+        function showOrderDetails() {
+            const orders = window.ordersData || [];
+            if (orders.length === 0) {
+                addResult('ordersResult', 'لا توجد طلبات لعرضها', 'error');
+                return;
+            }
+
+            let html = '<h3>آخر 5 طلبات:</h3>';
+            orders.slice(0, 5).forEach((order, index) => {
+                const shipping = order.shipping || {};
+                html += `
+                    <div style="border: 1px solid #ddd; padding: 10px; margin: 5px 0;">
+                        <strong>طلب #${index + 1}</strong><br>
+                        الكود: ${order.order_code || 'N/A'}<br>
+                        العميل: ${shipping.first_name || ''} ${shipping.last_name || ''}<br>
+                        الإيميل: ${shipping.email || 'N/A'}<br>
+                        الهاتف: ${shipping.phone || 'N/A'}<br>
+                        الحالة: ${order.order_status || 'pending'}
+                    </div>
+                `;
+            });
+
+            const detailsDiv = document.getElementById('ordersResult');
+            detailsDiv.innerHTML = `<div class="test-box">${html}</div>`;
+        }
+
+        async function testValidation() {
+            try {
+                // Test with empty data (should fail)
+                const emptyData = {
+                    items: [],
+                    shippingInfo: {},
+                    billing: {}
+                };
+
+                const response = await fetch('/api/orders', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(emptyData)
+                });
+
+                const result = await response.json();
+                
+                if (!response.ok && result.error) {
+                    addResult('validationResult', 
+                        `✅ التحقق يعمل!<br>
+                        تم رفض الطلب بشكل صحيح<br>
+                        الخطأ: ${result.error}`, 
+                        'success'
+                    );
+                } else {
+                    addResult('validationResult', 
+                        `❌ التحقق لا يعمل!<br>
+                        يجب أن يتم رفض الطلب الفارغ`, 
+                        'error'
+                    );
+                }
+            } catch (error) {
+                addResult('validationResult', 
+                    `❌ خطأ في الاختبار: ${error.message}<br>
+                    قد تحتاج لتسجيل الدخول أولاً`, 
+                    'error'
+                );
+            }
+        }
+
+        // Auto-test server on load
+        window.addEventListener('load', () => {
+            setTimeout(testServer, 1000);
+        });
+    </script>
+</body>
+</html>

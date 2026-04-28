@@ -80,6 +80,9 @@ class User {
         this.country = data.country || '';
         this.timezone = data.timezone || '';
         this.address = data.address || '';
+        this.phone = data.phone || '';
+        this.city = data.city || '';
+        this.postalCode = data.postalCode || '';
         this.created = data.created ? toDate(data.created) : new Date();
         this.createdAt = data.createdAt ? toDate(data.createdAt) : new Date();
         this.updatedAt = data.updatedAt ? toDate(data.updatedAt) : new Date();
@@ -88,11 +91,10 @@ class User {
     }
 
     toObject() {
-        return {
+        const obj = {
             first: this.first ? String(this.first).trim() : '',
             last: this.last ? String(this.last).trim() : '',
             email: this.email ? String(this.email).trim().toLowerCase() : '',
-            password: this.password,
             googleId: this.googleId ? String(this.googleId).trim() : '',
             resetPasswordToken: this.resetPasswordToken || null,
             resetPasswordExpires: this.resetPasswordExpires || null,
@@ -102,10 +104,18 @@ class User {
             country: this.country ? String(this.country).trim() : '',
             timezone: this.timezone ? String(this.timezone).trim() : '',
             address: this.address ? String(this.address).trim() : '',
+            phone: this.phone ? String(this.phone).trim() : '',
+            city: this.city ? String(this.city).trim() : '',
+            postalCode: this.postalCode ? String(this.postalCode).trim() : '',
             created: this.created || new Date(),
             createdAt: this.createdAt || new Date(),
             updatedAt: new Date()
         };
+        // Only include password if it's defined (not undefined)
+        if (this.password !== undefined) {
+            obj.password = this.password;
+        }
+        return obj;
     }
 
     static collection() {
