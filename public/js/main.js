@@ -5,27 +5,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Hamburger menu toggle
     const hamburger = document.querySelector('.hamburger');
     const userActions = document.querySelector('.user-actions');
+    const userMenuDropdown = document.getElementById('userMenuDropdown');
 
-    if (hamburger && userActions) {
-        hamburger.addEventListener('click', () => {
-            // Mutual exclusion: close filter panel if opening user menu
-            if (!userActions.classList.contains('active') && window.toggleFilterPanel) {
-                const sidebar = document.querySelector('.filter-sidebar');
-                if (sidebar && sidebar.classList.contains('active')) {
-                    window.toggleFilterPanel();
-                }
-            }
-            userActions.classList.toggle('active');
+    if (hamburger && userMenuDropdown) {
+        hamburger.addEventListener('click', (e) => {
+            e.stopPropagation();
             hamburger.classList.toggle('active');
+            userMenuDropdown.classList.toggle('active');
         });
     }
 
     // Close menu when clicking outside
     document.addEventListener('click', (e) => {
-        if (userActions && userActions.classList.contains('active') && 
-            !userActions.contains(e.target) && 
+        if (userMenuDropdown && userMenuDropdown.classList.contains('active') &&
+            !userMenuDropdown.contains(e.target) &&
             !hamburger.contains(e.target)) {
-            userActions.classList.remove('active');
+            userMenuDropdown.classList.remove('active');
             hamburger.classList.remove('active');
         }
     });
@@ -326,15 +321,15 @@ async function setupHeaderAuth() {
                     transition: all 0.3s; z-index: 1000;
                 ">
                     <div style="padding: 12px 16px; border-bottom: 1px solid var(--border); font-weight: 800; font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px;">My Account</div>
-                    <a href="my-orders.html" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; text-decoration: none; color: var(--dark); font-weight: 600; font-size: 14px; transition: all 0.2s;" onmouseover="this.style.background='var(--light)'; this.style.color='var(--teal)'" onmouseout="this.style.background='white'; this.style.color='var(--dark)'">
-                        <span style="font-size: 18px;">�</span> My Orders
+                    <a href="my-orders.html" style="display: block; padding: 12px 16px; text-decoration: none; color: var(--dark); font-weight: 600; font-size: 14px; transition: all 0.2s;" onmouseover="this.style.background='var(--light)'; this.style.color='var(--teal)'" onmouseout="this.style.background='white'; this.style.color='var(--dark)'">
+                        My Orders
                     </a>
-                    <a href="profile.html" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; text-decoration: none; color: var(--dark); font-weight: 600; font-size: 14px; transition: all 0.2s;" onmouseover="this.style.background='var(--light)'; this.style.color='var(--teal)'" onmouseout="this.style.background='white'; this.style.color='var(--dark)'">
-                        <span style="font-size: 18px;">👤</span> Profile
+                    <a href="profile.html" style="display: block; padding: 12px 16px; text-decoration: none; color: var(--dark); font-weight: 600; font-size: 14px; transition: all 0.2s;" onmouseover="this.style.background='var(--light)'; this.style.color='var(--teal)'" onmouseout="this.style.background='white'; this.style.color='var(--dark)'">
+                        Profile
                     </a>
                     <div style="height: 1px; background: var(--border); margin: 4px 0;"></div>
-                    <button id="logoutBtn" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; width: 100%; border: none; background: none; color: #dc2626; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s; text-align: left;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='white'">
-                        <span style="font-size: 18px;">🚪</span> Logout
+                    <button id="logoutBtn" style="display: block; padding: 12px 16px; width: 100%; border: none; background: none; color: #dc2626; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s; text-align: left;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='white'">
+                        Log Out
                     </button>
                 </div>
             </div>

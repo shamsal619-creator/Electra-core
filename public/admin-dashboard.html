@@ -24,6 +24,15 @@
             z-index: 100;
         }
         .admin-sidebar h2 { font-size: 14px; font-weight: 900; margin: 0 0 20px 0; color: var(--teal); text-transform: uppercase; }
+        .admin-logo {
+            display: block;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .admin-logo img {
+            height: 80px;
+            width: auto;
+        }
         .sidebar-nav { display: flex; flex-direction: column; gap: 8px; }
         .nav-item {
             padding: 12px 15px;
@@ -264,6 +273,12 @@
             .form-grid { grid-template-columns: 1fr; }
             .form-group.full-width { grid-column: 1; }
             .order-info { grid-template-columns: 1fr; }
+            .admin-logo img { height: 60px; }
+        }
+        @media (max-width: 768px) {
+            .admin-sidebar { width: 100%; position: relative; height: auto; }
+            .admin-main { margin-left: 0; }
+            .admin-logo img { height: 50px; }
         }
     </style>
 </head>
@@ -271,7 +286,9 @@
     <div class="admin-container">
         <!-- Sidebar -->
         <aside class="admin-sidebar">
-            <h2>Admin</h2>
+            <a href="index.html" class="admin-logo">
+                <img src="design/logo.png" alt="ElectraCore logo">
+            </a>
             <nav class="sidebar-nav">
                 <div class="nav-item active" data-tab="products" onclick="switchTab('products', this)">📦 Products</div>
                 <div class="nav-item" data-tab="orders" onclick="switchTab('orders', this)">📋 Orders</div>

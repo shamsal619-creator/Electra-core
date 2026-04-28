@@ -10,7 +10,8 @@
         body { font-family: 'Inter', sans-serif; background: #f8fafc; color: var(--dark); }
         .header { background: white; border-bottom: 1px solid var(--border); padding: 16px 0; position: sticky; top: 0; z-index: 100; }
         .header-container { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-size: 24px; font-weight: 900; color: var(--teal); text-decoration: none; }
+        .logo { display: flex; align-items: center; text-decoration: none; }
+        .logo img { height: 60px; width: auto; }
         .nav-links { display: flex; gap: 24px; align-items: center; }
         .nav-links a { text-decoration: none; color: var(--muted); font-weight: 600; font-size: 14px; }
         .nav-links a:hover { color: var(--teal); }
@@ -45,12 +46,23 @@
         .dropdown-item { display: flex; align-items: center; gap: 12px; padding: 14px 18px; text-decoration: none; color: var(--dark); font-weight: 600; font-size: 14px; border-bottom: 1px solid var(--border); }
         .dropdown-item:last-child { border-bottom: none; }
         .dropdown-item:hover { background: var(--light); color: var(--teal); }
+        @media (max-width: 768px) {
+            .logo img { height: 50px; }
+            .header-container { padding: 0 16px; }
+            .nav-links { gap: 16px; }
+        }
+        @media (max-width: 480px) {
+            .logo img { height: 40px; }
+            .nav-links a { font-size: 12px; }
+        }
     </style>
 </head>
 <body>
     <header class="header">
         <div class="header-container">
-            <a href="index.html" class="logo">ElectraCore</a>
+            <a href="index.html" class="logo">
+                <img src="design/logo.png" alt="ElectraCore logo">
+            </a>
             <nav class="nav-links">
                 <a href="index.html">Home</a>
                 <a href="cart.html">Cart</a>
