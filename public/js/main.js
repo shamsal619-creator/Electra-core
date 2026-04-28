@@ -3,27 +3,41 @@ document.addEventListener('DOMContentLoaded', async () => {
         await window.productsReadyPromise;
     }
     // Hamburger menu toggle
-    const hamburger = document.querySelector('.hamburger');
-    const userActions = document.querySelector('.user-actions');
-    const userMenuDropdown = document.getElementById('userMenuDropdown');
+    const hamburger = document.getElementById('hamburger');
+    const hamburgerMenu = document.getElementById('hamburgerMenu');
+    const hamburgerBackdrop = document.getElementById('hamburgerBackdrop');
 
-    if (hamburger && userMenuDropdown) {
+    if (hamburger && hamburgerMenu) {
         hamburger.addEventListener('click', (e) => {
             e.stopPropagation();
             hamburger.classList.toggle('active');
-            userMenuDropdown.classList.toggle('active');
+            hamburgerMenu.classList.toggle('active');
+            if (hamburgerBackdrop) {
+                hamburgerBackdrop.classList.toggle('active');
+            }
         });
     }
 
-    // Close menu when clicking outside
+    // Close menu when clicking outside or on backdrop
     document.addEventListener('click', (e) => {
-        if (userMenuDropdown && userMenuDropdown.classList.contains('active') &&
-            !userMenuDropdown.contains(e.target) &&
+        if (hamburgerMenu && hamburgerMenu.classList.contains('active') &&
+            !hamburgerMenu.contains(e.target) &&
             !hamburger.contains(e.target)) {
-            userMenuDropdown.classList.remove('active');
+            hamburgerMenu.classList.remove('active');
             hamburger.classList.remove('active');
+            if (hamburgerBackdrop) {
+                hamburgerBackdrop.classList.remove('active');
+            }
         }
     });
+
+    if (hamburgerBackdrop) {
+        hamburgerBackdrop.addEventListener('click', () => {
+            hamburgerMenu.classList.remove('active');
+            hamburger.classList.remove('active');
+            hamburgerBackdrop.classList.remove('active');
+        });
+    }
 
     // Initialize page transitions
     initPageTransitions();
@@ -300,66 +314,28 @@ async function setupHeaderAuth() {
     }
 
     if (user) {
-        const fullName = [user.first, user.last].filter(Boolean).join(' ').trim() || 'User';
         const firstName = user.first || user.email.split('@')[0];
 
         container.innerHTML = `
-            <span class="user-welcome">Hi, ${firstName}</span>
-            ${user.isAdmin ? '<a href="/admin-dashboard.html" class="auth-pill-link">⚙️ Admin</a>' : ''}
-            
-            <div class="user-dropdown" id="userDropdown" style="position: relative;">
-                <button type="button" class="avatar-pill" id="headerProfileAvatar" aria-label="Open menu" style="position: relative;">
-                    <svg viewBox="0 0 24 24" aria-hidden="true" style="width: 24px; height: 24px;">
-                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="currentColor"/>
-                    </svg>
-                </button>
-                <div class="dropdown-menu" id="headerDropdownMenu" style="
-                    position: absolute; top: calc(100% + 8px); right: 0; background: white; 
-                    border: 1px solid var(--border); border-radius: 12px; 
-                    box-shadow: 0 10px 40px rgba(0,0,0,0.15); min-width: 200px;
-                    opacity: 0; visibility: hidden; transform: translateY(-10px); 
-                    transition: all 0.3s; z-index: 1000;
-                ">
-                    <div style="padding: 12px 16px; border-bottom: 1px solid var(--border); font-weight: 800; font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px;">My Account</div>
-                    <a href="my-orders.html" style="display: block; padding: 12px 16px; text-decoration: none; color: var(--dark); font-weight: 600; font-size: 14px; transition: all 0.2s;" onmouseover="this.style.background='var(--light)'; this.style.color='var(--teal)'" onmouseout="this.style.background='white'; this.style.color='var(--dark)'">
-                        My Orders
-                    </a>
-                    <a href="profile.html" style="display: block; padding: 12px 16px; text-decoration: none; color: var(--dark); font-weight: 600; font-size: 14px; transition: all 0.2s;" onmouseover="this.style.background='var(--light)'; this.style.color='var(--teal)'" onmouseout="this.style.background='white'; this.style.color='var(--dark)'">
-                        Profile
-                    </a>
-                    <div style="height: 1px; background: var(--border); margin: 4px 0;"></div>
-                    <button id="logoutBtn" style="display: block; padding: 12px 16px; width: 100%; border: none; background: none; color: #dc2626; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s; text-align: left;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='white'">
-                        Log Out
-                    </button>
-                </div>
-            </div>
-            
             <a href="cart.html" class="cart-icon-link">
                 <span class="cart-icon">🛒</span>
                 <span class="cart-count" id="headerCartCount">0</span>
             </a>
         `;
 
-        // Dropdown toggle
-        const avatarBtn = document.getElementById('headerProfileAvatar');
-        const dropdownMenu = document.getElementById('headerDropdownMenu');
-        
-        if (avatarBtn && dropdownMenu) {
-            avatarBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const isVisible = dropdownMenu.style.visibility === 'visible';
-                dropdownMenu.style.opacity = isVisible ? '0' : '1';
-                dropdownMenu.style.visibility = isVisible ? 'hidden' : 'visible';
-                dropdownMenu.style.transform = isVisible ? 'translateY(-10px)' : 'translateY(0)';
-            });
-
-            document.addEventListener('click', (e) => {
-                if (!avatarBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
-                    dropdownMenu.style.opacity = '0';
-                    dropdownMenu.style.visibility = 'hidden';
-                    dropdownMenu.style.transform = 'translateY(-10px)';
-                }
-            });
+        // Add menu items to hamburger dropdown
+        const hamburgerMenu = document.getElementById('hamburgerMenu');
+        if (hamburgerMenu) {
+            hamburgerMenu.innerHTML = `
+                <div style="padding: 24px 20px; border-bottom: 1px solid rgba(255,255,255,0.2);">
+                    <div style="font-weight: 700; color: var(--teal); font-size: 18px; letter-spacing: 0.5px;">Welcome, ${firstName}</div>
+                    ${user.isAdmin ? '<a href="admin-dashboard.html" style="display: block; margin-top: 12px; color: var(--dark); font-size: 14px; text-decoration: none; font-weight: 600;">Admin Panel</a>' : ''}
+                </div>
+                <a href="my-orders.html" class="hamburger-menu-item">My Orders</a>
+                <a href="profile.html" class="hamburger-menu-item">Profile</a>
+                <div style="border-top: 1px solid rgba(255,255,255,0.2); margin: 8px 0;"></div>
+                <button id="logoutBtn" class="hamburger-menu-item" style="color: #dc2626; text-align: left;">Log Out</button>
+            `;
         }
 
         const logoutBtn = document.getElementById('logoutBtn');
@@ -379,6 +355,15 @@ async function setupHeaderAuth() {
             <a href="signin.html">Sign in</a>
             <a href="signup.html">Sign up</a>
         `;
+
+        // Add login/signup to hamburger menu for non-logged users
+        const hamburgerMenu = document.getElementById('hamburgerMenu');
+        if (hamburgerMenu) {
+            hamburgerMenu.innerHTML = `
+                <a href="signin.html" class="hamburger-menu-item">Sign In</a>
+                <a href="signup.html" class="hamburger-menu-item">Sign Up</a>
+            `;
+        }
     }
 }
 
