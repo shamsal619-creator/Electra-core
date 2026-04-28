@@ -276,9 +276,67 @@
             .admin-logo img { height: 60px; }
         }
         @media (max-width: 768px) {
-            .admin-sidebar { width: 100%; position: relative; height: auto; }
-            .admin-main { margin-left: 0; }
+            .admin-container { flex-direction: column; }
+            .admin-sidebar { 
+                width: 100%; 
+                position: relative; 
+                height: auto; 
+                padding: 15px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            }
+            .admin-main { 
+                margin-left: 0; 
+                padding: 20px 15px;
+            }
             .admin-logo img { height: 50px; }
+            .admin-header { 
+                flex-direction: column; 
+                align-items: flex-start; 
+                gap: 15px;
+            }
+            .admin-header h1 { font-size: 22px; }
+            .user-info { width: 100%; justify-content: space-between; }
+            .section { padding: 20px 15px; }
+            .section-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .section-header h2 { font-size: 16px; }
+            .btn-primary { width: 100%; padding: 12px 20px; }
+            .search-bar { flex-direction: column; }
+            .search-input { width: 100%; }
+            .btn-search, .btn-reset { width: 100%; margin-top: 8px; }
+            .products-table { font-size: 11px; }
+            .products-table th, .products-table td { padding: 8px 6px; }
+            .product-thumbnail { width: 40px; height: 40px; }
+            .btn-edit, .btn-delete { padding: 4px 8px; font-size: 10px; }
+            .order-card { padding: 12px; }
+            .order-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+            .status-update { flex-direction: column; align-items: stretch; }
+            .status-select { width: 100%; }
+            .btn-update-status { width: 100%; margin-top: 8px; }
+            .orders-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .orders-actions { width: 100%; }
+            .search-container { width: 100%; display: flex; flex-direction: column; gap: 8px; }
+            .search-container .search-input { width: 100%; }
+            .search-container .btn-search, 
+            .search-container .btn-reset,
+            .search-container .btn-refresh { width: 100%; }
+        }
+        @media (max-width: 480px) {
+            .admin-sidebar { padding: 12px; }
+            .admin-main { padding: 15px 10px; }
+            .section { padding: 15px 12px; }
+            .admin-header h1 { font-size: 18px; }
+            .user-email { font-size: 11px; }
+            .btn-logout { padding: 8px 16px; font-size: 11px; }
+            .btn-primary { font-size: 11px; padding: 10px 16px; }
+            .form-grid { gap: 10px; }
+            label { font-size: 11px; }
+            input, select, textarea { font-size: 11px; padding: 8px 10px; }
+            .products-table th, .products-table td { padding: 6px 4px; font-size: 10px; }
+            .product-thumbnail { width: 35px; height: 35px; }
+            .order-info { font-size: 11px; }
+            .info-label { font-size: 9px; }
+            .info-value { font-size: 11px; }
+            .order-items { font-size: 10px; padding: 8px; }
         }
     </style>
 </head>
