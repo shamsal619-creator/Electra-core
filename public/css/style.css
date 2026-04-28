@@ -1170,8 +1170,8 @@ a {
         padding-top: 150px; /* Adjusted for optimized mobile header layout */
     }
 
-    .header { 
-        padding: 10px 20px; 
+    .header {
+        padding: 10px 15px;
         background: rgba(255, 255, 255, 0.8);
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
@@ -1181,16 +1181,18 @@ a {
         align-items: center;
         justify-content: space-between;
         position: relative;
+        gap: 10px;
     }
 
     .logo {
-        flex: 1;
+        flex: 0 0 auto;
         display: flex;
         justify-content: flex-start;
+        max-width: 120px;
     }
 
-    .logo img { 
-        height: 100px; /* Optimized for mobile layout */
+    .logo img {
+        height: 60px;
         width: auto;
     }
 
@@ -1242,7 +1244,31 @@ a {
     .user-actions {
         display: flex;
         align-items: center;
-        gap: 15px;
+        gap: 10px;
+        flex: 0 0 auto;
+    }
+
+    .cart-icon-link {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        text-decoration: none;
+    }
+
+    .cart-icon {
+        font-size: 20px;
+    }
+
+    .cart-count {
+        background: var(--teal);
+        color: white;
+        border-radius: 50%;
+        padding: 2px 6px;
+        font-size: 11px;
+        font-weight: 700;
+        min-width: 18px;
+        text-align: center;
     }
 
     /* 2-Column Grid Like Noon/Amazon */

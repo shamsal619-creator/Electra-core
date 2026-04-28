@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Schema & ERD Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .page-break {
+                page-break-after: always;
+            }
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        /* Cover Page */
+        .cover-page {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 120px 40px;
+            text-align: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .cover-page h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .cover-page .subtitle {
+            font-size: 36px;
+            margin-bottom: 40px;
+            font-weight: 300;
+            opacity: 0.95;
+        }
+
+        .cover-page .project-info {
+            font-size: 16px;
+            margin-top: 60px;
+            opacity: 0.9;
+        }
+
+        .cover-page .date {
+            margin-top: 30px;
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        /* Content Pages */
+        .page {
+            padding: 60px 40px;
+            page-break-after: always;
+        }
+
+        .page-number {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 12px;
+            color: #999;
+        }
+
+        h2 {
+            color: #1a5490;
+            font-size: 28px;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: #1a5490;
+            font-size: 18px;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+            line-height: 1.8;
+        }
+
+        ul {
+            margin-left: 30px;
+            margin-bottom: 20px;
+        }
+
+        ul li {
+            margin-bottom: 10px;
+            text-align: justify;
+        }
+
+        /* Table Styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        thead {
+            background-color: #1a5490;
+            color: white;
+        }
+
+        th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            border: 1px solid #1a5490;
+        }
+
+        td {
+            padding: 12px;
+            border: 1px solid #ddd;
+        }
+
+        tbody tr:nth-child(odd) {
+            background-color: #f9f9f9;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f0f4f8;
+        }
+
+        tbody tr:hover {
+            background-color: #e8f0f7;
+        }
+
+        /* ERD Section */
+        .erd-container {
+            background: #f5f5f5;
+            border: 2px solid #1a5490;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            overflow-x: auto;
+            line-height: 1.4;
+            color: #333;
+        }
+
+        .erd-container pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        /* Table of Contents */
+        .toc {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .toc li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .toc li:last-child {
+            border-bottom: none;
+        }
+
+        /* Highlights */
+        .highlight {
+            background-color: #fff3cd;
+            padding: 20px;
+            border-left: 4px solid #ffc107;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .highlight h4 {
+            margin-top: 0;
+            color: #856404;
+        }
+
+        /* Print Button */
+        .no-print {
+            padding: 20px;
+            background: #f9f9f9;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        button:hover {
+            background: #764ba2;
+        }
+
+        .header-info {
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .field-list {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+
+        .field-item {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .field-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .field-name {
+            font-weight: bold;
+            color: #1a5490;
+            font-family: 'Courier New', monospace;
+        }
+
+        .field-type {
+            color: #764ba2;
+            font-weight: 600;
+            margin: 5px 0;
+        }
+
+        .field-desc {
+            color: #666;
+            font-size: 13px;
+            margin: 5px 0 0 0;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            color: #999;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="no-print">
+        <div style="padding: 20px; background: #f9f9f9; border-bottom: 1px solid #ddd; display: flex; gap: 10px;">
+            <button onclick="window.print()">🖨️ Print as PDF</button>
+            <button onclick="downloadHTML()">⬇️ Download HTML</button>
+            <span style="margin-left: auto; padding-top: 8px; font-size: 12px; color: #666;">Use Ctrl+P or the Print button to save as PDF</span>
+        </div>
+    </div>
+
+    <!-- Cover Page -->
+    <div class="container">
+        <div class="cover-page">
+            <h1>DATABASE SCHEMA</h1>
+            <div class="subtitle">& ERD DOCUMENTATION</div>
+            <div class="project-info">
+                <strong>E-Commerce Platform</strong><br>
+                Firebase Firestore Architecture
+            </div>
+            <div class="date">Generated: April 29, 2026</div>
+        </div>
+
+        <!-- Table of Contents -->
+        <div class="page page-break">
+            <h2>Table of Contents</h2>
+            <ul class="toc">
+                <li>1. Project Overview</li>
+                <li>2. Database Architecture</li>
+                <li>3. Entity Relationship Diagram</li>
+                <li>4. Collections Details
+                    <ul style="margin-top: 8px;">
+                        <li>4.1 Users Collection</li>
+                        <li>4.2 Products Collection</li>
+                        <li>4.3 Orders Collection</li>
+                    </ul>
+                </li>
+                <li>5. Data Types Reference</li>
+                <li>6. Relationships & Constraints</li>
+                <li>7. Implementation Notes</li>
+            </ul>
+        </div>
+
+        <!-- Section 1 -->
+        <div class="page page-break">
+            <h2>1. Project Overview</h2>
+            <p>This document describes the database schema and entity relationships for the E-Commerce Platform built with Firebase Firestore. The system is designed to support a scalable multi-category product marketplace with user authentication, product management, and comprehensive order tracking.</p>
+
+            <h3>Technology Stack</h3>
+            <ul>
+                <li><strong>Database:</strong> Firebase Firestore (NoSQL document database)</li>
+                <li><strong>Storage:</strong> Cloudinary for image hosting and CDN delivery</li>
+                <li><strong>Authentication:</strong> Firebase Authentication with Google OAuth2</li>
+                <li><strong>Backend:</strong> Node.js/Express server</li>
+                <li><strong>Password Security:</strong> bcryptjs hashing (10 salt rounds)</li>
+                <li><strong>Session Management:</strong> Express sessions with custom middleware</li>
+            </ul>
+
+            <h3>Project Scope</h3>
+            <p>The platform manages users, products, and orders across multiple product categories including phones, laptops, accessories, headphones, watches, and kitchen equipment. The system handles user registration, authentication, product browsing, shopping cart management, order processing, and order tracking with real-time status updates.</p>
+        </div>
+
+        <!-- Section 2 -->
+        <div class="page page-break">
+            <h2>2. Database Architecture</h2>
+            <p>The system uses a NoSQL document-based approach leveraging Firebase Firestore's scalable infrastructure. Unlike traditional relational databases, Firestore organizes data into collections and documents, enabling flexible schema evolution and real-time synchronization.</p>
+
+            <h3>Collections Overview</h3>
+            <ul>
+                <li><strong>Users:</strong> Manages user accounts, authentication credentials, and profile information</li>
+                <li><strong>Products:</strong> Maintains product inventory, pricing, descriptions, and availability status</li>
+                <li><strong>Orders:</strong> Tracks all transactions with order items, status workflow, and delivery details</li>
+            </ul>
+
+            <h3>Architecture Principles</h3>
+            <ul>
+                <li>Document-oriented storage for flexible field definitions</li>
+                <li>Denormalization where appropriate to reduce query complexity</li>
+                <li>Server-side timestamp generation for consistency</li>
+                <li>Indexed fields for efficient querying and filtering</li>
+                <li>Relationship management through document references (foreign keys)</li>
+            </ul>
+        </div>
+
+        <!-- Section 3 -->
+        <div class="page page-break">
+            <h2>3. Entity Relationship Diagram</h2>
+            <p>The following diagram illustrates the relationships between the three main collections:</p>
+
+            <div class="erd-container"><pre>┌─────────────────────────────────────────────────────────────────────┐
+│                          USERS Collection                           │
+├─────────────────────────────────────────────────────────────────────┤
+│ PK  id (String, UUID)                                               │
+│     email (String, UNIQUE, INDEXED)                                 │
+│     password (String, Hashed - bcryptjs)                            │
+│     first (String)                                                  │
+│     last (String)                                                   │
+│     phone (String)                                                  │
+│     address (String)                                                │
+│     city (String)                                                   │
+│     country (String)                                                │
+│     postalCode (String)                                             │
+│     gender (String)                                                 │
+│     timezone (String)                                               │
+│     language (String)                                               │
+│     googleId (String - OAuth)                                       │
+│     resetPasswordToken (String)                                     │
+│     resetPasswordExpires (Timestamp)                                │
+│     createdAt (Timestamp, SERVER_GENERATED)                         │
+│     updatedAt (Timestamp, SERVER_GENERATED)                         │
+└─────────────────────────────────────────────────────────────────────┘
+                                    │
+                           1:N Relationship
+                                    │
+                    ┌───────────────┴───────────────┐
+                    │                               │
+                    ▼                               ▼
+   ┌──────────────────────────────┐   ┌────────────────────────────────┐
+   │   ORDERS Collection          │   │   PRODUCTS Collection          │
+   ├──────────────────────────────┤   ├────────────────────────────────┤
+   │ PK  id (String, UUID)        │   │ PK  id (String, UUID)          │
+   │ FK  userId (INDEXED)         │   │     name (String)              │
+   │     order_code (UNIQUE)      │   │     category (String, INDEXED) │
+   │     items (Array<Object>)    │   │     price (Number)             │
+   │     totalPrice (Number)      │   │     oldPrice (Number)          │
+   │     status (String, INDEXED) │   │     description (String)       │
+   │     paymentMethod (String)   │   │     brand (String)             │
+   │     deliveryAddress (Object) │   │     color (String)             │
+   │     createdAt (Timestamp)    │   │     inStock (Boolean)          │
+   │     deliveredAt (Timestamp)  │   │     images (Array<String>)     │
+   │     updatedAt (Timestamp)    │   │     createdAt (Timestamp)      │
+   │                              │   │     updatedAt (Timestamp)      │
+   └──────────────────────────────┘   └────────────────────────────────┘</pre></div>
+
+            <p style="margin-top: 20px;"><strong>Cardinality:</strong> One User has Many Orders. Each Order references one User through userId.</p>
+        </div>
+
+        <!-- Section 4.1 -->
+        <div class="page page-break">
+            <h2>4. Collections Details</h2>
+            <h3>4.1 Users Collection</h3>
+            <p>Stores user account information, authentication credentials, and profile details. Each document represents a unique user account in the system.</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Field Name</th>
+                        <th>Data Type</th>
+                        <th>Constraints</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>id</code></td>
+                        <td>String</td>
+                        <td>PK, UUID</td>
+                        <td>Unique user identifier</td>
+                    </tr>
+                    <tr>
+                        <td><code>email</code></td>
+                        <td>String</td>
+                        <td>UNIQUE, INDEXED, Required</td>
+                        <td>User email address (stored lowercase)</td>
+                    </tr>
+                    <tr>
+                        <td><code>password</code></td>
+                        <td>String</td>
+                        <td>Hashed, Required</td>
+                        <td>Bcryptjs hashed password (never plain text)</td>
+                    </tr>
+                    <tr>
+                        <td><code>first</code></td>
+                        <td>String</td>
+                        <td>Optional</td>
+                        <td>First name</td>
+                    </tr>
+                    <tr>
+                        <td><code>last</code></td>
+                        <td>String</td>
+                        <td>Optional</td>
+                        <td>Last name</td>
+                    </tr>
+                    <tr>
+                        <td><code>phone</code></td>
+                        <td>String</td>
+                        <td>Optional</td>
+                        <td>Contact phone number</td>
+                    </tr>
+                    <tr>
+                        <td><code>address</code></td>
+                        <td>String</td>
+                        <td>Optional</td>
+                        <td>Street address</td>
+                    </tr>
+                    <tr>
+                        <td><code>city</code></td>
+                        <td>String</td>
+                        <td>Optional</td>
+                        <td>City name</td>
+                    </tr>
+                    <tr>
+                        <td><code>country</code></td>
+                        <td>String</td>
+                        <td>Optional</td>
+                        <td>Country name</td>
+                    </tr>
+                    <tr>
+                        <td><code>postalCode</code></td>
+                        <td>String</td>
+                        <td>Optional</td>
+                        <td>Postal/ZIP code</td>
+                    </tr>
+                    <tr>
+                        <td><code>gender</code></td>
+                        <td>String</td>
+                        <td>Optional</td>
+                        <td>Gender (male, female, other)</td>
+                    </tr>
+                    <tr>
+                        <td><code>timezone</code></td>
+                        <td>String</td>
+                        <td>Optional</td>
+                        <td>User timezone (e.g., UTC+2)</td>
+                    </tr>
+                    <tr>
+                        <td><code>language</code></td>
+                        <td>String</td>
+                        <td>Optional</td>
+                        <td>Preferred language (en, ar, etc.)</td>
+                    </tr>
+                    <tr>
+                        <td><code>googleId</code></td>
+                        <td>String</td>
+                        <td>Optional</td>
+                        <td>Google OAuth ID for social login</td>
+                    </tr>
+                    <tr>
+                        <td><code>resetPasswordToken</code></td>
+                        <td>String</td>
+                        <td>Optional</td>
+                        <td>Token for password reset functionality</td>
+                    </tr>
+                    <tr>
+                        <td><code>resetPasswordExpires</code></td>
+                        <td>Timestamp</td>
+                        <td>Optional</td>
+                        <td>Token expiration time</td>
+                    </tr>
+                    <tr>
+                        <td><code>createdAt</code></td>
+                        <td>Timestamp</td>
+                        <td>Required, SERVER_GENERATED</td>
+                        <td>Account creation timestamp</td>
+                    </tr>
+                    <tr>
+                        <td><code>updatedAt</code></td>
+                        <td>Timestamp</td>
+                        <td>Required, SERVER_GENERATED</td>
+                        <td>Last account update timestamp</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Section 4.2 -->
+        <div class="page page-break">
+            <h3>4.2 Products Collection</h3>
+            <p>Manages the product catalog with inventory status, pricing information, descriptions, and image references. Products are organized by category and support discount pricing through oldPrice field.</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Field Name</th>
+                        <th>Data Type</th>
+                        <th>Constraints</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>id</code></td>
+                        <td>String</td>
+                        <td>PK, UUID</td>
+                        <td>Unique product identifier</td>
+                    </tr>
+                    <tr>
+                        <td><code>name</code></td>
+                        <td>String</td>
+                        <td>Required</td>
+                        <td>Product name/title</td>
+                    </tr>
+                    <tr>
+                        <td><code>category</code></td>
+                        <td>String</td>
+                        <td>INDEXED, Required</td>
+                        <td>Product category (phones, laptops, accessories, headphones, watches, kitchen)</td>
+                    </tr>
+                    <tr>
+                        <td><code>price</code></td>
+                        <td>Number</td>
+                        <td>Required</td>
+                        <td>Current selling price</td>
+                    </tr>
+                    <tr>
+                        <td><code>oldPrice</code></td>
+                        <td>Number</td>
+                        <td>Optional</td>
+                        <td>Original price (for showing discounts)</td>
+                    </tr>
+                    <tr>
+                        <td><code>description</code></td>
+                        <td>String</td>
+                        <td>Optional</td>
+                        <td>Detailed product description</td>
+                    </tr>
+                    <tr>
+                        <td><code>brand</code></td>
+                        <td>String</td>
+                        <td>Optional</td>
+                        <td>Product brand/manufacturer</td>
+                    </tr>
+                    <tr>
+                        <td><code>color</code></td>
+                        <td>String</td>
+                        <td>Optional</td>
+                        <td>Product color</td>
+                    </tr>
+                    <tr>
+                        <td><code>inStock</code></td>
+                        <td>Boolean</td>
+                        <td>Default: true</td>
+                        <td>Inventory availability status</td>
+                    </tr>
+                    <tr>
+                        <td><code>images</code></td>
+                        <td>Array&lt;String&gt;</td>
+                        <td>Optional</td>
+                        <td>Array of Cloudinary image URLs</td>
+                    </tr>
+                    <tr>
+                        <td><code>createdAt</code></td>
+                        <td>Timestamp</td>
+                        <td>SERVER_GENERATED</td>
+                        <td>Product creation timestamp</td>
+                    </tr>
+                    <tr>
+                        <td><code>updatedAt</code></td>
+                        <td>Timestamp</td>
+                        <td>SERVER_GENERATED</td>
+                        <td>Last product update timestamp</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Section 4.3 -->
+        <div class="page page-break">
+            <h3>4.3 Orders Collection</h3>
+            <p>Tracks all customer orders with items, pricing, payment method, delivery information, and status workflow. Each order references a user and maintains a snapshot of product prices at purchase time.</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Field Name</th>
+                        <th>Data Type</th>
+                        <th>Constraints</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>id</code></td>
+                        <td>String</td>
+                        <td>PK, UUID</td>
+                        <td>Unique order identifier</td>
+                    </tr>
+                    <tr>
+                        <td><code>order_code</code></td>
+                        <td>String</td>
+                        <td>UNIQUE, Human-readable</td>
+                        <td>Order reference code (6-char alphanumeric)</td>
+                    </tr>
+                    <tr>
+                        <td><code>userId</code></td>
+                        <td>String</td>
+                        <td>FK, INDEXED, Required</td>
+                        <td>Reference to Users collection</td>
+                    </tr>
+                    <tr>
+                        <td><code>items</code></td>
+                        <td>Array&lt;Object&gt;</td>
+                        <td>Required</td>
+                        <td>Ordered items with product details, quantity, and price at purchase</td>
+                    </tr>
+                    <tr>
+                        <td><code>totalPrice</code></td>
+                        <td>Number</td>
+                        <td>Required</td>
+                        <td>Total order amount</td>
+                    </tr>
+                    <tr>
+                        <td><code>status</code></td>
+                        <td>String</td>
+                        <td>INDEXED, Enum</td>
+                        <td>Order status: pending, processing, shipped, delivered, cancelled</td>
+                    </tr>
+                    <tr>
+                        <td><code>paymentMethod</code></td>
+                        <td>String</td>
+                        <td>Optional</td>
+                        <td>Payment method (credit card, bank transfer, etc.)</td>
+                    </tr>
+                    <tr>
+                        <td><code>deliveryAddress</code></td>
+                        <td>Object</td>
+                        <td>Optional</td>
+                        <td>Delivery address with street, city, postal code</td>
+                    </tr>
+                    <tr>
+                        <td><code>createdAt</code></td>
+                        <td>Timestamp</td>
+                        <td>SERVER_GENERATED</td>
+                        <td>Order creation timestamp</td>
+                    </tr>
+                    <tr>
+                        <td><code>deliveredAt</code></td>
+                        <td>Timestamp</td>
+                        <td>Optional</td>
+                        <td>Delivery completion timestamp</td>
+                    </tr>
+                    <tr>
+                        <td><code>updatedAt</code></td>
+                        <td>Timestamp</td>
+                        <td>SERVER_GENERATED</td>
+                        <td>Last status update timestamp</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Section 5 -->
+        <div class="page page-break">
+            <h2>5. Data Types Reference</h2>
+            <p>The following table describes all data types used in the schema:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Data Type</th>
+                        <th>Description</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>String</code></td>
+                        <td>Text data, variable length</td>
+                        <td>"John Doe", "john@example.com"</td>
+                    </tr>
+                    <tr>
+                        <td><code>Number</code></td>
+                        <td>Integer or floating-point values</td>
+                        <td>299.99, 5, -100</td>
+                    </tr>
+                    <tr>
+                        <td><code>Boolean</code></td>
+                        <td>True or false values</td>
+                        <td>true, false</td>
+                    </tr>
+                    <tr>
+                        <td><code>Timestamp</code></td>
+                        <td>Date and time values (Firebase FieldValue.serverTimestamp)</td>
+                        <td>2026-04-29T14:30:00Z</td>
+                    </tr>
+                    <tr>
+                        <td><code>Array</code></td>
+                        <td>Ordered collection of values (homogeneous or mixed)</td>
+                        <td>["image1.jpg", "image2.jpg"]</td>
+                    </tr>
+                    <tr>
+                        <td><code>Object</code></td>
+                        <td>Key-value pairs (nested documents)</td>
+                        <td>{ street: "123 Main St", city: "Cairo" }</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Status Enumerations</h3>
+            <p><strong>Order Status Values:</strong></p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Description</th>
+                        <th>Allowed Transitions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>pending</code></td>
+                        <td>Order awaiting payment and processing</td>
+                        <td>→ processing, cancelled</td>
+                    </tr>
+                    <tr>
+                        <td><code>processing</code></td>
+                        <td>Order being prepared for shipment</td>
+                        <td>→ shipped, cancelled</td>
+                    </tr>
+                    <tr>
+                        <td><code>shipped</code></td>
+                        <td>Order in transit to customer</td>
+                        <td>→ delivered</td>
+                    </tr>
+                    <tr>
+                        <td><code>delivered</code></td>
+                        <td>Order successfully delivered</td>
+                        <td>→ (terminal state)</td>
+                    </tr>
+                    <tr>
+                        <td><code>cancelled</code></td>
+                        <td>Order cancelled by customer or system</td>
+                        <td>(terminal state)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Section 6 -->
+        <div class="page page-break">
+            <h2>6. Relationships & Constraints</h2>
+
+            <h3>Primary Keys (PK)</h3>
+            <ul>
+                <li><strong>Users.id</strong> – Unique identifier for each user (UUID format)</li>
+                <li><strong>Products.id</strong> – Unique identifier for each product (UUID format)</li>
+                <li><strong>Orders.id</strong> – Unique identifier for each order (UUID format)</li>
+            </ul>
+
+            <h3>Foreign Keys (FK)</h3>
+            <ul>
+                <li><strong>Orders.userId → Users.id</strong> – Establishes one-to-many relationship (One User can have many Orders)</li>
+            </ul>
+
+            <h3>Unique Constraints</h3>
+            <ul>
+                <li><strong>Users.email</strong> – Must be globally unique; prevents duplicate user accounts</li>
+                <li><strong>Orders.order_code</strong> – Must be unique; used for customer reference</li>
+            </ul>
+
+            <h3>Indexed Fields</h3>
+            <ul>
+                <li><strong>Users.email</strong> – Accelerates login queries</li>
+                <li><strong>Products.category</strong> – Optimizes category browsing</li>
+                <li><strong>Orders.userId</strong> – Enables efficient user order retrieval</li>
+                <li><strong>Orders.status</strong> – Facilitates status-based queries and filtering</li>
+                <li><strong>Orders.createdAt</strong> – Supports chronological ordering</li>
+            </ul>
+
+            <h3>Data Integrity Rules</h3>
+            <ul>
+                <li>User email addresses are automatically stored in lowercase for consistency</li>
+                <li>All system timestamps are server-generated using Firebase FieldValue.serverTimestamp() to prevent client-side clock skew</li>
+                <li>Passwords are hashed using bcryptjs with 10 salt rounds; plain passwords are never stored</li>
+                <li>Product prices are stored as numbers (recommend storing in cents to avoid floating-point errors)</li>
+                <li>Order status follows a defined workflow: pending → processing → shipped → delivered, with cancellation as an alternative path</li>
+                <li>Product images reference external Cloudinary URLs; no images are stored in Firestore</li>
+            </ul>
+        </div>
+
+        <!-- Section 7 -->
+        <div class="page page-break">
+            <h2>7. Implementation Notes</h2>
+
+            <h3>Authentication & Security</h3>
+            <p>Users authenticate via email/password combination or Google OAuth2. Passwords are hashed using bcryptjs with a salt round of 10, providing strong resistance to brute-force attacks. Password reset functionality uses time-limited tokens stored in the resetPasswordToken and resetPasswordExpires fields. These tokens are cleared upon successful password reset.</p>
+
+            <h3>Image Storage & Delivery</h3>
+            <p>Product images are hosted on Cloudinary, a dedicated image hosting and CDN service. The images array in Products contains URLs to these resources. This approach provides:</p>
+            <ul>
+                <li>Unlimited scalability without Firestore storage constraints</li>
+                <li>Automatic optimization and resizing</li>
+                <li>Global CDN for fast delivery</li>
+                <li>Separation of concerns between data and media</li>
+            </ul>
+
+            <h3>Order Processing Workflow</h3>
+            <p>Orders follow a state machine pattern:</p>
+            <ol>
+                <li><strong>Pending:</strong> Order created, awaiting payment confirmation</li>
+                <li><strong>Processing:</strong> Payment confirmed, order being prepared</li>
+                <li><strong>Shipped:</strong> Order handed to shipping carrier</li>
+                <li><strong>Delivered:</strong> Delivery confirmed at destination</li>
+            </ol>
+            <p>The items array maintains a snapshot of product data at purchase time (name, price, quantity), protecting against future price changes affecting historical orders.</p>
+
+            <h3>Query Patterns</h3>
+            <p>Common queries are optimized through strategic indexing:</p>
+            <ul>
+                <li>Find user by email: Uses Users.email index</li>
+                <li>List products by category: Uses Products.category index</li>
+                <li>Get user's orders: Uses Orders.userId index with createdAt sort</li>
+                <li>Filter orders by status: Uses Orders.status index</li>
+            </ul>
+
+            <h3>Scalability Considerations</h3>
+            <p>Firebase Firestore automatically scales to handle millions of documents and provides:</p>
+            <ul>
+                <li>Real-time synchronization for collaborative features</li>
+                <li>Automatic sharding and distribution</li>
+                <li>ACID transactions for multi-document updates</li>
+                <li>Read and write rate scaling</li>
+                <li>Backup and disaster recovery</li>
+            </ul>
+
+            <h3>Data Migration & Versioning</h3>
+            <p>The schema supports evolution through:</p>
+            <ul>
+                <li>Optional fields that don't break existing documents</li>
+                <li>Gradual addition of new collections</li>
+                <li>Backward-compatible field additions</li>
+                <li>Migration scripts for large-scale updates</li>
+            </ul>
+
+            <h3>Performance Optimization</h3>
+            <ul>
+                <li>Lean queries return plain objects instead of instantiated classes for read-heavy operations</li>
+                <li>Server-side sorting for consistent ordering across clients</li>
+                <li>Selective field projection to minimize data transfer</li>
+                <li>Batch operations for bulk updates</li>
+            </ul>
+
+            <h3>Backup & Recovery</h3>
+            <p>Firebase Firestore provides automated daily backups. For critical operations, consider:</p>
+            <ul>
+                <li>Regular data exports to Cloud Storage</li>
+                <li>Point-in-time recovery capabilities</li>
+                <li>Audit logging for compliance</li>
+            </ul>
+        </div>
+
+        <!-- Final Page -->
+        <div class="page">
+            <h2>Document Information</h2>
+            <div style="margin-top: 40px; line-height: 2; font-size: 14px;">
+                <p><strong>Document Title:</strong> Database Schema & ERD Documentation</p>
+                <p><strong>Project:</strong> E-Commerce Platform</p>
+                <p><strong>Database System:</strong> Firebase Firestore</p>
+                <p><strong>Generated Date:</strong> April 29, 2026</p>
+                <p><strong>Version:</strong> 1.0</p>
+                <p><strong>Language:</strong> English</p>
+            </div>
+
+            <div style="margin-top: 60px; padding: 20px; background: #f0f4f8; border-left: 4px solid #667eea; border-radius: 4px;">
+                <h3 style="margin-top: 0;">Changelog</h3>
+                <p><strong>Version 1.0 (April 29, 2026):</strong> Initial comprehensive schema documentation with ERD, field definitions, constraints, and implementation guidelines.</p>
+            </div>
+
+            <div class="footer">
+                <p>This document is a comprehensive guide to the database architecture of the E-Commerce Platform. For inquiries or updates, please consult with the development team.</p>
+                <p style="margin-top: 30px; border-top: 1px solid #ddd; padding-top: 20px;">© 2026 E-Commerce Platform. All rights reserved.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function downloadHTML() {
+            const element = document.documentElement;
+            const link = document.createElement('a');
+            link.href = 'data:text/html;charset=utf-8,' + encodeURIComponent(element.outerHTML);
+            link.download = 'DATABASE_SCHEMA_ERD.html';
+            link.click();
+        }
+    </script>
+</body>
+</html>

@@ -72,35 +72,8 @@ window.addEventListener('pageshow', (event) => {
 });
 
 function initMobileEnhancements() {
-    if (window.innerWidth > 768) return;
-
-    // Add Floating Action Button (FAB)
-    let fab = document.querySelector('.mobile-fab-cart');
-    if (!fab) {
-        fab = document.createElement('a');
-        fab.href = 'cart.html';
-        fab.className = 'mobile-fab-cart';
-        fab.innerHTML = `
-            🛒
-            <span class="fab-count" id="mobileFabCount">0</span>
-        `;
-        document.body.appendChild(fab);
-        
-        // Update FAB count immediately
-        const updateFab = () => {
-            const count = getCart().reduce((sum, item) => sum + item.quantity, 0);
-            const fabCount = document.getElementById('mobileFabCount');
-            if (fabCount) fabCount.textContent = count;
-        };
-        updateFab();
-        
-        // Hook into saveCart to update FAB
-        const originalSaveCart = window.saveCart;
-        window.saveCart = (cart) => {
-            originalSaveCart(cart);
-            updateFab();
-        };
-    }
+    // Mobile enhancements disabled - using standard cart icon in header
+    return;
 }
 
 function initStickyHeader() {

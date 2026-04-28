@@ -267,7 +267,52 @@
         }
         .btn-update-status:hover { opacity: 0.9; }
         .empty-state { text-align: center; padding: 40px; color: var(--muted); }
-        @media (max-width: 1024px) {
+        
+        /* Image Preview Styles */
+        .image-preview-item {
+            position: relative;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            background: #f9f9f9;
+        }
+
+        .image-preview-item img {
+            width: 100%;
+            height: 80px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .image-preview-item .delete-btn {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: #dc2626;
+            color: white;
+            border: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s;
+            padding: 0;
+        }
+
+        .image-preview-item:hover .delete-btn {
+            opacity: 1;
+        }
+
+        .image-preview-item .delete-btn:hover {
+            background: #991b1b;
+        }
+        
+        @media (max-width: 480px) {
             .admin-sidebar { width: 150px; }
             .admin-main { margin-left: 150px; }
             .form-grid { grid-template-columns: 1fr; }
@@ -405,8 +450,23 @@
                                 <textarea name="description" placeholder="Product details..." required></textarea>
                             </div>
                             <div class="form-group full-width">
-                                <label>Product Image</label>
-                                <input type="file" name="image" accept="image/*">
+                                <label>Product Images</label>
+                                <p style="font-size: 11px; color: #666; margin: 5px 0;">Select one or multiple images (PNG, JPG, GIF)</p>
+                                <input type="file" name="images" accept="image/*" multiple id="productImageInput">
+                            </div>
+
+                            <!-- Existing Images Preview -->
+                            <div id="existingImagesContainer" style="display: none;" class="form-group full-width">
+                                <label>Current Images</label>
+                                <div id="existingImagesList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; margin-top: 10px;">
+                                </div>
+                            </div>
+
+                            <!-- New Images Preview -->
+                            <div id="newImagesContainer" style="display: none;" class="form-group full-width">
+                                <label>New Images Preview</label>
+                                <div id="newImagesList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; margin-top: 10px;">
+                                </div>
                             </div>
                             <div class="btn-actions full-width">
                                 <button type="submit" class="btn-primary">Save Product</button>
@@ -484,6 +544,8 @@
         let allProducts = [];
         let allOrders = [];
         let currentUser = null;
+        let imagesToDelete = []; // Track images to delete
+        let newImageFiles = []; // Track new image files
 
         // Initialize
         document.addEventListener('DOMContentLoaded', async () => {
@@ -713,7 +775,65 @@
             if (isHidden) {
                 document.getElementById('productForm').reset();
                 document.getElementById('productId').value = '';
+                imagesToDelete = [];
+                newImageFiles = [];
+                document.getElementById('existingImagesContainer').style.display = 'none';
+                document.getElementById('newImagesContainer').style.display = 'none';
             }
+        };
+
+        window.deleteExistingImage = function(index, imageUrl) {
+            if (confirm('Delete this image?')) {
+                imagesToDelete.push(imageUrl);
+                document.querySelector(`[data-image-index="${index}"]`).remove();
+                
+                const remaining = document.querySelectorAll('[data-image-index]').length;
+                if (remaining === 0) {
+                    document.getElementById('existingImagesContainer').style.display = 'none';
+                }
+            }
+        };
+
+        // Handle new image file selection
+        document.getElementById('productImageInput').addEventListener('change', function(e) {
+            newImageFiles = Array.from(this.files);
+            const container = document.getElementById('newImagesContainer');
+            const list = document.getElementById('newImagesList');
+            
+            if (newImageFiles.length > 0) {
+                list.innerHTML = newImageFiles.map((file, index) => {
+                    const reader = new FileReader();
+                    const preview = document.createElement('div');
+                    preview.className = 'image-preview-item';
+                    preview.innerHTML = '<img src="" alt="Preview"><button type="button" class="delete-btn" onclick="removeNewImage(' + index + ')">✕</button>';
+                    
+                    reader.onload = function(e) {
+                        preview.querySelector('img').src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                    
+                    return preview.outerHTML;
+                }).join('');
+                
+                container.style.display = 'block';
+            } else {
+                container.style.display = 'none';
+                list.innerHTML = '';
+            }
+        });
+
+        window.removeNewImage = function(index) {
+            const dataTransfer = new DataTransfer();
+            newImageFiles.forEach((file, i) => {
+                if (i !== index) {
+                    dataTransfer.items.add(file);
+                }
+            });
+            document.getElementById('productImageInput').files = dataTransfer.files;
+            
+            // Trigger change event
+            const event = new Event('change', { bubbles: true });
+            document.getElementById('productImageInput').dispatchEvent(event);
         };
 
         window.editProduct = function(productId) {
@@ -722,12 +842,39 @@
                 alert('Product not found');
                 return;
             }
+            
             document.getElementById('productId').value = productId;
             document.querySelector('[name="name"]').value = product.name || product.title || '';
             document.querySelector('[name="category"]').value = product.category || '';
             document.querySelector('[name="price"]').value = product.price || '';
             document.querySelector('[name="stock"]').value = product.stock || '';
             document.querySelector('[name="description"]').value = product.description || '';
+            
+            // Reset image tracking
+            imagesToDelete = [];
+            newImageFiles = [];
+            document.getElementById('productImageInput').value = '';
+            
+            // Show existing images
+            const existingImages = product.images || [];
+            if (existingImages.length > 0) {
+                const existingContainer = document.getElementById('existingImagesContainer');
+                const existingList = document.getElementById('existingImagesList');
+                existingList.innerHTML = existingImages.map((imgUrl, index) => `
+                    <div class="image-preview-item" data-image-index="${index}" data-image-url="${imgUrl}">
+                        <img src="${imgUrl}" alt="Product image" onerror="this.src='design/placeholder.png'">
+                        <button type="button" class="delete-btn" onclick="deleteExistingImage(${index}, '${imgUrl}')">✕</button>
+                    </div>
+                `).join('');
+                existingContainer.style.display = 'block';
+            } else {
+                document.getElementById('existingImagesContainer').style.display = 'none';
+            }
+            
+            // Hide new images container initially
+            document.getElementById('newImagesContainer').style.display = 'none';
+            document.getElementById('newImagesList').innerHTML = '';
+            
             document.getElementById('productFormContainer').style.display = 'block';
             window.scrollTo({ top: 0, behavior: 'smooth' });
         };
@@ -820,9 +967,14 @@
             formData.append('stock', parseInt(document.querySelector('[name="stock"]').value));
             formData.append('description', document.querySelector('[name="description"]').value.trim());
             
-            const imageFile = document.querySelector('[name="image"]').files[0];
-            if (imageFile) {
-                formData.append('images', imageFile);
+            // Add new images
+            newImageFiles.forEach(file => {
+                formData.append('images', file);
+            });
+            
+            // Add images to delete (only for edit)
+            if (productId && imagesToDelete.length > 0) {
+                formData.append('imagesToDelete', JSON.stringify(imagesToDelete));
             }
 
             try {
@@ -838,9 +990,12 @@
                     alert(productId ? 'Product updated' : 'Product added');
                     document.getElementById('productFormContainer').style.display = 'none';
                     document.getElementById('productForm').reset();
+                    imagesToDelete = [];
+                    newImageFiles = [];
                     loadProducts();
                 } else {
-                    alert('Error saving product');
+                    const error = await res.text();
+                    alert('Error saving product: ' + error);
                 }
             } catch (error) {
                 alert('Error: ' + error.message);
