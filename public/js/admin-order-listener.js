@@ -23,8 +23,7 @@ const auth = getAuth(getApp());
 // ===== SOUND NOTIFICATION =====
 const NOTIFICATION_SOUND = new Audio('data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQIAAAAAAA==');
 
-// ===== ADMIN ORDERS LISTENER - DEPRECATED: Use admin-dashboard.html logic =====
-/*
+// ===== ADMIN ORDERS LISTENER =====
 export function initializeAdminOrderListener() {
     const user = auth.currentUser;
     
@@ -68,7 +67,6 @@ export function initializeAdminOrderListener() {
 
     return unsubscribe;
 }
-*/
 
 // ===== NOTIFICATION UI =====
 function showNewOrderNotification(orderId, orderData) {
@@ -531,8 +529,7 @@ const styleSheet = document.createElement('style');
 styleSheet.textContent = styles;
 document.head.appendChild(styleSheet);
 
-// ===== AUTO INITIALIZE - DEPRECATED =====
-/*
+// ===== AUTO INITIALIZE =====
 document.addEventListener('DOMContentLoaded', () => {
     const isAdminPage = document.body.classList.contains('admin-page');
     if (isAdminPage) {
@@ -540,6 +537,5 @@ document.addEventListener('DOMContentLoaded', () => {
         initializeAdminOrderListener();
     }
 });
-*/
 
 export { showOrderModal };

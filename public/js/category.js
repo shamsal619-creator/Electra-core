@@ -28,9 +28,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 function setupFilterToggle() {
     const toggleBtn = document.querySelector('.filter-toggle-btn');
+    const overlay = document.querySelector('.filter-panel-overlay');
     
     if (toggleBtn) {
         toggleBtn.addEventListener('click', toggleFilterPanel);
+    }
+    
+    if (overlay) {
+        overlay.addEventListener('click', toggleFilterPanel);
     }
 }
 
