@@ -167,10 +167,8 @@ function initPageTransitions() {
 }
 
 function initQuickView() {
-    const qvButtons = document.querySelectorAll('.quick-view-btn');
-    if (qvButtons.length === 0) return;
-
-    // Create modal element if not exists
+    // Create modal element if not exists (independent of whether cards
+    // are rendered yet — products on the home page render asynchronously).
     let modal = document.getElementById('quickViewModal');
     if (!modal) {
         modal = document.createElement('div');
@@ -198,29 +196,41 @@ function initQuickView() {
 
         // Close modal events
         modal.querySelector('.close-modal').onclick = () => modal.style.display = 'none';
-        window.onclick = (event) => { if (event.target == modal) modal.style.display = 'none'; };
+        window.addEventListener('click', (event) => { if (event.target === modal) modal.style.display = 'none'; });
     }
 
-    qvButtons.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const card = btn.closest('.product-card');
-            const link = card.querySelector('a').href;
-            const url = new URL(link);
-            const id = url.searchParams.get('id');
+    // Event delegation: works for cards rendered now or later.
+    // Guard so we only bind the document-level listener once.
+    if (window.__quickViewBound) return;
+    window.__quickViewBound = true;
 
-            if (typeof products !== 'undefined') {
-                const p = products.find(prod => prod.id === id);
-                if (p) {
-                    document.getElementById('qvImage').src = getPrimaryProductImage(p);
-                    document.getElementById('qvName').textContent = p.name;
-                    document.getElementById('qvPrice').textContent = `${p.price} EGP`;
-                    document.getElementById('qvDescription').textContent = p.description || "No description available.";
-                    document.getElementById('qvViewFull').href = `product.html?id=${p.id}`;
-                    modal.style.display = 'block';
-                }
-            }
-        });
+    document.addEventListener('click', (e) => {
+        const btn = e.target.closest('.quick-view-btn');
+        if (!btn) return;
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        const card = btn.closest('.product-card');
+        if (!card) return;
+
+        // Resolve the product id from the card link or data-id attribute.
+        let id = card.dataset.id || null;
+        if (!id) {
+            const link = card.querySelector('a[href*="id="]');
+            if (link) id = new URL(link.href).searchParams.get('id');
+        }
+        if (!id || typeof products === 'undefined') return;
+
+        const p = products.find(prod => String(prod.id) === String(id));
+        if (!p) return;
+
+        document.getElementById('qvImage').src = getPrimaryProductImage(p);
+        document.getElementById('qvName').textContent = p.name;
+        document.getElementById('qvPrice').textContent = `${p.price} EGP`;
+        document.getElementById('qvDescription').textContent = p.description || "No description available.";
+        document.getElementById('qvViewFull').href = `product.html?id=${p.id}`;
+        modal.style.display = 'block';
     });
 }
 
