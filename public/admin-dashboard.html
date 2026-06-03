@@ -801,20 +801,31 @@
             const list = document.getElementById('newImagesList');
             
             if (newImageFiles.length > 0) {
-                list.innerHTML = newImageFiles.map((file, index) => {
-                    const reader = new FileReader();
+                // Clear and append real DOM nodes so the async FileReader
+                // can set the src on the element that's actually in the page.
+                list.innerHTML = '';
+                newImageFiles.forEach((file, index) => {
                     const preview = document.createElement('div');
                     preview.className = 'image-preview-item';
-                    preview.innerHTML = '<img src="" alt="Preview"><button type="button" class="delete-btn" onclick="removeNewImage(' + index + ')">✕</button>';
-                    
-                    reader.onload = function(e) {
-                        preview.querySelector('img').src = e.target.result;
-                    };
+
+                    const img = document.createElement('img');
+                    img.alt = file.name || 'Preview';
+
+                    const delBtn = document.createElement('button');
+                    delBtn.type = 'button';
+                    delBtn.className = 'delete-btn';
+                    delBtn.textContent = '✕';
+                    delBtn.addEventListener('click', () => removeNewImage(index));
+
+                    preview.appendChild(img);
+                    preview.appendChild(delBtn);
+                    list.appendChild(preview);
+
+                    const reader = new FileReader();
+                    reader.onload = (ev) => { img.src = ev.target.result; };
                     reader.readAsDataURL(file);
-                    
-                    return preview.outerHTML;
-                }).join('');
-                
+                });
+
                 container.style.display = 'block';
             } else {
                 container.style.display = 'none';
