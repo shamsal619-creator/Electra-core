@@ -349,11 +349,11 @@ async function setupHeaderAuth() {
                         <div class="hm-email">${user.email}</div>
                     </div>
                 </div>
-                ${user.isAdmin ? `<a href="admin-dashboard.html" class="hamburger-menu-item hm-admin"><span class="hm-icon">⚙️</span> Admin Panel</a>` : ''}
-                <a href="my-orders.html" class="hamburger-menu-item"><span class="hm-icon">📦</span> My Orders</a>
-                <a href="profile.html" class="hamburger-menu-item"><span class="hm-icon">👤</span> Profile</a>
+                ${user.isAdmin ? `<a href="admin-dashboard.html" class="hamburger-menu-item hm-admin"><span class="hm-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg></span> Admin Panel</a>` : ''}
+                <a href="my-orders.html" class="hamburger-menu-item"><span class="hm-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></span> My Orders</a>
+                <a href="profile.html" class="hamburger-menu-item"><span class="hm-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span> Profile</a>
                 <div class="hm-divider"></div>
-                <button id="logoutBtn" class="hamburger-menu-item hm-logout"><span class="hm-icon">🚪</span> Log Out</button>
+                <button id="logoutBtn" class="hamburger-menu-item hm-logout"><span class="hm-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span> Log Out</button>
             `;
             document.getElementById('logoutBtn').addEventListener('click', async () => {
                 localStorage.removeItem('currentUser');
