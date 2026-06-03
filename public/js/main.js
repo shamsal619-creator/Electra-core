@@ -72,9 +72,12 @@ window.addEventListener('pageshow', (event) => {
 });
 
 function initMobileEnhancements() {
+    // FAB is created in setupHeaderAuth only when logged in
+}
+
+function initMobileFab() {
     if (window.innerWidth > 768) return;
 
-    // Add Floating Action Button (FAB)
     let fab = document.querySelector('.mobile-fab-cart');
     if (!fab) {
         fab = document.createElement('a');
@@ -86,7 +89,6 @@ function initMobileEnhancements() {
         `;
         document.body.appendChild(fab);
 
-        // Update FAB count immediately
         const updateFab = () => {
             const count = getCart().reduce((sum, item) => sum + item.quantity, 0);
             const fabCount = document.getElementById('mobileFabCount');
@@ -94,7 +96,6 @@ function initMobileEnhancements() {
         };
         updateFab();
 
-        // Hook into saveCart to update FAB
         const originalSaveCart = window.saveCart;
         window.saveCart = (cart) => {
             originalSaveCart(cart);
@@ -313,60 +314,88 @@ async function setupHeaderAuth() {
         // Ignore session fetch failures and show cached login links
     }
 
+    const cartIconHTML = `
+        <a href="cart.html" class="cart-icon-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px;">
+                <circle cx="9" cy="21" r="1"></circle>
+                <circle cx="20" cy="21" r="1"></circle>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            </svg>
+            <span class="cart-count" id="headerCartCount">0</span>
+        </a>
+    `;
+
+    const desktopNav = document.getElementById('desktopNav');
+    const searchBar = document.querySelector('.search-bar');
+
     if (user) {
         const firstName = user.first || user.email.split('@')[0];
 
-        container.innerHTML = `
-            <a href="cart.html" class="cart-icon-link desktop-only">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px;">
-                    <circle cx="9" cy="21" r="1"></circle>
-                    <circle cx="20" cy="21" r="1"></circle>
-                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                </svg>
-                <span class="cart-count" id="headerCartCount">0</span>
-            </a>
-        `;
+        // Show search bar and cart icon for logged-in users
+        if (searchBar) searchBar.style.display = '';
+        container.innerHTML = cartIconHTML;
 
-        // Add menu items to hamburger dropdown
+        // Desktop nav — logged in
+        if (desktopNav) {
+            desktopNav.innerHTML = `
+                <span class="desktop-username">Hi, ${firstName}</span>
+                ${user.isAdmin ? '<a href="admin-dashboard.html">Admin</a>' : ''}
+                <a href="my-orders.html">My Orders</a>
+                <a href="profile.html">Profile</a>
+                <button class="btn-logout" id="desktopLogoutBtn">Log Out</button>
+            `;
+            document.getElementById('desktopLogoutBtn').addEventListener('click', async () => {
+                localStorage.removeItem('currentUser');
+                try { await fetch('/auth/logout', { method: 'POST', credentials: 'include' }); } catch {}
+                window.location.href = 'signin.html';
+            });
+        }
+
+        // Mobile hamburger menu — logged in
         const hamburgerMenu = document.getElementById('hamburgerMenu');
         if (hamburgerMenu) {
             hamburgerMenu.innerHTML = `
                 <div style="padding: 24px 20px; border-bottom: 1px solid rgba(255,255,255,0.2);">
                     <div style="font-weight: 700; color: var(--teal); font-size: 18px; letter-spacing: 0.5px;">Welcome, ${firstName}</div>
-                    ${user.isAdmin ? '<a href="admin-dashboard.html" style="display: block; margin-top: 12px; color: var(--dark); font-size: 14px; text-decoration: none; font-weight: 600;">Admin Panel</a>' : ''}
                 </div>
+                ${user.isAdmin ? `<a href="admin-dashboard.html" class="hamburger-menu-item">Admin Panel</a>` : ''}
                 <a href="my-orders.html" class="hamburger-menu-item">My Orders</a>
                 <a href="profile.html" class="hamburger-menu-item">Profile</a>
                 <div style="border-top: 1px solid rgba(255,255,255,0.2); margin: 8px 0;"></div>
                 <button id="logoutBtn" class="hamburger-menu-item" style="color: #dc2626; text-align: left;">Log Out</button>
             `;
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', async () => {
+                    localStorage.removeItem('currentUser');
+                    try { await fetch('/auth/logout', { method: 'POST', credentials: 'include' }); } catch {}
+                    window.location.href = 'signin.html';
+                });
+            }
         }
 
-        const logoutBtn = document.getElementById('logoutBtn');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', async () => {
-                localStorage.removeItem('currentUser');
-                try {
-                    await fetch('/auth/logout', { method: 'POST', credentials: 'include' });
-                } catch (err) {}
-                window.location.href = 'signin.html';
-            });
-        }
-        
+        // Mobile floating cart FAB — only for logged-in users on mobile
+        initMobileFab();
+
         updateCartCount();
     } else {
-        container.innerHTML = `
-            <a href="cart.html" class="cart-icon-link desktop-only">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px;">
-                    <circle cx="9" cy="21" r="1"></circle>
-                    <circle cx="20" cy="21" r="1"></circle>
-                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                </svg>
-                <span class="cart-count" id="headerCartCount">0</span>
-            </a>
-        `;
+        // Hide search bar and cart icon for guests
+        if (searchBar) searchBar.style.display = 'none';
+        container.innerHTML = '';
 
-        // Add login/signup to hamburger menu for non-logged users
+        // Remove mobile FAB if it exists (e.g. after logout)
+        const existingFab = document.querySelector('.mobile-fab-cart');
+        if (existingFab) existingFab.remove();
+
+        // Desktop nav — not logged in
+        if (desktopNav) {
+            desktopNav.innerHTML = `
+                <a href="signin.html">Sign in</a>
+                <a href="signup.html" class="btn-signup">Sign up</a>
+            `;
+        }
+
+        // Mobile hamburger menu — not logged in
         const hamburgerMenu = document.getElementById('hamburgerMenu');
         if (hamburgerMenu) {
             hamburgerMenu.innerHTML = `
