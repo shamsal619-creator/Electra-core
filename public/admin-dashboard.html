@@ -982,10 +982,15 @@
             newImageFiles.forEach(file => {
                 formData.append('images', file);
             });
-            
-            // Add images to delete (only for edit)
-            if (productId && imagesToDelete.length > 0) {
-                formData.append('imagesToDelete', JSON.stringify(imagesToDelete));
+
+            // On edit, tell the server which existing images to KEEP.
+            // The server replaces the image list with `existingImages`, so we
+            // send the URLs still present in the DOM (i.e. not deleted).
+            if (productId) {
+                const keptImages = Array.from(
+                    document.querySelectorAll('#existingImagesList [data-image-url]')
+                ).map(el => el.dataset.imageUrl);
+                formData.append('existingImages', JSON.stringify(keptImages));
             }
 
             try {
