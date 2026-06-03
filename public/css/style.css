@@ -1940,10 +1940,10 @@ a {
     font-weight: 500;
 }
 
-/* Desktop: Hide hamburger, show desktop nav */
+/* Desktop: hamburger hidden by default, shown via JS when logged in */
 @media (min-width: 769px) {
     .hamburger {
-        display: none !important;
+        display: none; /* JS overrides to flex when logged in */
     }
 
     .desktop-nav {
