@@ -316,7 +316,7 @@ async function setupHeaderAuth() {
 
     const cartIconHTML = `
         <a href="cart.html" class="cart-icon-link">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="9" cy="21" r="1"></circle>
                 <circle cx="20" cy="21" r="1"></circle>
                 <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
@@ -325,84 +325,63 @@ async function setupHeaderAuth() {
         </a>
     `;
 
-    const desktopNav = document.getElementById('desktopNav');
-    const searchBar = document.querySelector('.search-bar');
+    const desktopNav  = document.getElementById('desktopNav');
+    const searchBar   = document.querySelector('.search-bar');
+    const hamburger   = document.getElementById('hamburger');
+    const hamburgerMenu = document.getElementById('hamburgerMenu');
 
     if (user) {
         const firstName = user.first || user.email.split('@')[0];
 
-        // Show search bar and cart icon for logged-in users
+        // Show search bar + hamburger + cart
         if (searchBar) searchBar.style.display = '';
+        if (hamburger) hamburger.style.display = 'flex';
+        if (desktopNav) desktopNav.innerHTML = '';
         container.innerHTML = cartIconHTML;
 
-        // Desktop nav — logged in
-        if (desktopNav) {
-            desktopNav.innerHTML = `
-                <span class="desktop-username">Hi, ${firstName}</span>
-                ${user.isAdmin ? '<a href="admin-dashboard.html">Admin</a>' : ''}
-                <a href="my-orders.html">My Orders</a>
-                <a href="profile.html">Profile</a>
-                <button class="btn-logout" id="desktopLogoutBtn">Log Out</button>
+        // Hamburger menu — all user actions live here (desktop + mobile)
+        if (hamburgerMenu) {
+            hamburgerMenu.innerHTML = `
+                <div class="hm-header">
+                    <div class="hm-avatar">${firstName.charAt(0).toUpperCase()}</div>
+                    <div>
+                        <div class="hm-name">${firstName}</div>
+                        <div class="hm-email">${user.email}</div>
+                    </div>
+                </div>
+                ${user.isAdmin ? `<a href="admin-dashboard.html" class="hamburger-menu-item hm-admin"><span class="hm-icon">⚙️</span> Admin Panel</a>` : ''}
+                <a href="my-orders.html" class="hamburger-menu-item"><span class="hm-icon">📦</span> My Orders</a>
+                <a href="profile.html" class="hamburger-menu-item"><span class="hm-icon">👤</span> Profile</a>
+                <div class="hm-divider"></div>
+                <button id="logoutBtn" class="hamburger-menu-item hm-logout"><span class="hm-icon">🚪</span> Log Out</button>
             `;
-            document.getElementById('desktopLogoutBtn').addEventListener('click', async () => {
+            document.getElementById('logoutBtn').addEventListener('click', async () => {
                 localStorage.removeItem('currentUser');
                 try { await fetch('/auth/logout', { method: 'POST', credentials: 'include' }); } catch {}
                 window.location.href = 'signin.html';
             });
         }
 
-        // Mobile hamburger menu — logged in
-        const hamburgerMenu = document.getElementById('hamburgerMenu');
-        if (hamburgerMenu) {
-            hamburgerMenu.innerHTML = `
-                <div style="padding: 24px 20px; border-bottom: 1px solid rgba(255,255,255,0.2);">
-                    <div style="font-weight: 700; color: var(--teal); font-size: 18px; letter-spacing: 0.5px;">Welcome, ${firstName}</div>
-                </div>
-                ${user.isAdmin ? `<a href="admin-dashboard.html" class="hamburger-menu-item">Admin Panel</a>` : ''}
-                <a href="my-orders.html" class="hamburger-menu-item">My Orders</a>
-                <a href="profile.html" class="hamburger-menu-item">Profile</a>
-                <div style="border-top: 1px solid rgba(255,255,255,0.2); margin: 8px 0;"></div>
-                <button id="logoutBtn" class="hamburger-menu-item" style="color: #dc2626; text-align: left;">Log Out</button>
-            `;
-            const logoutBtn = document.getElementById('logoutBtn');
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', async () => {
-                    localStorage.removeItem('currentUser');
-                    try { await fetch('/auth/logout', { method: 'POST', credentials: 'include' }); } catch {}
-                    window.location.href = 'signin.html';
-                });
-            }
-        }
-
-        // Mobile floating cart FAB — only for logged-in users on mobile
+        // Mobile floating cart FAB — only on mobile when logged in
         initMobileFab();
-
         updateCartCount();
+
     } else {
-        // Hide search bar and cart icon for guests
-        if (searchBar) searchBar.style.display = 'none';
-        container.innerHTML = '';
+        // Guest state: hide hamburger, show search bar, Sign In + Sign Up in user-actions
+        if (hamburger) hamburger.style.display = 'none';
+        if (searchBar)  searchBar.style.display = '';
+        if (desktopNav) desktopNav.innerHTML = '';
+        if (hamburgerMenu) hamburgerMenu.innerHTML = '';
 
         // Remove mobile FAB if it exists (e.g. after logout)
         const existingFab = document.querySelector('.mobile-fab-cart');
         if (existingFab) existingFab.remove();
 
-        // Desktop nav — not logged in
-        if (desktopNav) {
-            desktopNav.innerHTML = `
-                <a href="signin.html">Sign in</a>
-                <a href="signup.html" class="btn-signup">Sign up</a>
-            `;
-        }
-
-        // Mobile hamburger menu — not logged in
-        const hamburgerMenu = document.getElementById('hamburgerMenu');
-        if (hamburgerMenu) {
-            hamburgerMenu.innerHTML = `
-                <a href="signin.html" class="hamburger-menu-item">Sign In</a>
-                <a href="signup.html" class="hamburger-menu-item">Sign Up</a>
-            `;
-        }
+        // Sign In + Sign Up go into user-actions (visible on all screen sizes)
+        container.innerHTML = `
+            <a href="signin.html" class="header-btn-signin">Sign In</a>
+            <a href="signup.html" class="header-btn-signup">Sign Up</a>
+        `;
     }
 }
 
