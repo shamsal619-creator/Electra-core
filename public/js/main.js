@@ -44,7 +44,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Initialize search functionality
     initSearch();
-    
+
+    // Initialize category dropdown next to the search bar
+    initCategoryDropdown();
+
     // Initialize Quick View
     initQuickView();
 
@@ -231,6 +234,66 @@ function initQuickView() {
         document.getElementById('qvDescription').textContent = p.description || "No description available.";
         document.getElementById('qvViewFull').href = `product.html?id=${p.id}`;
         modal.style.display = 'block';
+    });
+}
+
+function initCategoryDropdown() {
+    const searchBar = document.querySelector('.search-bar');
+    if (!searchBar || document.querySelector('.category-dropdown')) return;
+
+    const categories = [
+        { label: 'All Products', value: '', href: 'index.html' },
+        { label: 'Phones',       value: 'phones',      href: 'phones.html' },
+        { label: 'Laptops',      value: 'laptops',     href: 'laptops.html' },
+        { label: 'Headphones',   value: 'headphones',  href: 'headphones.html' },
+        { label: 'Watches',      value: 'watches',     href: 'watches.html' },
+        { label: 'Accessories',  value: 'accessories', href: 'accessories.html' },
+        { label: 'Kitchen',      value: 'kitchen',     href: 'kitchen.html' }
+    ];
+
+    // Detect current category from the page title for the active label.
+    const title = document.title.toLowerCase();
+    let current = categories.find(c => c.value && title.includes(c.value.replace(/s$/, '')));
+    const activeLabel = current ? current.label : 'Categories';
+
+    const wrap = document.createElement('div');
+    wrap.className = 'category-dropdown';
+    wrap.innerHTML = `
+        <button type="button" class="category-toggle" aria-haspopup="true" aria-expanded="false">
+            <span class="category-toggle-label">${activeLabel}</span>
+            <svg class="category-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </button>
+        <div class="category-menu" role="menu">
+            ${categories.map(c => `
+                <a href="${c.href}" class="category-menu-item${current && current.value === c.value ? ' active' : ''}" role="menuitem" data-value="${c.value}">${c.label}</a>
+            `).join('')}
+        </div>
+    `;
+
+    // Insert the dropdown right before the search bar so they sit side by side.
+    searchBar.parentNode.insertBefore(wrap, searchBar);
+
+    const toggle = wrap.querySelector('.category-toggle');
+    const menu = wrap.querySelector('.category-menu');
+
+    toggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const open = wrap.classList.toggle('open');
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+
+    // Close on outside click / Escape
+    document.addEventListener('click', (e) => {
+        if (!wrap.contains(e.target)) {
+            wrap.classList.remove('open');
+            toggle.setAttribute('aria-expanded', 'false');
+        }
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            wrap.classList.remove('open');
+            toggle.setAttribute('aria-expanded', 'false');
+        }
     });
 }
 
