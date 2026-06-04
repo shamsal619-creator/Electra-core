@@ -227,8 +227,13 @@
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
+            max-width: none;
+            width: 100%;
+            margin-left: 0;
+            margin-right: 0;
+            align-items: center;
         }
-        .search-input { flex: 1; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 12px; }
+        .search-bar input.search-input { flex: 1 1 auto; min-width: 340px; padding: 13px 18px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; }
         .btn-search {
             padding: 10px 20px;
             background: var(--teal);
