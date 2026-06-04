@@ -36,6 +36,36 @@
         .admin-confirm-actions button { flex: 1; padding: 11px 0; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; border: none; font-family: inherit; }
         .btn-danger { background: var(--error-color, #b91c1c); color: #fff; transition: background 0.18s; }
         .btn-danger:hover { background: #991b1b; }
+        /* Admin category filter dropdown */
+        .cat-filter { position: relative; flex-shrink: 0; }
+        .cat-filter-toggle {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 10px 14px; background: #fff;
+            border: 1px solid var(--border, #e6e6e6); border-radius: 8px;
+            font-size: 12px; font-weight: 700; color: var(--dark);
+            cursor: pointer; font-family: inherit; white-space: nowrap;
+            transition: border-color 0.18s, box-shadow 0.18s;
+        }
+        .cat-filter-toggle svg { width: 14px; height: 14px; color: var(--teal); transition: transform 0.2s ease; }
+        .cat-filter-toggle:hover { border-color: var(--teal); }
+        .cat-filter.open .cat-filter-toggle { border-color: var(--teal); box-shadow: 0 0 0 2px rgba(5,163,145,0.12); }
+        .cat-filter.open .cat-filter-toggle svg { transform: rotate(180deg); }
+        .cat-filter-menu {
+            position: absolute; top: calc(100% + 6px); left: 0; min-width: 180px;
+            background: #fff; border: 1px solid var(--border, #e6e6e6); border-radius: 10px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.12); padding: 6px;
+            opacity: 0; visibility: hidden; transform: translateY(-6px);
+            transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s; z-index: 200;
+        }
+        .cat-filter.open .cat-filter-menu { opacity: 1; visibility: visible; transform: translateY(0); }
+        .cat-filter-item {
+            display: block; width: 100%; text-align: left;
+            padding: 10px 12px; border: none; background: none; cursor: pointer;
+            border-radius: 7px; font-size: 12px; font-weight: 600; color: var(--dark);
+            font-family: inherit; transition: background 0.15s, color 0.15s;
+        }
+        .cat-filter-item:hover { background: var(--teal-light, #e6fffb); color: var(--teal); }
+        .cat-filter-item.active { background: var(--teal); color: #fff; }
         .admin-container { display: flex; min-height: 100vh; }
         .admin-sidebar {
             background: linear-gradient(135deg, var(--dark) 0%, #1a1a1a 100%);
@@ -523,8 +553,23 @@
                         </form>
                     </div>
 
-                    <!-- Products Search -->
+                    <!-- Products Search + Category Filter -->
                     <div class="search-bar">
+                        <div class="cat-filter" id="catFilter">
+                            <button type="button" class="cat-filter-toggle" id="catFilterToggle" aria-haspopup="true" aria-expanded="false">
+                                <span id="catFilterLabel">All Categories</span>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </button>
+                            <div class="cat-filter-menu" id="catFilterMenu" role="menu">
+                                <button type="button" class="cat-filter-item active" data-cat="">All Categories</button>
+                                <button type="button" class="cat-filter-item" data-cat="phones">Phones</button>
+                                <button type="button" class="cat-filter-item" data-cat="laptops">Laptops</button>
+                                <button type="button" class="cat-filter-item" data-cat="headphones">Headphones</button>
+                                <button type="button" class="cat-filter-item" data-cat="watches">Watches</button>
+                                <button type="button" class="cat-filter-item" data-cat="accessories">Accessories</button>
+                                <button type="button" class="cat-filter-item" data-cat="kitchen">Kitchen</button>
+                            </div>
+                        </div>
                         <input type="text" id="productSearchInput" class="search-input" placeholder="Search products by name...">
                         <button class="btn-search" onclick="searchProducts()">Search</button>
                         <button class="btn-reset" onclick="resetProductSearch()">Reset</button>
@@ -1064,23 +1109,65 @@
             renderOrders(allOrders);
         };
 
-        window.searchProducts = function() {
+        // Combined category + name filter state
+        let currentCategoryFilter = '';
+
+        function applyProductFilters() {
             const searchValue = document.getElementById('productSearchInput').value.trim().toLowerCase();
-            if (!searchValue) {
-                renderProducts(allProducts);
-                return;
-            }
             const filtered = allProducts.filter(product => {
                 const name = (product.name || product.title || '').toLowerCase();
-                return name.includes(searchValue);
+                const cat = (product.category || '').toLowerCase();
+                const matchName = !searchValue || name.includes(searchValue);
+                const matchCat = !currentCategoryFilter || cat === currentCategoryFilter;
+                return matchName && matchCat;
             });
             renderProducts(filtered);
-        };
+        }
+
+        window.searchProducts = applyProductFilters;
 
         window.resetProductSearch = function() {
             document.getElementById('productSearchInput').value = '';
+            currentCategoryFilter = '';
+            // Reset dropdown UI
+            document.querySelectorAll('.cat-filter-item').forEach(i => i.classList.toggle('active', i.dataset.cat === ''));
+            const label = document.getElementById('catFilterLabel');
+            if (label) label.textContent = 'All Categories';
             renderProducts(allProducts);
         };
+
+        // Category filter dropdown wiring
+        (function initCatFilter() {
+            const wrap = document.getElementById('catFilter');
+            if (!wrap) return;
+            const toggle = document.getElementById('catFilterToggle');
+            const label = document.getElementById('catFilterLabel');
+
+            toggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const open = wrap.classList.toggle('open');
+                toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+            });
+
+            wrap.querySelectorAll('.cat-filter-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    currentCategoryFilter = item.dataset.cat || '';
+                    label.textContent = item.textContent;
+                    wrap.querySelectorAll('.cat-filter-item').forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                    wrap.classList.remove('open');
+                    toggle.setAttribute('aria-expanded', 'false');
+                    applyProductFilters();
+                });
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!wrap.contains(e.target)) {
+                    wrap.classList.remove('open');
+                    toggle.setAttribute('aria-expanded', 'false');
+                }
+            });
+        })();
 
         window.logout = function() {
             window.location.href = '/signin.html';
