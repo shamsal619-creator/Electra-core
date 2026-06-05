@@ -68,17 +68,66 @@
         .cat-filter-item.active { background: var(--teal); color: #fff; }
         .admin-container { display: flex; min-height: 100vh; }
         .admin-sidebar {
-            background: linear-gradient(135deg, var(--dark) 0%, #1a1a1a 100%);
+            background: rgba(30, 30, 30, 0.55);
+            backdrop-filter: blur(18px) saturate(1.4);
+            -webkit-backdrop-filter: blur(18px) saturate(1.4);
+            border-right: 1px solid rgba(255, 255, 255, 0.12);
             color: white;
             padding: 20px;
-            width: 200px;
-            box-shadow: 4px 0 12px rgba(0,0,0,0.15);
+            width: 220px;
+            box-shadow: 4px 0 24px rgba(0,0,0,0.25);
             position: fixed;
             left: 0;
             top: 0;
             height: 100vh;
             overflow-y: auto;
             z-index: 100;
+            transition: transform 0.35s cubic-bezier(.4,0,.2,1), width 0.35s cubic-bezier(.4,0,.2,1);
+        }
+        .admin-sidebar.collapsed {
+            transform: translateX(-100%);
+        }
+        .sidebar-toggle {
+            position: fixed;
+            top: 50%;
+            left: 220px;
+            transform: translateY(-50%);
+            width: 28px;
+            height: 56px;
+            background: rgba(30, 30, 30, 0.55);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-left: none;
+            border-radius: 0 10px 10px 0;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 101;
+            transition: left 0.35s cubic-bezier(.4,0,.2,1), background 0.2s;
+            padding: 0;
+        }
+        .sidebar-toggle:hover {
+            background: rgba(5, 163, 145, 0.45);
+        }
+        .sidebar-toggle.collapsed {
+            left: 0;
+        }
+        .sidebar-toggle .arrow {
+            display: inline-block;
+            transition: transform 0.35s;
+        }
+        .sidebar-toggle.collapsed .arrow {
+            transform: rotate(180deg);
+        }
+        .admin-main {
+            transition: margin-left 0.35s cubic-bezier(.4,0,.2,1);
+        }
+        .admin-main.sidebar-hidden {
+            margin-left: 0;
         }
         .admin-sidebar h2 { font-size: 14px; font-weight: 900; margin: 0 0 20px 0; color: var(--teal); text-transform: uppercase; }
         .admin-logo {
@@ -100,10 +149,10 @@
             transition: all 0.3s;
             border-left: 3px solid transparent;
         }
-        .nav-item:hover { background: rgba(5, 163, 145, 0.15); border-left-color: var(--teal); }
-        .nav-item.active { background: rgba(5, 163, 145, 0.25); border-left-color: var(--teal); color: var(--teal); }
+        .nav-item:hover { background: rgba(5, 163, 145, 0.2); border-left-color: var(--teal); }
+        .nav-item.active { background: rgba(5, 163, 145, 0.3); border-left-color: var(--teal); color: var(--teal); }
         .admin-main {
-            margin-left: 200px;
+            margin-left: 220px;
             padding: 30px;
             flex: 1;
             overflow-y: auto;
@@ -375,8 +424,10 @@
         }
         
         @media (max-width: 480px) {
-            .admin-sidebar { width: 150px; }
-            .admin-main { margin-left: 150px; }
+            .admin-sidebar { width: 160px; }
+            .admin-main { margin-left: 160px; }
+            .sidebar-toggle { left: 160px; }
+            .sidebar-toggle.collapsed { left: 0; }
             .form-grid { grid-template-columns: 1fr; }
             .form-group.full-width { grid-column: 1; }
             .order-info { grid-template-columns: 1fr; }
@@ -390,10 +441,29 @@
                 height: auto; 
                 padding: 15px;
                 box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                transform: none !important;
+            }
+            .admin-sidebar.collapsed {
+                transform: none !important;
+                display: none;
             }
             .admin-main { 
-                margin-left: 0; 
+                margin-left: 0 !important; 
                 padding: 20px 15px;
+            }
+            .sidebar-toggle {
+                position: relative;
+                top: auto;
+                left: auto !important;
+                transform: none;
+                width: 100%;
+                height: 36px;
+                border-radius: 8px;
+                border: 1px solid rgba(255,255,255,0.12);
+                margin-bottom: 10px;
+            }
+            .sidebar-toggle.collapsed {
+                left: auto !important;
             }
             .admin-logo img { height: 50px; }
             .admin-header { 
@@ -449,8 +519,13 @@
 </head>
 <body>
     <div class="admin-container">
+        <!-- Sidebar Toggle -->
+        <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">
+            <span class="arrow">&lsaquo;</span>
+        </button>
+
         <!-- Sidebar -->
-        <aside class="admin-sidebar">
+        <aside class="admin-sidebar" id="adminSidebar">
             <a href="index.html" class="admin-logo">
                 <img src="design/logo.png" alt="ElectraCore logo">
             </a>
@@ -1243,6 +1318,16 @@
                 searchProducts();
             }
         });
+
+        // Sidebar Toggle
+        window.toggleSidebar = function() {
+            const sidebar = document.getElementById('adminSidebar');
+            const toggle = document.getElementById('sidebarToggle');
+            const main = document.querySelector('.admin-main');
+            sidebar.classList.toggle('collapsed');
+            toggle.classList.toggle('collapsed');
+            main.classList.toggle('sidebar-hidden');
+        };
     </script>
 </body>
 </html>
