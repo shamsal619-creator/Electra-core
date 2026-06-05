@@ -954,6 +954,11 @@ a {
     margin-bottom: 15px;
 }
 
+/* Discounts / old prices are hidden site-wide */
+.old-price {
+    display: none !important;
+}
+
 .product-card .old-price {
     text-decoration: line-through;
     color: var(--muted);
